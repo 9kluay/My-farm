@@ -138,7 +138,7 @@
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอด */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด */
         .summary-dashboard {
             background: var(--forest-card);
             border: 1px solid var(--forest-border);
@@ -317,7 +317,7 @@
             box-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
         }
 
-        /* ------------------ เลย์เอาต์ใหม่: สภาพอากาศซ้อนมุมขวาล่าง ------------------ */
+        /* ------------------ เลย์เอาต์: สภาพอากาศซ้อนมุมขวาล่าง ------------------ */
         .nature-pod {
             background: rgba(6, 23, 15, 0.6);
             border: 1px solid rgba(52, 211, 153, 0.15);
@@ -330,14 +330,12 @@
             align-items: center;
         }
 
-        /* กรอบหุ้มต้นไม้และป้ายสภาพอากาศ */
         .avatar-container {
             position: relative;
             display: inline-block;
             margin-bottom: 15px;
         }
 
-        /* ต้นไม้ตรงกลาง */
         .tree-avatar {
             font-size: 85px;
             filter: drop-shadow(0 12px 18px rgba(0,0,0,0.35));
@@ -351,14 +349,13 @@
             50% { transform: translateY(-8px) rotate(-2deg); }
         }
 
-        /* ป้ายสภาพอากาศ (กรอบสีเขียว) ลอยอยู่มุมขวาล่างของต้นไม้ */
         .weather-badge {
             position: absolute;
             bottom: -5px;
             right: -40px;
             font-size: 11px;
             color: var(--leaf-green);
-            background: rgba(6, 43, 31, 0.95); /* สีพื้นหลังเข้มขึ้นเพื่อให้อ่านง่าย */
+            background: rgba(6, 43, 31, 0.95);
             padding: 6px 12px;
             border-radius: 20px;
             border: 1px solid rgba(52, 211, 153, 0.4);
@@ -371,7 +368,6 @@
             z-index: 2;
         }
 
-        /* ชื่อต้นไม้ด้านล่างสุด */
         .forest-tier-title {
             font-size: 18px;
             font-weight: 700;
@@ -585,7 +581,6 @@
             farms.forEach(login => {
                 const card = document.createElement('div');
                 card.className = 'tree-card';
-                // HTML เลย์เอาต์ใหม่: อิโมจิ ป้ายสภาพอากาศซ้อนมุมขวาล่าง
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">🌲 #${login}</div>
@@ -670,29 +665,34 @@
                     return;
                 }
 
-                                const latest = data[0];
+                const latest = data[0];
                 const balance = parseFloat(latest.balance);
                 const equity = parseFloat(latest.equity);
                 const profitLoss = parseFloat(latest.floating_pl);
                 const openPositions = parseInt(latest.open_positions || 0);
                 
+                // 🟢 ดึงยอดเงินฝากจริง (initial_deposit) มาใช้คำนวณ % การเติบโต
+                const initialDeposit = parseFloat(latest.initial_deposit || balance);
+                
                 globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss };
                 updatePortfolioSummary();
 
-                // 🟢 คำนวณเปอร์เซ็นต์การเติบโตจาก "เงินต้น (Balance)" ที่ฝากเข้าไป
-                const diff = equity - balance;
-                const percent = (balance > 0) ? (diff / balance) * 100 : 0;
+                // คำนวณเปอร์เซ็นต์เทียบกับเงินฝากจริง
+                const diff = equity - initialDeposit;
+                const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
 
                 statusDiv.innerHTML = '● ป่าไม้อุดมสมบูรณ์';
                 statusDiv.style.color = 'var(--leaf-green)';
+                weatherBadge.style.color = 'var(--leaf-green)';
+                weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
 
-                // 🌳 ระบบไล่ระดับต้นไม้ตามเปอร์เซ็นต์เทียบกับเงินต้น
+                // 🌳 ระบบไล่ระดับต้นไม้ตามเปอร์เซ็นต์เทียบกับเงินฝากจริง
                 let treeEmoji = '🌱';
                 let treeName = 'ต้นกล้าเล็กๆ (Sprout)';
                 
                 if (balance <= 0) {
                     treeEmoji = '🌰'; 
-                    treeName = 'เมล็ดพันธุ์รอเติบโต (Seed)';
+                    treeName = 'เมล็ดพันธุ์ในดิน (Seed)';
                 } else if (percent >= 100) {
                     treeEmoji = '🍎';
                     treeName = 'ต้นแอปเปิลทองคำ (Golden Fruit Tree)';
@@ -716,12 +716,10 @@
                     treeName = 'ต้นกล้าแรกแย้ม (Sprout)';
                 } else {
                     treeEmoji = '🌰';
-                    treeName = 'เมล็ดพันธุ์ในดิน (Seed)';
+                    treeName = 'เมล็ดพันธุ์รอเติบโต (Seed)';
                 }
 
-
-
-                // 🟢 ระบบสภาพอากาศ (ไอคอน + ข้อความใน Badge เดียวกัน)
+                // ☀️ ระบบสภาพอากาศ
                 let weatherEmoji = '';
                 let weatherText = '';
                 
@@ -741,7 +739,7 @@
                     weatherEmoji = '🌧️'; weatherText = 'ฝนตกปรอยๆ';
                 } else if (percent < -5 && percent >= -10) {
                     weatherEmoji = '☔'; weatherText = 'ฝนตกชุก';
-                    weatherBadge.style.color = '#fbbf24'; // เปลี่ยนสี Badge ถ้าติดลบ
+                    weatherBadge.style.color = '#fbbf24';
                     weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
                 } else if (percent < -10 && percent >= -15) {
                     weatherEmoji = '⛈️'; weatherText = 'พายุฝนรุนแรง!';
@@ -755,8 +753,6 @@
 
                 avatarDiv.innerText = treeEmoji;
                 tierDiv.innerText = treeName;
-                
-                // อัปเดตข้อมูลลงใน Badge สภาพอากาศ
                 weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
 
                 balDiv.innerText = `$${balance.toFixed(2)}`;
