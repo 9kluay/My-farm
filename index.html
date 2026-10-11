@@ -795,12 +795,45 @@
             });
         }
 
+                // 💧 ฟังก์ชันซิงค์ข้อมูลแบบผสาน (Merge) ป้องกันพอร์ตหาย
         async function refreshAll() {
-            await fetchUserFarmsFromCloud();
-            renderForest();
-            const farms = getFarmsList();
-            farms.forEach(login => fetchNodeData(login));
+            if (!currentUser) return;
+            
+            try {
+                // 1. ดึงข้อมูลพอร์ตล่าสุดจากคลาวด์
+                const response = await fetch(`${SCRIPT_URL}?action=getUserData&user=${currentUser}`);
+                const data = await response.json();
+                
+                let localFarms = getFarmsList(); // พอร์ตที่มีในเครื่องตอนนี้
+                
+                if (data.success && data.farms && data.farms.length > 0) {
+                    // ผสานพอร์ตจากคลาวด์และในเครื่องเข้าด้วยกัน (ไม่ให้ซ้ำกัน)
+                    let mergedFarms = Array.from(new Set([...localFarms, ...data.farms]));
+                    saveFarmsList(mergedFarms);
+                    
+                    // ถ้าในคลาวด์มีน้อยกว่า ให้ซิงค์ข้อมูลรวมกลับขึ้นไปเก็บบนคลาวด์ด้วย
+                    if (mergedFarms.length > data.farms.length) {
+                        syncFarmsToCloud(mergedFarms);
+                    }
+                } else if (localFarms.length > 0) {
+                    // ถ้าคลาวด์ยังไม่มีข้อมูล แต่ในเครื่องมี ให้ส่งข้อมูลในเครื่องขึ้นคลาวด์ทันที
+                    syncFarmsToCloud(localFarms);
+                }
+                
+                // 2. แสดงผลและอัปเดตข้อมูลแต่ละพอร์ต
+                renderForest();
+                const currentFarms = getFarmsList();
+                currentFarms.forEach(login => fetchNodeData(login));
+                
+                alert('💧 รดน้ำและซิงค์ข้อมูลสำเร็จเรียบร้อยครับ!');
+            } catch (err) {
+                console.error('Refresh failed', err);
+                alert('⚠️ ไม่สามารถซิงค์ข้อมูลกับคลาวด์ได้ชั่วคราว แต่ข้อมูลในเครื่องยังอยู่ครับ');
+                renderForest();
+                getFarmsList().forEach(login => fetchNodeData(login));
+            }
         }
+
 
         async function fetchNodeData(login) {
             const avatarDiv = document.getElementById(`avatar-${login}`);
