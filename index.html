@@ -670,7 +670,7 @@
                     return;
                 }
 
-                const latest = data[0];
+                                const latest = data[0];
                 const balance = parseFloat(latest.balance);
                 const equity = parseFloat(latest.equity);
                 const profitLoss = parseFloat(latest.floating_pl);
@@ -679,20 +679,19 @@
                 globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss };
                 updatePortfolioSummary();
 
+                // 🟢 คำนวณเปอร์เซ็นต์การเติบโตจาก "เงินต้น (Balance)" ที่ฝากเข้าไป
                 const diff = equity - balance;
                 const percent = (balance > 0) ? (diff / balance) * 100 : 0;
 
                 statusDiv.innerHTML = '● ป่าไม้อุดมสมบูรณ์';
                 statusDiv.style.color = 'var(--leaf-green)';
-                weatherBadge.style.color = 'var(--leaf-green)';
-                weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
 
-                                // 🌳 ระบบไล่ระดับต้นไม้ตามเปอร์เซ็นต์กำไร (%)
+                // 🌳 ระบบไล่ระดับต้นไม้ตามเปอร์เซ็นต์เทียบกับเงินต้น
                 let treeEmoji = '🌱';
                 let treeName = 'ต้นกล้าเล็กๆ (Sprout)';
                 
                 if (balance <= 0) {
-                    treeEmoji = '🌰'; // เปลี่ยนจากกล่องดิน เป็นเมล็ดพันธุ์ในดิน
+                    treeEmoji = '🌰'; 
                     treeName = 'เมล็ดพันธุ์รอเติบโต (Seed)';
                 } else if (percent >= 100) {
                     treeEmoji = '🍎';
@@ -719,6 +718,7 @@
                     treeEmoji = '🌰';
                     treeName = 'เมล็ดพันธุ์ในดิน (Seed)';
                 }
+
 
 
                 // 🟢 ระบบสภาพอากาศ (ไอคอน + ข้อความใน Badge เดียวกัน)
