@@ -687,31 +687,39 @@
                 weatherBadge.style.color = 'var(--leaf-green)';
                 weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
 
+                                // 🌳 ระบบไล่ระดับต้นไม้ตามเปอร์เซ็นต์กำไร (%)
                 let treeEmoji = '🌱';
-                let treeName = 'ต้นกล้าเงินออม (Seedling)';
+                let treeName = 'ต้นกล้าเล็กๆ (Sprout)';
                 
                 if (balance <= 0) {
-                    treeEmoji = '🟫'; 
-                    treeName = 'ที่ดินเปล่า (Empty Land)';
-                } else if (equity >= 20000) {
+                    treeEmoji = '🌰'; // เปลี่ยนจากกล่องดิน เป็นเมล็ดพันธุ์ในดิน
+                    treeName = 'เมล็ดพันธุ์รอเติบโต (Seed)';
+                } else if (percent >= 100) {
                     treeEmoji = '🍎';
-                    treeName = 'ต้นแอปเปิลผลดกมั่งคั่ง (Golden Fruit Tree)';
-                } else if (equity >= 10000) {
+                    treeName = 'ต้นแอปเปิลทองคำ (Golden Fruit Tree)';
+                } else if (percent >= 80) {
+                    treeEmoji = '🍒';
+                    treeName = 'ต้นไม้ผลิดอกออกผล (Blooming Tree)';
+                } else if (percent >= 60) {
                     treeEmoji = '🌲';
                     treeName = 'มหาพฤกษาใหญ่ (Ancient Giant)';
-                } else if (equity >= 5000) {
+                } else if (percent >= 40) {
                     treeEmoji = '🌳';
                     treeName = 'ต้นไม้ร่มรื่น (Mature Tree)';
-                } else if (equity >= 2000) {
+                } else if (percent >= 25) {
                     treeEmoji = '🌿';
                     treeName = 'พุ่มไม้เขียวขจี (Growing Bush)';
-                } else if (equity >= 1000) {
+                } else if (percent >= 10) {
                     treeEmoji = '🪴';
                     treeName = 'ไม้ประดับในกระถาง (Pot Plant)';
-                } else {
+                } else if (percent > 0) {
                     treeEmoji = '🌱';
-                    treeName = 'ต้นกล้าเล็กๆ (Sprout)';
+                    treeName = 'ต้นกล้าแรกแย้ม (Sprout)';
+                } else {
+                    treeEmoji = '🌰';
+                    treeName = 'เมล็ดพันธุ์ในดิน (Seed)';
                 }
+
 
                 // 🟢 ระบบสภาพอากาศ (ไอคอน + ข้อความใน Badge เดียวกัน)
                 let weatherEmoji = '';
