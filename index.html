@@ -551,8 +551,10 @@
             if (currentUser) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('welcomeUser').innerText = `👤 ผู้ใช้งาน: ${currentUser}`;
-                renderForest();
-                refreshAll();
+                fetchUserFarmsFromCloud().then(() => {
+                    renderForest();
+                    refreshAll();
+                });
             }
             startWindEffect();
         };
@@ -583,7 +585,7 @@
             }
         }
 
-        function handleAuth() {
+        async function handleAuth() {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value.trim();
 
@@ -592,31 +594,40 @@
                 return;
             }
 
-            // ดึงฐานข้อมูลผู้ใช้ทั้งหมดจาก LocalStorage
-            let usersDb = JSON.parse(localStorage.getItem('mt4_forest_users_db') || '{}');
+            const action = (currentMode === 'register') ? 'register' : 'login';
 
-            if (currentMode === 'register') {
-                if (usersDb[user]) {
-                    alert('❌ ชื่อผู้ใช้นี้มีคนใช้งานแล้ว กรุณาใช้ชื่ออื่นครับ');
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: action, user: user, pass: pass })
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    alert('❌ ' + (result.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'));
                     return;
                 }
-                usersDb[user] = pass;
-                localStorage.setItem('mt4_forest_users_db', JSON.stringify(usersDb));
-                alert('✅ สมัครสมาชิกสำเร็จ! ระบบกำลังพาเข้าสู่สวนป่าของคุณ...');
-            } else {
-                if (!usersDb[user] || usersDb[user] !== pass) {
-                    alert('❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้องครับ');
-                    return;
+
+                if (currentMode === 'register') {
+                    alert('✅ สมัครสมาชิกสำเร็จ! ระบบกำลังพาเข้าสู่สวนป่าของคุณ...');
                 }
+
+                sessionStorage.setItem('forest_current_user', user);
+                currentUser = user;
+
+                if (result.farms) {
+                    saveFarmsList(result.farms);
+                }
+
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('welcomeUser').innerText = `👤 ผู้ใช้งาน: ${currentUser}`;
+                renderForest();
+                refreshAll();
+
+            } catch (err) {
+                alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
             }
-
-            // บันทึก Session การเข้าสู่ระบบ
-            sessionStorage.setItem('forest_current_user', user);
-            currentUser = user;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('welcomeUser').innerText = `👤 ผู้ใช้งาน: ${currentUser}`;
-            renderForest();
-            refreshAll();
         }
 
         function checkAuthEnter(e) {
@@ -630,7 +641,6 @@
             }
         }
 
-        // ดึงรายการพอร์ตเฉพาะของ User ปัจจุบัน
         function getUserFarmsKey() {
             return `mt4_forest_farms_${currentUser}`;
         }
@@ -643,6 +653,32 @@
             localStorage.setItem(getUserFarmsKey(), JSON.stringify(farms));
         }
 
+        async function syncFarmsToCloud(farms) {
+            if (!currentUser) return;
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'updateFarms', user: currentUser, farms: farms })
+                });
+            } catch (err) {
+                console.error('Sync failed', err);
+            }
+        }
+
+        async function fetchUserFarmsFromCloud() {
+            if (!currentUser) return;
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getUserData&user=${currentUser}`);
+                const data = await response.json();
+                if (data.success && data.farms) {
+                    saveFarmsList(data.farms);
+                }
+            } catch (err) {
+                console.error('Fetch farms failed', err);
+            }
+        }
+
         function addFarm() {
             const loginInput = document.getElementById('loginId');
             const login = loginInput.value.trim();
@@ -653,6 +689,7 @@
             
             farms.push(login);
             saveFarmsList(farms);
+            syncFarmsToCloud(farms);
             loginInput.value = '';
             renderForest();
             fetchNodeData(login);
@@ -663,6 +700,7 @@
                 let farms = getFarmsList();
                 farms = farms.filter(f => f !== login);
                 saveFarmsList(farms);
+                syncFarmsToCloud(farms);
                 renderForest();
             }
         };
@@ -726,7 +764,9 @@
             });
         }
 
-        function refreshAll() {
+        async function refreshAll() {
+            await fetchUserFarmsFromCloud();
+            renderForest();
             const farms = getFarmsList();
             farms.forEach(login => fetchNodeData(login));
         }
