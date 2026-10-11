@@ -15,6 +15,7 @@
             --text-light: #ecfdf5;
             --text-dim: #9ca3af;
             --danger-red: #f87171;
+            --sun-gold: #fbbf24;
         }
 
         * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -44,11 +45,13 @@
             display: flex;
             align-items: center;
         }
+
         .river-wave-track {
             display: flex;
             white-space: nowrap;
             animation: flowRiver 12s linear infinite;
         }
+
         .river-wave-item {
             font-size: 16px;
             font-weight: 500;
@@ -59,6 +62,7 @@
             gap: 10px;
             text-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
         }
+
         @keyframes flowRiver {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -115,6 +119,7 @@
             font-size: 14px;
             font-weight: 600;
             border: 1px solid var(--forest-border);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
         }
 
         h1 {
@@ -126,7 +131,12 @@
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
         }
-        p.subtitle { color: var(--text-dim); font-size: 15px; margin: 0; }
+
+        p.subtitle {
+            color: var(--text-dim);
+            font-size: 15px;
+            margin: 0;
+        }
 
         /* 📊 แถบรวมยอด */
         .summary-dashboard {
@@ -136,18 +146,37 @@
             padding: 20px 30px;
             margin-bottom: 30px;
             backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
         }
-        .summary-item { text-align: center; border-right: 1px solid rgba(255, 255, 255, 0.08); }
+
+        .summary-item {
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
         .summary-item:last-child { border-right: none; }
-        .summary-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; font-weight: 500; }
-        .summary-val { font-size: 20px; font-weight: 700; color: #fff; }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .summary-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
         .summary-val.positive { color: var(--leaf-green); }
         .summary-val.negative { color: var(--danger-red); }
 
-        /* ส่วนควบคุมปุ่มกด */
+        /* ส่วนควบคุม */
         .control-box {
             background: var(--forest-card);
             backdrop-filter: blur(15px);
@@ -156,12 +185,19 @@
             border-radius: 24px;
             display: inline-flex;
             gap: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             margin-bottom: 35px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
         }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
         input[type="text"] {
             background: rgba(6, 23, 15, 0.85);
             border: 1px solid rgba(52, 211, 153, 0.25);
@@ -173,8 +209,18 @@
             width: 270px;
             outline: none;
         }
-        input[type="text"]:focus { border-color: var(--leaf-green); box-shadow: 0 0 0 4px var(--leaf-glow); }
-        .input-icon { position: absolute; left: 16px; font-size: 18px; pointer-events: none; }
+        input[type="text"]:focus {
+            border-color: var(--leaf-green);
+            box-shadow: 0 0 0 4px var(--leaf-glow);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            font-size: 18px;
+            pointer-events: none;
+        }
+
         .btn {
             padding: 14px 28px;
             border-radius: 16px;
@@ -187,10 +233,25 @@
             gap: 10px;
             border: none;
         }
-        .btn-plant { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; }
-        .btn-plant:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5); }
-        .btn-water { background: rgba(255, 255, 255, 0.06); color: var(--text-light); border: 1px solid rgba(255, 255, 255, 0.12); }
-        .btn-water:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
+        .btn-plant {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+        .btn-plant:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+        .btn-water {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .btn-water:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
 
         #forest-grid {
             display: grid;
@@ -223,107 +284,161 @@
             background: linear-gradient(90deg, transparent, var(--leaf-green), transparent);
             opacity: 0.7;
         }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .plot-number { font-size: 22px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
-        .delete-btn {
-            background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.25);
-            color: var(--danger-red); width: 36px; height: 36px; border-radius: 12px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;
-        }
-        .delete-btn:hover { background: var(--danger-red); color: white; }
 
-        /* ------------------ อัปเกรดเลย์เอาต์กราฟิก 3D ------------------ */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .plot-number {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delete-btn {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.25);
+            color: var(--danger-red);
+            width: 36px; height: 36px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .delete-btn:hover {
+            background: var(--danger-red);
+            color: white;
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
+        }
+
+        /* ------------------ เลย์เอาต์ใหม่: สภาพอากาศซ้อนมุมขวาล่าง ------------------ */
         .nature-pod {
             background: rgba(6, 23, 15, 0.6);
             border: 1px solid rgba(52, 211, 153, 0.15);
             border-radius: 22px;
-            padding: 25px 20px;
+            padding: 30px 20px 25px;
             text-align: center;
             margin-bottom: 25px;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .avatar-wrapper {
+        /* กรอบหุ้มต้นไม้และป้ายสภาพอากาศ */
+        .avatar-container {
             position: relative;
             display: inline-block;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
-        /* กล่องใส่รูปต้นไม้ 3D */
+        /* ต้นไม้ตรงกลาง */
         .tree-avatar {
-            width: 95px;
-            height: 95px;
-            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
+            font-size: 85px;
+            filter: drop-shadow(0 12px 18px rgba(0,0,0,0.35));
             animation: floatTree 3.5s ease-in-out infinite;
             transform-origin: bottom center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto;
-        }
-        .tree-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* กล่องใส่รูปสภาพอากาศ 3D (ลอยมุมขวาบน) */
-        .weather-icon {
-            position: absolute;
-            top: -15px;
-            right: -30px;
-            width: 48px;
-            height: 48px;
-            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5));
-            animation: floatWeather 4s ease-in-out infinite alternate;
-            z-index: 2;
-        }
-        .weather-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            line-height: 1;
         }
 
         @keyframes floatTree {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-8px) rotate(-2deg); }
         }
-        @keyframes floatWeather {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-6px) rotate(8deg); }
+
+        /* ป้ายสภาพอากาศ (กรอบสีเขียว) ลอยอยู่มุมขวาล่างของต้นไม้ */
+        .weather-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -40px;
+            font-size: 11px;
+            color: var(--leaf-green);
+            background: rgba(6, 43, 31, 0.95); /* สีพื้นหลังเข้มขึ้นเพื่อให้อ่านง่าย */
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            z-index: 2;
         }
 
-        /* ชื่อต้นไม้ และ คำบรรยาย */
+        /* ชื่อต้นไม้ด้านล่างสุด */
         .forest-tier-title {
             font-size: 18px;
             font-weight: 700;
             color: #fff;
-            margin: 0 0 10px 0;
+            margin: 0;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            width: 100%;
         }
-        .forest-weather {
-            font-size: 12px;
-            color: var(--leaf-green);
-            background: rgba(52, 211, 153, 0.12);
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-block;
-            border: 1px solid rgba(52, 211, 153, 0.25);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        /* ------------------------------------------------------------------------- */
+
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: rgba(6, 23, 15, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 14px 16px;
+            border-radius: 16px;
+        }
+
+        .metric-title {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 5px;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* ----------------------------------------------------------- */
-
-        .metrics-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .metric-card { background: rgba(6, 23, 15, 0.5); border: 1px solid rgba(255, 255, 255, 0.04); padding: 14px 16px; border-radius: 16px; }
-        .metric-title { font-size: 11px; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; }
-        .metric-value { font-size: 16px; font-weight: 700; color: #fff; }
+        .metric-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
         .metric-value.positive { color: var(--leaf-green); }
         .metric-value.negative { color: var(--danger-red); }
-        .card-footer { font-size: 12px; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 15px; }
-        
-        .empty-forest { grid-column: 1 / -1; background: var(--forest-card); border: 1px dashed var(--forest-border); padding: 60px; border-radius: 30px; text-align: center; color: var(--text-dim); }
-        .empty-forest img { width: 80px; margin-bottom: 15px; animation: floatTree 3s ease-in-out infinite; }
+
+        .card-footer {
+            font-size: 12px;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 15px;
+        }
+
+        .empty-forest {
+            grid-column: 1 / -1;
+            background: var(--forest-card);
+            border: 1px dashed var(--forest-border);
+            padding: 60px;
+            border-radius: 30px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+        .empty-forest span {
+            font-size: 55px;
+            display: block;
+            margin-bottom: 15px;
+            animation: floatTree 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -343,10 +458,10 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">จำลองสายลม สายน้ำ และสภาพอากาศ 3D เคลื่อนไหวเฉพาะพอร์ตของคุณ</p>
+            <p class="subtitle">จำลองสายลม สายน้ำ และสภาพอากาศเคลื่อนไหวเฉพาะพอร์ตของคุณ</p>
         </header>
 
-        <!-- แถบรวมยอด -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">Total Balance</div>
@@ -385,7 +500,6 @@
     </div>
 
     <script>
-        // ลิงก์เชื่อมต่อ Google Sheet ของคุณ
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -459,7 +573,7 @@
             if (farms.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-forest">
-                        <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Leaf%20fluttering%20in%20wind/3D/leaf_fluttering_in_wind_3d.png" alt="Empty">
+                        <span>🍃</span>
                         <h3 style="color:#fff; margin:0 0 5px 0; font-size: 20px;">ผืนป่ายังว่างเปล่า</h3>
                         <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบน แล้วกด "ปลูกต้นไม้ใหม่" เพื่อเริ่มสร้างระบบนิเวศน์ส่วนตัวของคุณ</p>
                     </div>
@@ -471,7 +585,7 @@
             farms.forEach(login => {
                 const card = document.createElement('div');
                 card.className = 'tree-card';
-                // วางโครงสร้างเพื่อรอใส่ภาพ 3D
+                // HTML เลย์เอาต์ใหม่: อิโมจิ ป้ายสภาพอากาศซ้อนมุมขวาล่าง
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">🌲 #${login}</div>
@@ -479,18 +593,13 @@
                     </div>
 
                     <div class="nature-pod">
-                        <div class="avatar-wrapper">
-                            <!-- จุดแสดงต้นไม้ 3D -->
-                            <div class="tree-avatar" id="avatar-${login}">
-                                <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Seedling/3D/seedling_3d.png" style="opacity: 0.5;">
-                            </div>
-                            <!-- จุดแสดงสภาพอากาศ 3D มุมขวาบน -->
-                            <div class="weather-icon" id="weather-icon-${login}">
-                                <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Hourglass%20not%20done/3D/hourglass_not_done_3d.png">
+                        <div class="avatar-container">
+                            <div class="tree-avatar" id="avatar-${login}">🌱</div>
+                            <div class="weather-badge" id="weather-badge-${login}">
+                                <span>⏳</span> รอรับข้อมูล
                             </div>
                         </div>
                         <div class="forest-tier-title" id="tier-${login}">กำลังหยั่งราก...</div>
-                        <div class="forest-weather" id="weather-desc-${login}">⏳ รอรับสภาพอากาศ</div>
                     </div>
 
                     <div class="metrics-container">
@@ -530,9 +639,8 @@
 
         async function fetchNodeData(login) {
             const avatarDiv = document.getElementById(`avatar-${login}`);
-            const weatherIconDiv = document.getElementById(`weather-icon-${login}`);
+            const weatherBadge = document.getElementById(`weather-badge-${login}`);
             const tierDiv = document.getElementById(`tier-${login}`);
-            const weatherDescDiv = document.getElementById(`weather-desc-${login}`);
             const statusDiv = document.getElementById(`status-${login}`);
             
             const balDiv = document.getElementById(`bal-${login}`);
@@ -552,11 +660,11 @@
                     statusDiv.style.color = 'var(--danger-red)';
                     tierDiv.innerText = 'ดินแห้งแล้ง';
                     
-                    // รูป 3D เมื่อเกิด Error
-                    avatarDiv.innerHTML = '<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Fallen%20leaf/3D/fallen_leaf_3d.png">';
-                    weatherIconDiv.innerHTML = '<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Warning/3D/warning_3d.png">';
-                    weatherDescDiv.innerText = '⚠️ ข้อมูลขาดหาย';
+                    weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย';
+                    weatherBadge.style.color = 'var(--danger-red)';
+                    weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
                     
+                    avatarDiv.innerText = '🍂';
                     globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0 };
                     updatePortfolioSummary();
                     return;
@@ -576,75 +684,72 @@
 
                 statusDiv.innerHTML = '● ป่าไม้อุดมสมบูรณ์';
                 statusDiv.style.color = 'var(--leaf-green)';
+                weatherBadge.style.color = 'var(--leaf-green)';
+                weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
 
-                // 🌳 ระบบรูประดับต้นไม้ 3D
-                let treeImgUrl = '';
-                let treeName = '';
+                let treeEmoji = '🌱';
+                let treeName = 'ต้นกล้าเงินออม (Seedling)';
                 
                 if (balance <= 0) {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Wood/3D/wood_3d.png'; 
+                    treeEmoji = '🟫'; 
                     treeName = 'ที่ดินเปล่า (Empty Land)';
                 } else if (equity >= 20000) {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Christmas%20tree/3D/christmas_tree_3d.png';
-                    treeName = 'ต้นไม้ผลดกมั่งคั่ง (Golden Tree)';
+                    treeEmoji = '🍎';
+                    treeName = 'ต้นแอปเปิลผลดกมั่งคั่ง (Golden Fruit Tree)';
                 } else if (equity >= 10000) {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Evergreen%20tree/3D/evergreen_tree_3d.png';
+                    treeEmoji = '🌲';
                     treeName = 'มหาพฤกษาใหญ่ (Ancient Giant)';
                 } else if (equity >= 5000) {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Deciduous%20tree/3D/deciduous_tree_3d.png';
+                    treeEmoji = '🌳';
                     treeName = 'ต้นไม้ร่มรื่น (Mature Tree)';
                 } else if (equity >= 2000) {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Herb/3D/herb_3d.png';
+                    treeEmoji = '🌿';
                     treeName = 'พุ่มไม้เขียวขจี (Growing Bush)';
                 } else if (equity >= 1000) {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Potted%20plant/3D/potted_plant_3d.png';
+                    treeEmoji = '🪴';
                     treeName = 'ไม้ประดับในกระถาง (Pot Plant)';
                 } else {
-                    treeImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Seedling/3D/seedling_3d.png';
+                    treeEmoji = '🌱';
                     treeName = 'ต้นกล้าเล็กๆ (Sprout)';
                 }
 
-                // ☀️ ระบบรูปสภาพอากาศ 3D 10 ระดับ
-                let weatherImgUrl = '';
+                // 🟢 ระบบสภาพอากาศ (ไอคอน + ข้อความใน Badge เดียวกัน)
+                let weatherEmoji = '';
                 let weatherText = '';
                 
                 if (balance <= 0) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Construction/3D/construction_3d.png'; 
-                    weatherText = '🚧 รอดำเนินการหว่านเมล็ดพันธุ์';
+                    weatherEmoji = '🚧'; weatherText = 'รอหว่านเมล็ด';
                 } else if (percent > 15) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Rainbow/3D/rainbow_3d.png'; 
-                    weatherText = '🌈 ท้องฟ้าสดใส รุ้งงามทอประกาย';
+                    weatherEmoji = '🌈'; weatherText = 'รุ้งงามทอประกาย';
                 } else if (percent > 10 && percent <= 15) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Sun/3D/sun_3d.png'; 
-                    weatherText = '☀️ แดดออกอบอุ่น ลมพัดเย็นสบาย';
+                    weatherEmoji = '☀️'; weatherText = 'แดดออกอบอุ่น';
                 } else if (percent > 5 && percent <= 10) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Sun%20behind%20small%20cloud/3D/sun_behind_small_cloud_3d.png'; 
-                    weatherText = '🌤️ ท้องฟ้าแจ่มใส มีเมฆประดับบางส่วน';
+                    weatherEmoji = '🌤️'; weatherText = 'เมฆประดับบางส่วน';
                 } else if (percent > 0 && percent <= 5) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Cloud/3D/cloud_3d.png'; 
-                    weatherText = '⛅ ร่มรื่น แดดอ่อนๆ สบายตัว';
+                    weatherEmoji = '⛅'; weatherText = 'ร่มรื่น แดดอ่อนๆ';
                 } else if (percent === 0) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Fog/3D/fog_3d.png'; 
-                    weatherText = '🌫️ หมอกจางๆ ยามเช้า สงบเงียบ';
+                    weatherEmoji = '🌫️'; weatherText = 'สงบเงียบ';
                 } else if (percent < 0 && percent >= -5) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Droplet/3D/droplet_3d.png'; 
-                    weatherText = '🌧️ ฝนตกปรอยๆ ลมเริ่มพัดแรง';
+                    weatherEmoji = '🌧️'; weatherText = 'ฝนตกปรอยๆ';
                 } else if (percent < -5 && percent >= -10) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Cloud%20with%20rain/3D/cloud_with_rain_3d.png'; 
-                    weatherText = '☔ ฝนตกชุก สภาพอากาศแปรปรวน';
+                    weatherEmoji = '☔'; weatherText = 'ฝนตกชุก';
+                    weatherBadge.style.color = '#fbbf24'; // เปลี่ยนสี Badge ถ้าติดลบ
+                    weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
                 } else if (percent < -10 && percent >= -15) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Cloud%20with%20lightning%20and%20rain/3D/cloud_with_lightning_and_rain_3d.png'; 
-                    weatherText = '⛈️ พายุฝนฟ้าคะนองรุนแรง!';
+                    weatherEmoji = '⛈️'; weatherText = 'พายุฝนรุนแรง!';
+                    weatherBadge.style.color = 'var(--danger-red)';
+                    weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
                 } else if (percent < -15) {
-                    weatherImgUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Tornado/3D/tornado_3d.png'; 
-                    weatherText = '🌪️ พายุทอร์นาโดเข้าถล่มป่า!';
+                    weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโด!';
+                    weatherBadge.style.color = 'var(--danger-red)';
+                    weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
                 }
 
-                // สั่งแสดงผลภาพลงเว็บ
-                avatarDiv.innerHTML = `<img src="${treeImgUrl}">`;
+                avatarDiv.innerText = treeEmoji;
                 tierDiv.innerText = treeName;
-                weatherIconDiv.innerHTML = `<img src="${weatherImgUrl}">`;
-                weatherDescDiv.innerText = weatherText;
+                
+                // อัปเดตข้อมูลลงใน Badge สภาพอากาศ
+                weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
 
                 balDiv.innerText = `$${balance.toFixed(2)}`;
                 eqDiv.innerText = `$${equity.toFixed(2)}`;
@@ -662,9 +767,11 @@
                 statusDiv.style.color = 'var(--danger-red)';
                 tierDiv.innerText = 'ดินแห้งแล้ง';
                 
-                avatarDiv.innerHTML = '<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Fallen%20leaf/3D/fallen_leaf_3d.png">';
-                weatherIconDiv.innerHTML = '<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Warning/3D/warning_3d.png">';
-                weatherDescDiv.innerText = '⚠️ ภัยแล้งชั่วคราว';
+                weatherBadge.innerHTML = '<span>⚠️</span> ภัยแล้งชั่วคราว';
+                weatherBadge.style.color = 'var(--danger-red)';
+                weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
+                
+                avatarDiv.innerText = '🥀';
             }
         }
 
