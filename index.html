@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ป่าไม้แห่งการลงทุน - Living Forest Sanctuary</title>
+    <title>ป่าไม้แห่งการลงทุน - Multi-User Living Forest</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,7 +33,7 @@
             position: relative;
         }
 
-        /* ------------------ สายน้ำไหลด้านล่างสุด (ปรับให้เด่นชัด พริ้วไหว) ------------------ */
+        /* สายน้ำไหลด้านล่างสุด */
         .river-container {
             position: fixed;
             bottom: 0; left: 0; width: 100%; height: 50px;
@@ -68,7 +68,7 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* เอฟเฟกต์ลมพัดใบไม้ปลิว (Falling Leaves) */
+        /* เอฟเฟกต์ลมพัดใบไม้ปลิว */
         .falling-leaf {
             position: fixed;
             top: -50px;
@@ -84,23 +84,23 @@
             100% { transform: translateY(105vh) translateX(120px) rotate(360deg); opacity: 0; }
         }
 
-        /* ------------------ ล็อกเกอร์รหัสผ่าน ------------------ */
-        #lock-screen {
+        /* ------------------ หน้าจอเข้าสู่ระบบ / ลงทะเบียน (Auth Screen) ------------------ */
+        #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(7, 25, 17, 0.96);
-            backdrop-filter: blur(20px);
+            background: rgba(7, 25, 17, 0.97);
+            backdrop-filter: blur(25px);
             display: flex; justify-content: center; align-items: center;
             z-index: 99999;
         }
 
-        .lock-box {
+        .auth-box {
             background: var(--forest-card);
             border: 1px solid var(--forest-border);
             padding: 40px;
             border-radius: 30px;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            max-width: 400px; width: 90%;
+            max-width: 420px; width: 90%;
             animation: floatLock 4s ease-in-out infinite;
         }
         @keyframes floatLock {
@@ -108,35 +108,60 @@
             50% { transform: translateY(-6px); }
         }
 
-        .lock-box h2 {
+        .auth-box h2 {
             margin-top: 0;
             color: #fff;
             font-size: 24px;
         }
 
-        .lock-box p {
+        .auth-box p {
             color: var(--text-dim);
             font-size: 14px;
             margin-bottom: 25px;
         }
 
-        .lock-box input[type="password"] {
+        .auth-input {
             background: rgba(6, 23, 15, 0.9);
-            border: 1px solid rgba(52, 211, 153, 0.4);
+            border: 1px solid rgba(52, 211, 153, 0.3);
             padding: 14px 20px;
             border-radius: 16px;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             width: 100%;
             outline: none;
-            text-align: center;
-            letter-spacing: 6px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        .auth-input:focus {
+            border-color: var(--leaf-green);
+            box-shadow: 0 0 0 4px var(--leaf-glow);
+        }
+
+        .tab-switch {
+            display: flex;
+            background: rgba(6, 23, 15, 0.6);
+            border-radius: 12px;
+            padding: 4px;
             margin-bottom: 20px;
         }
 
-        .lock-box input[type="password"]:focus {
-            border-color: var(--leaf-green);
-            box-shadow: 0 0 0 4px var(--leaf-glow);
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: var(--leaf-green);
+            color: #064e3b;
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
         }
 
         /* ------------------ โครงสร้างหลัก ------------------ */
@@ -152,6 +177,18 @@
             margin-bottom: 40px;
         }
 
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--forest-card);
+            border: 1px solid var(--forest-border);
+            padding: 12px 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
         .nature-badge {
             display: inline-flex;
             align-items: center;
@@ -163,7 +200,6 @@
             font-size: 14px;
             font-weight: 600;
             border: 1px solid var(--forest-border);
-            margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
         }
 
@@ -264,13 +300,28 @@
             transform: translateY(-2px);
         }
 
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+        }
+        .btn-logout:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
         #forest-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 30px;
         }
 
-        /* ------------------ การ์ดต้นไม้ + อนิเมชันลมพัด ------------------ */
+        /* การ์ดต้นไม้ */
         .tree-card {
             background: var(--forest-card);
             backdrop-filter: blur(20px);
@@ -434,28 +485,41 @@
 </head>
 <body>
 
-    <!-- สายน้ำไหลเคลื่อนไหวที่ด้านล่างจอ (แบบลูปต่อเนื่องเนียนตา) -->
+    <!-- สายน้ำไหลเคลื่อนไหวที่ด้านล่างจอ -->
     <div class="river-container">
-        <div class="river-wave-track" id="riverTrack">
-            <!-- จะถูกเติมด้วย Javascript เพื่อความสมบูรณ์ในการลูป -->
-        </div>
+        <div class="river-wave-track" id="riverTrack"></div>
     </div>
 
-    <!-- ล็อกเกอร์รหัสผ่าน -->
-    <div id="lock-screen">
-        <div class="lock-box">
-            <h2>🔒 ป่าส่วนตัว</h2>
-            <p>กรุณาใส่รหัสผ่านเพื่อเข้าสู่สวนป่าของคุณ</p>
-            <input type="password" id="pinInput" placeholder="••••" maxlength="6" onkeypress="checkEnter(event)">
-            <button class="btn btn-plant" style="width: 100%; justify-content: center;" onclick="verifyPin()">ปลดล็อกสวนป่า</button>
+    <!-- หน้าต่างลงทะเบียน / ล็อกอินอิสระ -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h2>🌲 Living Forest Sanctuary</h2>
+            <p id="auth-subtitle">สร้างบัญชีส่วนตัวหรือเข้าสู่ระบบเพื่อดูแลสวนป่าของคุณ</p>
+            
+            <div class="tab-switch">
+                <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">เข้าสู่ระบบ</button>
+                <button class="tab-btn" id="tab-register" onclick="switchTab('register')">สมัครสมาชิกใหม่</button>
+            </div>
+
+            <input type="text" id="usernameInput" class="auth-input" placeholder="ชื่อผู้ใช้ (Username)" autocomplete="off">
+            <input type="password" id="passwordInput" class="auth-input" placeholder="รหัสผ่าน (Password)" onkeypress="checkAuthEnter(event)">
+            
+            <button class="btn btn-plant" id="authBtn" style="width: 100%; justify-content: center;" onclick="handleAuth()">เข้าสู่ระบบสวนป่า</button>
         </div>
     </div>
 
     <div class="container">
-        <header>
+        <div class="user-bar">
             <div class="nature-badge">🌲 Living MT4 Forest Sanctuary</div>
-            <h1>ป่าไม้แห่งการลงทุน (มีชีวิตชีวา)</h1>
-            <p class="subtitle">ต้นไม้ สายลม สายน้ำ และสภาพอากาศเคลื่อนไหวตามพอร์ตการลงทุนจริง</p>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span id="welcomeUser" style="color: var(--leaf-green); font-weight: 600;">ยินดีต้อนรับ</span>
+                <button class="btn-logout" onclick="logoutUser()">ออกจากระบบ</button>
+            </div>
+        </div>
+
+        <header>
+            <h1>ป่าไม้แห่งการลงทุนส่วนตัว</h1>
+            <p class="subtitle">จำลองสายลม สายน้ำ และสภาพอากาศเคลื่อนไหวเฉพาะพอร์ตในบัญชีของคุณ</p>
         </header>
 
         <div style="text-align: center;">
@@ -478,77 +542,127 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVJpGjKYIEUMvP4lrfeauE0ylJXtOaXndxxjXHfW3R0C6RYZ9mClszxEUA-3IRoHKApg/exec';
-        const GARDEN_PIN = '1234'; 
+        
+        let currentMode = 'login'; // 'login' หรือ 'register'
+        let currentUser = sessionStorage.getItem('forest_current_user') || null;
 
         window.onload = () => {
-            if (sessionStorage.getItem('forest_unlocked') === 'true') {
-                document.getElementById('lock-screen').style.display = 'none';
-            }
             initRiver();
-            renderForest();
-            refreshAll();
+            if (currentUser) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('welcomeUser').innerText = `👤 ผู้ใช้งาน: ${currentUser}`;
+                renderForest();
+                refreshAll();
+            }
             startWindEffect();
         };
 
-        // สร้างข้อความสายน้ำไหลแบบลูปไม่รู้จบ
         function initRiver() {
             const track = document.getElementById('riverTrack');
             const content = '<div class="river-wave-item">🌊 💧 🌿 สายน้ำแห่งสภาพคล่องหล่อเลี้ยงผืนป่า 🌿 💧 🌊</div>';
             track.innerHTML = content.repeat(6);
         }
 
-        function verifyPin() {
-            const enteredPin = document.getElementById('pinInput').value;
-            if (enteredPin === GARDEN_PIN) {
-                sessionStorage.setItem('forest_unlocked', 'true');
-                document.getElementById('lock-screen').style.display = 'none';
+        function switchTab(mode) {
+            currentMode = mode;
+            const btnLogin = document.getElementById('tab-login');
+            const btnReg = document.getElementById('tab-register');
+            const subtitle = document.getElementById('auth-subtitle');
+            const authBtn = document.getElementById('authBtn');
+
+            if (mode === 'login') {
+                btnLogin.classList.add('active');
+                btnReg.classList.remove('active');
+                subtitle.innerText = 'เข้าสู่ระบบเพื่อดูแลสวนป่าของคุณ';
+                authBtn.innerText = 'เข้าสู่ระบบสวนป่า';
             } else {
-                alert('❌ รหัสผ่านไม่ถูกต้องครับ');
-                document.getElementById('pinInput').value = '';
+                btnReg.classList.add('active');
+                btnLogin.classList.remove('active');
+                subtitle.innerText = 'ตั้งชื่อผู้ใช้และรหัสผ่านใหม่เพื่อสร้างสวนป่าของคุณเอง';
+                authBtn.innerText = 'สร้างบัญชีสวนป่าใหม่';
             }
         }
 
-        function checkEnter(e) {
-            if (e.key === 'Enter') verifyPin();
+        function handleAuth() {
+            const user = document.getElementById('usernameInput').value.trim();
+            const pass = document.getElementById('passwordInput').value.trim();
+
+            if (!user || !pass) {
+                alert('⚠️ กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ครบถ้วนครับ');
+                return;
+            }
+
+            // ดึงฐานข้อมูลผู้ใช้ทั้งหมดจาก LocalStorage
+            let usersDb = JSON.parse(localStorage.getItem('mt4_forest_users_db') || '{}');
+
+            if (currentMode === 'register') {
+                if (usersDb[user]) {
+                    alert('❌ ชื่อผู้ใช้นี้มีคนใช้งานแล้ว กรุณาใช้ชื่ออื่นครับ');
+                    return;
+                }
+                usersDb[user] = pass;
+                localStorage.setItem('mt4_forest_users_db', JSON.stringify(usersDb));
+                alert('✅ สมัครสมาชิกสำเร็จ! ระบบกำลังพาเข้าสู่สวนป่าของคุณ...');
+            } else {
+                if (!usersDb[user] || usersDb[user] !== pass) {
+                    alert('❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้องครับ');
+                    return;
+                }
+            }
+
+            // บันทึก Session การเข้าสู่ระบบ
+            sessionStorage.setItem('forest_current_user', user);
+            currentUser = user;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('welcomeUser').innerText = `👤 ผู้ใช้งาน: ${currentUser}`;
+            renderForest();
+            refreshAll();
         }
 
-        // เอฟเฟกต์ลมพัดใบไม้ปลิว
-        function startWindEffect() {
-            setInterval(() => {
-                const leaf = document.createElement('div');
-                leaf.className = 'falling-leaf';
-                const icons = ['🍃', '🍂', '✨', '🌿'];
-                leaf.innerText = icons[Math.floor(Math.random() * icons.length)];
-                leaf.style.left = Math.random() * window.innerWidth + 'px';
-                leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
-                leaf.style.fontSize = (Math.random() * 10 + 14) + 'px';
-                document.body.appendChild(leaf);
-                
-                setTimeout(() => {
-                    leaf.remove();
-                }, 9000);
-            }, 1200);
+        function checkAuthEnter(e) {
+            if (e.key === 'Enter') handleAuth();
         }
 
-        let savedFarms = JSON.parse(localStorage.getItem('mt4_forest_nodes_v4') || '[]');
+        function logoutUser() {
+            if (confirm('ต้องการออกจากระบบสวนป่าใช่หรือไม่?')) {
+                sessionStorage.removeItem('forest_current_user');
+                location.reload();
+            }
+        }
+
+        // ดึงรายการพอร์ตเฉพาะของ User ปัจจุบัน
+        function getUserFarmsKey() {
+            return `mt4_forest_farms_${currentUser}`;
+        }
+
+        function getFarmsList() {
+            return JSON.parse(localStorage.getItem(getUserFarmsKey()) || '[]');
+        }
+
+        function saveFarmsList(farms) {
+            localStorage.setItem(getUserFarmsKey(), JSON.stringify(farms));
+        }
 
         function addFarm() {
             const loginInput = document.getElementById('loginId');
             const login = loginInput.value.trim();
             if (!login) { alert('กรุณากรอกเลขพอร์ต MT4 ครับ'); return; }
-            if (savedFarms.includes(login)) { alert('พอร์ตนี้ถูกปลูกไว้ในป่าแล้วครับ'); return; }
             
-            savedFarms.push(login);
-            localStorage.setItem('mt4_forest_nodes_v4', JSON.stringify(savedFarms));
+            let farms = getFarmsList();
+            if (farms.includes(login)) { alert('พอร์ตนี้ถูกปลูกไว้ในป่าของคุณแล้วครับ'); return; }
+            
+            farms.push(login);
+            saveFarmsList(farms);
             loginInput.value = '';
             renderForest();
             fetchNodeData(login);
         }
 
         window.removeFarm = function(login) {
-            if(confirm(`ต้องการถอนต้นไม้พอร์ต ${login} ออกจากผืนป่าใช่หรือไม่?`)) {
-                savedFarms = savedFarms.filter(f => f !== login);
-                localStorage.setItem('mt4_forest_nodes_v4', JSON.stringify(savedFarms));
+            if(confirm(`ต้องการถอนต้นไม้พอร์ต ${login} ออกจากผืนป่าของคุณใช่หรือไม่?`)) {
+                let farms = getFarmsList();
+                farms = farms.filter(f => f !== login);
+                saveFarmsList(farms);
                 renderForest();
             }
         };
@@ -556,19 +670,20 @@
         function renderForest() {
             const grid = document.getElementById('forest-grid');
             grid.innerHTML = '';
+            const farms = getFarmsList();
 
-            if (savedFarms.length === 0) {
+            if (farms.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-forest">
                         <span>🍃</span>
                         <h3 style="color:#fff; margin:0 0 5px 0; font-size: 20px;">ผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบน แล้วกด "ปลูกต้นไม้ใหม่" เพื่อเริ่มสร้างระบบนิเวศน์</p>
+                        <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบน แล้วกด "ปลูกต้นไม้ใหม่" เพื่อเริ่มสร้างระบบนิเวศน์ส่วนตัวของคุณ</p>
                     </div>
                 `;
                 return;
             }
 
-            savedFarms.forEach(login => {
+            farms.forEach(login => {
                 const card = document.createElement('div');
                 card.className = 'tree-card';
                 card.innerHTML = `
@@ -612,7 +727,25 @@
         }
 
         function refreshAll() {
-            savedFarms.forEach(login => fetchNodeData(login));
+            const farms = getFarmsList();
+            farms.forEach(login => fetchNodeData(login));
+        }
+
+        function startWindEffect() {
+            setInterval(() => {
+                const leaf = document.createElement('div');
+                leaf.className = 'falling-leaf';
+                const icons = ['🍃', '🍂', '✨', '🌿'];
+                leaf.innerText = icons[Math.floor(Math.random() * icons.length)];
+                leaf.style.left = Math.random() * window.innerWidth + 'px';
+                leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                leaf.style.fontSize = (Math.random() * 10 + 14) + 'px';
+                document.body.appendChild(leaf);
+                
+                setTimeout(() => {
+                    leaf.remove();
+                }, 9000);
+            }, 1200);
         }
 
         async function fetchNodeData(login) {
@@ -666,7 +799,7 @@
                     treeName = 'ต้นไม้ร่มรื่น (Mature Tree)';
                 } else if (equity >= 2000) {
                     treeEmoji = '🌿';
-                    treeName, 'พุ่มไม้เขียวขจี (Growing Bush)';
+                    treeName = 'พุ่มไม้เขียวขจี (Growing Bush)';
                 } else if (equity >= 1000) {
                     treeEmoji = '🪴';
                     treeName = 'ไม้ประดับในกระถาง (Pot Plant)';
