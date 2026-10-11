@@ -317,7 +317,7 @@
             box-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
         }
 
-        /* ------------------ จัดเลย์เอาต์ต้นไม้ & สภาพอากาศใหม่ ------------------ */
+        /* ------------------ จัดเลย์เอาต์ต้นไม้ & สภาพอากาศใหม่ (ลอยด้านข้าง) ------------------ */
         .nature-pod {
             background: rgba(6, 23, 15, 0.6);
             border: 1px solid rgba(52, 211, 153, 0.15);
@@ -328,51 +328,64 @@
             position: relative;
         }
 
-        /* จัดต้นไม้และสภาพอากาศให้อยู่ซ้าย-ขวา */
-        .pod-center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 15px;
+        /* จัดกรอบครอบต้นไม้และไอคอนสภาพอากาศ */
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 12px;
         }
 
         .tree-avatar {
-            font-size: 75px;
+            font-size: 85px;
             filter: drop-shadow(0 12px 18px rgba(0,0,0,0.35));
             animation: floatTree 3.5s ease-in-out infinite;
             transform-origin: bottom center;
-            margin: 0;
+            display: inline-block;
             line-height: 1;
         }
+
+        /* ไอคอนสภาพอากาศลอยอยู่มุมขวาบนของต้นไม้ */
+        .weather-icon {
+            position: absolute;
+            top: -5px;
+            right: -35px;
+            font-size: 38px;
+            filter: drop-shadow(0 5px 12px rgba(0,0,0,0.5));
+            animation: floatWeather 4s ease-in-out infinite alternate;
+            z-index: 2;
+        }
+
         @keyframes floatTree {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-8px) rotate(-2deg); }
         }
 
-        /* ป้ายสภาพอากาศข้างต้นไม้ */
-        .forest-weather {
-            font-size: 12px;
-            color: var(--leaf-green);
-            background: rgba(52, 211, 153, 0.12);
-            padding: 10px 14px;
-            border-radius: 16px;
-            border: 1px solid rgba(52, 211, 153, 0.25);
-            text-align: left;
-            max-width: 140px;
-            line-height: 1.5;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        @keyframes floatWeather {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-6px) rotate(8deg); }
         }
 
-        /* ชื่อต้นไม้อยู่ด้านล่างสุด */
+        /* ชื่อต้นไม้ */
         .forest-tier-title {
             font-size: 18px;
             font-weight: 700;
             color: #fff;
-            margin: 0;
-            padding-top: 5px;
-            border-top: 1px dashed rgba(255,255,255,0.1);
+            margin: 0 0 8px 0;
         }
+
+        /* กรอบคำบรรยายสภาพอากาศด้านล่างสุดเหมือนเดิม */
+        .forest-weather {
+            font-size: 12px;
+            color: var(--leaf-green);
+            background: rgba(52, 211, 153, 0.12);
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* ------------------------------------------------------------------------- */
 
         .metrics-container {
             display: grid;
@@ -491,6 +504,7 @@
     </div>
 
     <script>
+        // ใช้ลิงก์ล่าสุดของคุณ
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -576,7 +590,7 @@
             farms.forEach(login => {
                 const card = document.createElement('div');
                 card.className = 'tree-card';
-                // HTML เลย์เอาต์ใหม่: สภาพอากาศอยู่ข้างต้นไม้
+                // HTML เลย์เอาต์ใหม่: ไอคอนสภาพอากาศลอยขวาบนต้นไม้, คำบรรยายอยู่ล่างสุด
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">🌲 #${login}</div>
@@ -584,11 +598,12 @@
                     </div>
 
                     <div class="nature-pod">
-                        <div class="pod-center">
+                        <div class="avatar-wrapper">
                             <div class="tree-avatar" id="avatar-${login}">🌱</div>
-                            <div class="forest-weather" id="weather-${login}">รอรับสภาพอากาศ</div>
+                            <div class="weather-icon" id="weather-icon-${login}">⏳</div>
                         </div>
                         <div class="forest-tier-title" id="tier-${login}">กำลังหยั่งราก...</div>
+                        <div class="forest-weather" id="weather-desc-${login}">รอรับสภาพอากาศ</div>
                     </div>
 
                     <div class="metrics-container">
@@ -628,8 +643,9 @@
 
         async function fetchNodeData(login) {
             const avatarDiv = document.getElementById(`avatar-${login}`);
+            const weatherIconDiv = document.getElementById(`weather-icon-${login}`);
             const tierDiv = document.getElementById(`tier-${login}`);
-            const weatherDiv = document.getElementById(`weather-${login}`);
+            const weatherDescDiv = document.getElementById(`weather-desc-${login}`);
             const statusDiv = document.getElementById(`status-${login}`);
             
             const balDiv = document.getElementById(`bal-${login}`);
@@ -648,7 +664,8 @@
                     statusDiv.innerHTML = '● ขาดการติดต่อ';
                     statusDiv.style.color = 'var(--danger-red)';
                     tierDiv.innerText = 'ดินแห้งแล้ง';
-                    weatherDiv.innerText = '⚠️ ข้อมูลขาดหาย';
+                    weatherIconDiv.innerText = '⚠️';
+                    weatherDescDiv.innerText = 'ข้อมูลขาดหาย';
                     avatarDiv.innerText = '🍂';
                     globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0 };
                     updatePortfolioSummary();
@@ -696,33 +713,36 @@
                     treeName = 'ต้นกล้าเล็กๆ (Sprout)';
                 }
 
-                // 🟢 ระบบสภาพอากาศใหม่ 10 ระดับ
+                // 🟢 ระบบสภาพอากาศ (แยกไอคอน กับ คำบรรยาย)
+                let weatherEmoji = '';
                 let weatherText = '';
+                
                 if (balance <= 0) {
-                    weatherText = '🚧 รอดำเนินการหว่านเมล็ดพันธุ์';
+                    weatherEmoji = '🚧'; weatherText = 'รอดำเนินการหว่านเมล็ดพันธุ์';
                 } else if (percent > 15) {
-                    weatherText = '🌈 ท้องฟ้าสดใส รุ้งงามทอประกาย';
+                    weatherEmoji = '🌈'; weatherText = 'ท้องฟ้าสดใส รุ้งงามทอประกาย';
                 } else if (percent > 10 && percent <= 15) {
-                    weatherText = '☀️ แดดออกอบอุ่น ลมพัดเย็นสบาย';
+                    weatherEmoji = '☀️'; weatherText = 'แดดออกอบอุ่น ลมพัดเย็นสบาย';
                 } else if (percent > 5 && percent <= 10) {
-                    weatherText = '🌤️ ท้องฟ้าแจ่มใส มีเมฆประดับบางส่วน';
+                    weatherEmoji = '🌤️'; weatherText = 'ท้องฟ้าแจ่มใส มีเมฆประดับบางส่วน';
                 } else if (percent > 0 && percent <= 5) {
-                    weatherText = '⛅ ร่มรื่น แดดอ่อนๆ สบายตัว';
+                    weatherEmoji = '⛅'; weatherText = 'ร่มรื่น แดดอ่อนๆ สบายตัว';
                 } else if (percent === 0) {
-                    weatherText = '🌫️ หมอกจางๆ ยามเช้า สงบเงียบ';
+                    weatherEmoji = '🌫️'; weatherText = 'หมอกจางๆ ยามเช้า สงบเงียบ';
                 } else if (percent < 0 && percent >= -5) {
-                    weatherText = '🌧️ ฝนตกปรอยๆ ลมเริ่มพัดแรง';
+                    weatherEmoji = '🌧️'; weatherText = 'ฝนตกปรอยๆ ลมเริ่มพัดแรง';
                 } else if (percent < -5 && percent >= -10) {
-                    weatherText = '☔ ฝนตกชุก สภาพอากาศแปรปรวน';
+                    weatherEmoji = '☔'; weatherText = 'ฝนตกชุก สภาพอากาศแปรปรวน';
                 } else if (percent < -10 && percent >= -15) {
-                    weatherText = '⛈️ พายุฝนฟ้าคะนองรุนแรง!';
+                    weatherEmoji = '⛈️'; weatherText = 'พายุฝนฟ้าคะนองรุนแรง!';
                 } else if (percent < -15) {
-                    weatherText = '🌪️ พายุทอร์นาโดเข้าถล่มป่า!';
+                    weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโดเข้าถล่มป่า!';
                 }
 
                 avatarDiv.innerText = treeEmoji;
                 tierDiv.innerText = treeName;
-                weatherDiv.innerText = weatherText;
+                weatherIconDiv.innerText = weatherEmoji;
+                weatherDescDiv.innerText = weatherText;
 
                 balDiv.innerText = `$${balance.toFixed(2)}`;
                 eqDiv.innerText = `$${equity.toFixed(2)}`;
@@ -739,7 +759,8 @@
                 statusDiv.innerHTML = '● ระบบขัดข้อง';
                 statusDiv.style.color = 'var(--danger-red)';
                 tierDiv.innerText = 'ดินแห้งแล้ง';
-                weatherDiv.innerText = '⚠️ ภัยแล้งชั่วคราว';
+                weatherIconDiv.innerText = '⚠️';
+                weatherDescDiv.innerText = 'ภัยแล้งชั่วคราว';
                 avatarDiv.innerText = '🥀';
             }
         }
