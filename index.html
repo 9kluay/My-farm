@@ -174,7 +174,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .user-bar {
@@ -185,7 +185,7 @@
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
             border-radius: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             backdrop-filter: blur(10px);
         }
 
@@ -204,9 +204,9 @@
         }
 
         h1 {
-            font-size: 44px;
+            font-size: 40px;
             font-weight: 700;
-            margin: 0 0 10px 0;
+            margin: 0 0 8px 0;
             background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -215,9 +215,50 @@
 
         p.subtitle {
             color: var(--text-dim);
-            font-size: 16px;
+            font-size: 15px;
             margin: 0;
         }
+
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (Portfolio Summary Bar) */
+        .summary-dashboard {
+            background: var(--forest-card);
+            border: 1px solid var(--forest-border);
+            border-radius: 24px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .summary-item:last-child {
+            border-right: none;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .summary-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .summary-val.positive { color: var(--leaf-green); }
+        .summary-val.negative { color: var(--danger-red); }
 
         .control-box {
             background: var(--forest-card);
@@ -228,7 +269,7 @@
             display: inline-flex;
             gap: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 45px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
@@ -522,6 +563,26 @@
             <p class="subtitle">จำลองสายลม สายน้ำ และสภาพอากาศเคลื่อนไหวเฉพาะพอร์ตในบัญชีของคุณ</p>
         </header>
 
+        <!-- 📊 แถบรวมยอดพอร์ตทั้งหมด (Portfolio Summary Bar) -->
+        <div class="summary-dashboard">
+            <div class="summary-item">
+                <div class="summary-label">Total Balance</div>
+                <div class="summary-val" id="sum-balance">$0.00</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total Equity</div>
+                <div class="summary-val" id="sum-equity">$0.00</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total Floating P/L</div>
+                <div class="summary-val" id="sum-pl">$0.00</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total Farms</div>
+                <div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div>
+            </div>
+        </div>
+
         <div style="text-align: center;">
             <div class="control-box">
                 <div class="input-wrapper">
@@ -541,15 +602,17 @@
     </div>
 
     <script>
-        // ลิงก์เชื่อมต่อ Google Apps Script ของคุณ
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVJpGjKYIEUMvP4lrfeauE0ylJXtOaXndxxjXHfW3R0C6RYZ9mClszxEUA-3IRoHKApg/exec';
         
         let currentMode = 'login';
         let currentUser = sessionStorage.getItem('forest_current_user') || null;
+        
+        // ตัวแปรเก็บข้อมูลงบการเงินรวมทุกล็อกอิน
+        let globalPortfolioData = {};
 
         window.onload = () => {
-            initRiver(); // เริ่มสายน้ำ
-            startWindEffect(); // เริ่มสายลมและใบไม้
+            initRiver();
+            startWindEffect();
             if (currentUser) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('welcomeUser').innerText = `👤 ผู้ใช้งาน: ${currentUser}`;
@@ -560,14 +623,12 @@
             }
         };
 
-        // ฟังก์ชันสร้างสายน้ำ
         function initRiver() {
             const track = document.getElementById('riverTrack');
             const content = '<div class="river-wave-item">🌊 💧 🌿 สายน้ำแห่งสภาพคล่องหล่อเลี้ยงผืนป่า 🌿 💧 🌊</div>';
             track.innerHTML = content.repeat(6);
         }
 
-        // ฟังก์ชันสร้างลมพัดและใบไม้ปลิว
         function startWindEffect() {
             setInterval(() => {
                 const leaf = document.createElement('div');
@@ -578,10 +639,7 @@
                 leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
                 leaf.style.fontSize = (Math.random() * 10 + 14) + 'px';
                 document.body.appendChild(leaf);
-                
-                setTimeout(() => {
-                    leaf.remove();
-                }, 9000);
+                setTimeout(() => leaf.remove(), 9000);
             }, 1200);
         }
 
@@ -605,19 +663,16 @@
             }
         }
 
-        // ฟังก์ชันล็อกอินฉบับปรับปรุงใหม่ ป้องกันปุ่มค้างและมีแจ้งเตือน Error
         async function handleAuth() {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value.trim();
             const btn = document.getElementById('authBtn');
 
-            if (!user || !pass) {
-                return alert('⚠️ กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ครบถ้วนครับ');
-            }
+            if (!user || !pass) return alert('⚠️ กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ครบถ้วนครับ');
 
             try {
                 const originalText = btn.innerText;
-                btn.innerText = 'กำลังเชื่อมต่อฐานข้อมูล...'; // แสดงข้อความโหลด
+                btn.innerText = 'กำลังเชื่อมต่อฐานข้อมูล...';
                 
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
@@ -627,14 +682,9 @@
                 
                 const textResult = await response.text(); 
                 let data;
-                
-                try {
-                    data = JSON.parse(textResult);
-                } catch(e) {
-                    // ดักจับ Error กรณีหลังบ้านสิทธิ์ยังไม่เป็น "ทุกคน"
-                    console.error("Server Response:", textResult);
+                try { data = JSON.parse(textResult); } catch(e) {
                     btn.innerText = originalText;
-                    return alert('❌ ไม่สามารถเชื่อมต่อได้: โปรดตรวจสอบว่าสิทธิ์หลังบ้านตั้งเป็น "ทุกคน (Anyone)" แล้วครับ');
+                    return alert('❌ ไม่สามารถเชื่อมต่อได้: โปรดตรวจสอบสิทธิ์หลังบ้าน Google Script');
                 }
 
                 if (!data.success) {
@@ -642,29 +692,20 @@
                     return alert('❌ ' + (data.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'));
                 }
 
-                if (currentMode === 'register') {
-                    alert('✅ สมัครสมาชิกสำเร็จ! ระบบกำลังพาเข้าสู่สวนป่าของคุณ...');
-                }
+                if (currentMode === 'register') alert('✅ สมัครสมาชิกสำเร็จ!');
 
                 sessionStorage.setItem('forest_current_user', user);
                 currentUser = user;
+                if (data.farms) saveFarmsList(data.farms);
 
-                if (data.farms) {
-                    saveFarmsList(data.farms);
-                }
-
-                location.reload(); // โหลดหน้าใหม่เพื่อเข้าสวนป่า
-
+                location.reload();
             } catch (err) {
                 btn.innerText = 'เข้าสู่ระบบสวนป่า';
                 alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
             }
         }
 
-        function checkAuthEnter(e) {
-            if (e.key === 'Enter') handleAuth();
-        }
-
+        function checkAuthEnter(e) { if (e.key === 'Enter') handleAuth(); }
         function logoutUser() {
             if (confirm('ต้องการออกจากระบบสวนป่าใช่หรือไม่?')) {
                 sessionStorage.removeItem('forest_current_user');
@@ -672,17 +713,9 @@
             }
         }
 
-        function getUserFarmsKey() {
-            return `mt4_forest_farms_${currentUser}`;
-        }
-
-        function getFarmsList() {
-            return JSON.parse(localStorage.getItem(getUserFarmsKey()) || '[]');
-        }
-
-        function saveFarmsList(farms) {
-            localStorage.setItem(getUserFarmsKey(), JSON.stringify(farms));
-        }
+        function getUserFarmsKey() { return `mt4_forest_farms_${currentUser}`; }
+        function getFarmsList() { return JSON.parse(localStorage.getItem(getUserFarmsKey()) || '[]'); }
+        function saveFarmsList(farms) { localStorage.setItem(getUserFarmsKey(), JSON.stringify(farms)); }
 
         async function syncFarmsToCloud(farms) {
             if (!currentUser) return;
@@ -692,9 +725,7 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'updateFarms', user: currentUser, farms: farms })
                 });
-            } catch (err) {
-                console.error('Sync failed', err);
-            }
+            } catch (err) { console.error('Sync failed', err); }
         }
 
         async function fetchUserFarmsFromCloud() {
@@ -703,11 +734,11 @@
                 const response = await fetch(`${SCRIPT_URL}?action=getUserData&user=${currentUser}`);
                 const data = await response.json();
                 if (data.success && data.farms) {
-                    saveFarmsList(data.farms);
+                    let localFarms = getFarmsList();
+                    let mergedFarms = Array.from(new Set([...localFarms, ...data.farms]));
+                    saveFarmsList(mergedFarms);
                 }
-            } catch (err) {
-                console.error('Fetch farms failed', err);
-            }
+            } catch (err) { console.error('Fetch farms failed', err); }
         }
 
         function addFarm() {
@@ -732,6 +763,8 @@
                 farms = farms.filter(f => f !== login);
                 saveFarmsList(farms);
                 syncFarmsToCloud(farms);
+                delete globalPortfolioData[login];
+                updatePortfolioSummary();
                 renderForest();
             }
         };
@@ -749,6 +782,7 @@
                         <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบน แล้วกด "ปลูกต้นไม้ใหม่" เพื่อเริ่มสร้างระบบนิเวศน์ส่วนตัวของคุณ</p>
                     </div>
                 `;
+                updatePortfolioSummary();
                 return;
             }
 
@@ -795,45 +829,20 @@
             });
         }
 
-                // 💧 ฟังก์ชันซิงค์ข้อมูลแบบผสาน (Merge) ป้องกันพอร์ตหาย
+        // 💧 ฟังก์ชันซิงค์ข้อมูลแบบผสาน (Merge) ป้องกันพอร์ตหาย
         async function refreshAll() {
             if (!currentUser) return;
-            
             try {
-                // 1. ดึงข้อมูลพอร์ตล่าสุดจากคลาวด์
-                const response = await fetch(`${SCRIPT_URL}?action=getUserData&user=${currentUser}`);
-                const data = await response.json();
-                
-                let localFarms = getFarmsList(); // พอร์ตที่มีในเครื่องตอนนี้
-                
-                if (data.success && data.farms && data.farms.length > 0) {
-                    // ผสานพอร์ตจากคลาวด์และในเครื่องเข้าด้วยกัน (ไม่ให้ซ้ำกัน)
-                    let mergedFarms = Array.from(new Set([...localFarms, ...data.farms]));
-                    saveFarmsList(mergedFarms);
-                    
-                    // ถ้าในคลาวด์มีน้อยกว่า ให้ซิงค์ข้อมูลรวมกลับขึ้นไปเก็บบนคลาวด์ด้วย
-                    if (mergedFarms.length > data.farms.length) {
-                        syncFarmsToCloud(mergedFarms);
-                    }
-                } else if (localFarms.length > 0) {
-                    // ถ้าคลาวด์ยังไม่มีข้อมูล แต่ในเครื่องมี ให้ส่งข้อมูลในเครื่องขึ้นคลาวด์ทันที
-                    syncFarmsToCloud(localFarms);
-                }
-                
-                // 2. แสดงผลและอัปเดตข้อมูลแต่ละพอร์ต
+                await fetchUserFarmsFromCloud();
                 renderForest();
-                const currentFarms = getFarmsList();
-                currentFarms.forEach(login => fetchNodeData(login));
-                
-                alert('💧 รดน้ำและซิงค์ข้อมูลสำเร็จเรียบร้อยครับ!');
+                const farms = getFarmsList();
+                farms.forEach(login => fetchNodeData(login));
             } catch (err) {
                 console.error('Refresh failed', err);
-                alert('⚠️ ไม่สามารถซิงค์ข้อมูลกับคลาวด์ได้ชั่วคราว แต่ข้อมูลในเครื่องยังอยู่ครับ');
                 renderForest();
                 getFarmsList().forEach(login => fetchNodeData(login));
             }
         }
-
 
         async function fetchNodeData(login) {
             const avatarDiv = document.getElementById(`avatar-${login}`);
@@ -859,6 +868,8 @@
                     tierDiv.innerText = 'ต้นไม้แห้งเหี่ยว';
                     weatherDiv.innerText = '⚠️ ข้อมูลขาดหาย';
                     avatarDiv.innerText = '🍂';
+                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0 };
+                    updatePortfolioSummary();
                     return;
                 }
 
@@ -866,6 +877,12 @@
                 const balance = parseFloat(latest.balance);
                 const equity = parseFloat(latest.equity);
                 const profitLoss = parseFloat(latest.floating_pl);
+                const openPositions = parseInt(latest.open_positions || 0);
+                
+                // บันทึกข้อมูลลง Object รวมยอด
+                globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss };
+                updatePortfolioSummary();
+
                 const diff = equity - balance;
                 const percent = (balance > 0) ? (diff / balance) * 100 : 0;
 
@@ -920,7 +937,7 @@
                 plDiv.className = `metric-value ${plClass}`;
                 plDiv.innerText = `${plPrefix}$${profitLoss.toFixed(2)} (${plPrefix}${percent.toFixed(2)}%)`;
 
-                ordDiv.innerText = `${latest.open_positions} แปลง`;
+                ordDiv.innerText = `${openPositions} แปลง`;
                 timeDiv.innerText = new Date(latest.lastUpdated).toLocaleTimeString('th-TH');
 
             } catch (err) {
@@ -930,6 +947,32 @@
                 weatherDiv.innerText = '⚠️ ภัยแล้งชั่วคราว';
                 avatarDiv.innerText = '🥀';
             }
+        }
+
+        // 📊 ฟังก์ชันคำนวณและแสดงผลรวมยอดพอร์ตทั้งหมด
+        function updatePortfolioSummary() {
+            let totalBalance = 0;
+            let totalEquity = 0;
+            let totalProfit = 0;
+            const farms = getFarmsList();
+
+            farms.forEach(login => {
+                if (globalPortfolioData[login]) {
+                    totalBalance += globalPortfolioData[login].balance || 0;
+                    totalEquity += globalPortfolioData[login].equity || 0;
+                    totalProfit += globalPortfolioData[login].profit || 0;
+                }
+            });
+
+            document.getElementById('sum-balance').innerText = `$${totalBalance.toFixed(2)}`;
+            document.getElementById('sum-equity').innerText = `$${totalEquity.toFixed(2)}`;
+            
+            const plElem = document.getElementById('sum-pl');
+            const plPrefix = totalProfit > 0 ? '+' : '';
+            plElem.className = 'summary-val ' + (totalProfit > 0 ? 'positive' : (totalProfit < 0 ? 'negative' : ''));
+            plElem.innerText = `${plPrefix}$${totalProfit.toFixed(2)}`;
+
+            document.getElementById('sum-farms').innerText = `${farms.length} แปลง`;
         }
     </script>
 </body>
