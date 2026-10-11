@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ป่าไม้แห่งการลงทุน - Secure Forest Sanctuary</title>
+    <title>ป่าไม้แห่งการลงทุน - Living Forest Sanctuary</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --forest-dark: #071911;
-            --forest-card: rgba(14, 38, 26, 0.75);
-            --forest-border: rgba(52, 211, 153, 0.15);
+            --forest-card: rgba(14, 38, 26, 0.85);
+            --forest-border: rgba(52, 211, 153, 0.25);
             --leaf-green: #34d399;
-            --leaf-glow: rgba(52, 211, 153, 0.25);
+            --leaf-glow: rgba(52, 211, 153, 0.4);
             --text-light: #ecfdf5;
             --text-dim: #9ca3af;
             --danger-red: #f87171;
@@ -24,19 +24,73 @@
             font-family: 'Prompt', sans-serif;
             background-color: var(--forest-dark);
             background-image: 
-                radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 80% 90%, rgba(5, 150, 105, 0.08) 0%, transparent 40%);
+                radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 80% 90%, rgba(5, 150, 105, 0.12) 0%, transparent 40%);
             color: var(--text-light);
-            margin: 0; padding: 50px 20px;
+            margin: 0; padding: 40px 20px 100px 20px;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* ------------------ สายน้ำไหลด้านล่างสุด (ปรับให้เด่นชัด พริ้วไหว) ------------------ */
+        .river-container {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 50px;
+            background: linear-gradient(180deg, rgba(4, 47, 46, 0.4) 0%, rgba(2, 44, 34, 0.95) 100%);
+            border-top: 2px solid rgba(52, 211, 153, 0.3);
+            z-index: 999;
+            box-shadow: 0 -10px 30px rgba(52, 211, 153, 0.25);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .river-wave-track {
+            display: flex;
+            white-space: nowrap;
+            animation: flowRiver 12s linear infinite;
+        }
+
+        .river-wave-item {
+            font-size: 16px;
+            font-weight: 500;
+            color: #6ee7b7;
+            padding-right: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+        }
+
+        @keyframes flowRiver {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* เอฟเฟกต์ลมพัดใบไม้ปลิว (Falling Leaves) */
+        .falling-leaf {
+            position: fixed;
+            top: -50px;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            animation: fallLeaf linear infinite;
+        }
+        @keyframes fallLeaf {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.9; }
+            100% { transform: translateY(105vh) translateX(120px) rotate(360deg); opacity: 0; }
+        }
+
+        /* ------------------ ล็อกเกอร์รหัสผ่าน ------------------ */
         #lock-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(7, 25, 17, 0.95);
+            background: rgba(7, 25, 17, 0.96);
             backdrop-filter: blur(20px);
             display: flex; justify-content: center; align-items: center;
-            z-index: 9999;
+            z-index: 99999;
         }
 
         .lock-box {
@@ -45,8 +99,13 @@
             padding: 40px;
             border-radius: 30px;
             text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
             max-width: 400px; width: 90%;
+            animation: floatLock 4s ease-in-out infinite;
+        }
+        @keyframes floatLock {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
         }
 
         .lock-box h2 {
@@ -62,8 +121,8 @@
         }
 
         .lock-box input[type="password"] {
-            background: rgba(6, 23, 15, 0.8);
-            border: 1px solid rgba(52, 211, 153, 0.3);
+            background: rgba(6, 23, 15, 0.9);
+            border: 1px solid rgba(52, 211, 153, 0.4);
             padding: 14px 20px;
             border-radius: 16px;
             color: white;
@@ -71,7 +130,7 @@
             width: 100%;
             outline: none;
             text-align: center;
-            letter-spacing: 5px;
+            letter-spacing: 6px;
             margin-bottom: 20px;
         }
 
@@ -80,29 +139,32 @@
             box-shadow: 0 0 0 4px var(--leaf-glow);
         }
 
+        /* ------------------ โครงสร้างหลัก ------------------ */
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
         }
 
         header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .nature-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(52, 211, 153, 0.1);
+            background: rgba(52, 211, 153, 0.12);
             color: var(--leaf-green);
-            padding: 8px 20px;
+            padding: 8px 22px;
             border-radius: 30px;
             font-size: 14px;
             font-weight: 600;
             border: 1px solid var(--forest-border);
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
         }
 
         h1 {
@@ -130,7 +192,7 @@
             display: inline-flex;
             gap: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 50px;
+            margin-bottom: 45px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
@@ -143,8 +205,8 @@
         }
 
         input[type="text"] {
-            background: rgba(6, 23, 15, 0.8);
-            border: 1px solid rgba(52, 211, 153, 0.2);
+            background: rgba(6, 23, 15, 0.85);
+            border: 1px solid rgba(52, 211, 153, 0.25);
             padding: 14px 20px 14px 45px;
             border-radius: 16px;
             color: white;
@@ -192,13 +254,13 @@
         }
 
         .btn-water {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             color: var(--text-light);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .btn-water:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             transform: translateY(-2px);
         }
 
@@ -208,6 +270,7 @@
             gap: 30px;
         }
 
+        /* ------------------ การ์ดต้นไม้ + อนิเมชันลมพัด ------------------ */
         .tree-card {
             background: var(--forest-card);
             backdrop-filter: blur(20px);
@@ -217,6 +280,13 @@
             position: relative;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             overflow: hidden;
+            transform-origin: bottom center;
+            animation: breezeSway 6s ease-in-out infinite;
+        }
+
+        @keyframes breezeSway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(0.8deg) translateY(-2px); }
         }
 
         .tree-card::after {
@@ -225,7 +295,7 @@
             bottom: 0; left: 0; right: 0;
             height: 6px;
             background: linear-gradient(90deg, transparent, var(--leaf-green), transparent);
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         .card-header {
@@ -246,7 +316,7 @@
 
         .delete-btn {
             background: rgba(248, 113, 113, 0.1);
-            border: 1px solid rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.25);
             color: var(--danger-red);
             width: 36px; height: 36px;
             border-radius: 12px;
@@ -258,12 +328,12 @@
         .delete-btn:hover {
             background: var(--danger-red);
             color: white;
-            box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
         }
 
         .nature-pod {
-            background: rgba(6, 23, 15, 0.5);
-            border: 1px solid rgba(52, 211, 153, 0.1);
+            background: rgba(6, 23, 15, 0.6);
+            border: 1px solid rgba(52, 211, 153, 0.15);
             border-radius: 22px;
             padding: 25px;
             text-align: center;
@@ -272,32 +342,34 @@
         }
 
         .tree-avatar {
-            font-size: 75px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-            animation: floatTree 4s ease-in-out infinite;
+            font-size: 80px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 12px 18px rgba(0,0,0,0.35));
+            animation: floatTree 3.5s ease-in-out infinite;
+            display: inline-block;
+            transform-origin: bottom center;
         }
 
         @keyframes floatTree {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(-2deg); }
         }
 
         .forest-tier-title {
             font-size: 18px;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .forest-weather {
             font-size: 13px;
             color: var(--leaf-green);
-            background: rgba(52, 211, 153, 0.1);
-            padding: 4px 12px;
+            background: rgba(52, 211, 153, 0.12);
+            padding: 5px 14px;
             border-radius: 20px;
             display: inline-block;
-            border: 1px solid rgba(52, 211, 153, 0.2);
+            border: 1px solid rgba(52, 211, 153, 0.25);
         }
 
         .metrics-container {
@@ -308,8 +380,8 @@
         }
 
         .metric-card {
-            background: rgba(6, 23, 15, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(6, 23, 15, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             padding: 14px 16px;
             border-radius: 16px;
         }
@@ -338,7 +410,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             padding-top: 15px;
         }
 
@@ -353,14 +425,23 @@
         }
 
         .empty-forest span {
-            font-size: 50px;
+            font-size: 55px;
             display: block;
             margin-bottom: 15px;
+            animation: floatTree 3s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
 
+    <!-- สายน้ำไหลเคลื่อนไหวที่ด้านล่างจอ (แบบลูปต่อเนื่องเนียนตา) -->
+    <div class="river-container">
+        <div class="river-wave-track" id="riverTrack">
+            <!-- จะถูกเติมด้วย Javascript เพื่อความสมบูรณ์ในการลูป -->
+        </div>
+    </div>
+
+    <!-- ล็อกเกอร์รหัสผ่าน -->
     <div id="lock-screen">
         <div class="lock-box">
             <h2>🔒 ป่าส่วนตัว</h2>
@@ -372,9 +453,9 @@
 
     <div class="container">
         <header>
-            <div class="nature-badge">🌲 MT4 Forest Sanctuary</div>
-            <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ให้พอร์ตลงทุนเติบโตเป็นผืนป่าอันอุดมสมบูรณ์ ตามผลกำไรและขนาดพอร์ตจริง</p>
+            <div class="nature-badge">🌲 Living MT4 Forest Sanctuary</div>
+            <h1>ป่าไม้แห่งการลงทุน (มีชีวิตชีวา)</h1>
+            <p class="subtitle">จำลองสายลม สายน้ำ และสภาพอากาศเคลื่อนไหวตามพอร์ตการลงทุนจริง</p>
         </header>
 
         <div style="text-align: center;">
@@ -403,9 +484,18 @@
             if (sessionStorage.getItem('forest_unlocked') === 'true') {
                 document.getElementById('lock-screen').style.display = 'none';
             }
+            initRiver();
             renderForest();
             refreshAll();
+            startWindEffect();
         };
+
+        // สร้างข้อความสายน้ำไหลแบบลูปไม่รู้จบ
+        function initRiver() {
+            const track = document.getElementById('riverTrack');
+            const content = '<div class="river-wave-item">🌊 💧 🌿 สายน้ำแห่งสภาพคล่องหล่อเลี้ยงผืนป่า 🌿 💧 🌊</div>';
+            track.innerHTML = content.repeat(6);
+        }
 
         function verifyPin() {
             const enteredPin = document.getElementById('pinInput').value;
@@ -422,7 +512,25 @@
             if (e.key === 'Enter') verifyPin();
         }
 
-        let savedFarms = JSON.parse(localStorage.getItem('mt4_forest_nodes_v3') || '[]');
+        // เอฟเฟกต์ลมพัดใบไม้ปลิว
+        function startWindEffect() {
+            setInterval(() => {
+                const leaf = document.createElement('div');
+                leaf.className = 'falling-leaf';
+                const icons = ['🍃', '🍂', '✨', '🌿'];
+                leaf.innerText = icons[Math.floor(Math.random() * icons.length)];
+                leaf.style.left = Math.random() * window.innerWidth + 'px';
+                leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                leaf.style.fontSize = (Math.random() * 10 + 14) + 'px';
+                document.body.appendChild(leaf);
+                
+                setTimeout(() => {
+                    leaf.remove();
+                }, 9000);
+            }, 1200);
+        }
+
+        let savedFarms = JSON.parse(localStorage.getItem('mt4_forest_nodes_v4') || '[]');
 
         function addFarm() {
             const loginInput = document.getElementById('loginId');
@@ -431,7 +539,7 @@
             if (savedFarms.includes(login)) { alert('พอร์ตนี้ถูกปลูกไว้ในป่าแล้วครับ'); return; }
             
             savedFarms.push(login);
-            localStorage.setItem('mt4_forest_nodes_v3', JSON.stringify(savedFarms));
+            localStorage.setItem('mt4_forest_nodes_v4', JSON.stringify(savedFarms));
             loginInput.value = '';
             renderForest();
             fetchNodeData(login);
@@ -440,7 +548,7 @@
         window.removeFarm = function(login) {
             if(confirm(`ต้องการถอนต้นไม้พอร์ต ${login} ออกจากผืนป่าใช่หรือไม่?`)) {
                 savedFarms = savedFarms.filter(f => f !== login);
-                localStorage.setItem('mt4_forest_nodes_v3', JSON.stringify(savedFarms));
+                localStorage.setItem('mt4_forest_nodes_v4', JSON.stringify(savedFarms));
                 renderForest();
             }
         };
@@ -558,7 +666,7 @@
                     treeName = 'ต้นไม้ร่มรื่น (Mature Tree)';
                 } else if (equity >= 2000) {
                     treeEmoji = '🌿';
-                    treeName = 'พุ่มไม้เขียวขจี (Growing Bush)';
+                    treeName, 'พุ่มไม้เขียวขจี (Growing Bush)';
                 } else if (equity >= 1000) {
                     treeEmoji = '🪴';
                     treeName = 'ไม้ประดับในกระถาง (Pot Plant)';
