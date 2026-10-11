@@ -488,7 +488,7 @@
     </div>
 
     <script>
-        // ⚠️ ใส่ลิงก์ SCRIPT_URL ล่าสุดของคุณตรงนี้ครับ (เอาไว้ดึงข้อมูลพอร์ต)
+        // ใช้ลิงก์ล่าสุดที่คุณให้มา
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -643,7 +643,7 @@
                 if (data.error || data.length === 0) {
                     statusDiv.innerHTML = '● ขาดการติดต่อ';
                     statusDiv.style.color = 'var(--danger-red)';
-                    tierDiv.innerText = 'ต้นไม้แห้งเหี่ยว';
+                    tierDiv.innerText = 'ดินแห้งแล้ง';
                     weatherDiv.innerText = '⚠️ ข้อมูลขาดหาย';
                     avatarDiv.innerText = '🍂';
                     globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0 };
@@ -670,7 +670,11 @@
                 let treeEmoji = '🌱';
                 let treeName = 'ต้นกล้าเงินออม (Seedling)';
                 
-                if (equity >= 20000) {
+                // 🟢 เงื่อนไขใหม่: ถ้า Balance เป็น 0 ให้แสดงเป็น "ที่ดินเปล่า"
+                if (balance <= 0) {
+                    treeEmoji = '🟫'; 
+                    treeName = 'ที่ดินเปล่า (Empty Land)';
+                } else if (equity >= 20000) {
                     treeEmoji = '🍎';
                     treeName = 'ต้นแอปเปิลผลดกมั่งคั่ง (Golden Fruit Tree)';
                 } else if (equity >= 10000) {
@@ -691,7 +695,11 @@
                 }
 
                 let weatherText = '🌤️ ท้องฟ้าแจ่มใส อากาศสบายๆ';
-                if (percent >= 10) {
+                
+                // 🟢 ปรับสภาพอากาศสำหรับที่ดินเปล่าด้วย
+                if (balance <= 0) {
+                    weatherText = '🚧 รอดำเนินการหว่านเมล็ดพันธุ์';
+                } else if (percent >= 10) {
                     weatherText = '🌈 แดดออกสดใส พร้อมรุ้งงามทอประกาย';
                 } else if (percent > 0) {
                     weatherText = '☀️ แดดออกอบอุ่น เหมาะแก่การเติบโต';
