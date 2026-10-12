@@ -94,7 +94,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
         .user-bar {
@@ -105,7 +105,7 @@
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
             border-radius: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             backdrop-filter: blur(10px);
         }
 
@@ -124,9 +124,9 @@
         }
 
         h1 {
-            font-size: 42px;
+            font-size: 40px;
             font-weight: 700;
-            margin: 0 0 10px 0;
+            margin: 0 0 8px 0;
             background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -135,29 +135,40 @@
 
         p.subtitle {
             color: var(--text-dim);
-            font-size: 16px;
+            font-size: 15px;
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (6 ช่อง) */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่องสวยงาม) */
         .summary-dashboard {
             background: rgba(14, 38, 26, 0.6);
             border: 1px solid var(--forest-border);
-            border-radius: 30px;
-            padding: 25px;
-            margin-bottom: 40px;
+            border-radius: 28px;
+            padding: 22px 25px;
+            margin-bottom: 35px;
             backdrop-filter: blur(20px);
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(6, 1fr);
             gap: 15px;
         }
 
+        @media (max-width: 1100px) {
+            .summary-dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .summary-dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .summary-item {
-            background: rgba(6, 23, 15, 0.7);
+            background: rgba(6, 23, 15, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 20px 15px;
-            border-radius: 20px;
+            padding: 16px 10px;
+            border-radius: 18px;
             text-align: center;
             box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);
         }
@@ -165,24 +176,24 @@
         .summary-item:hover {
             transform: translateY(-3px);
             border-color: rgba(52, 211, 153, 0.3);
-            background: rgba(6, 23, 15, 0.9);
+            background: rgba(6, 23, 15, 0.95);
         }
 
         .summary-label {
             font-size: 11px;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .summary-val {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: #fff;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
@@ -200,7 +211,7 @@
             display: inline-flex;
             gap: 15px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
@@ -539,7 +550,7 @@
             <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด (แยกช่องกำไรและช่อง % ไว้ข้างๆ กัน) -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">💰 Total Balance</div>
@@ -885,10 +896,11 @@
             balDiv.innerText = `$${data.balance.toFixed(2)}`;
             eqDiv.innerText = `$${data.equity.toFixed(2)}`;
 
+            // 🟢 เพิ่มแสดงผล (%) กำไร/ขาดทุน ในการ์ดแต่ละฟาร์ม
             const plClass = data.profit < 0 ? 'negative' : (data.profit > 0 ? 'positive' : '');
             const plPrefix = data.profit > 0 ? '+' : '';
             plDiv.className = `metric-value ${plClass}`;
-            plDiv.innerText = `${plPrefix}$${data.profit.toFixed(2)}`;
+            plDiv.innerText = `${plPrefix}$${data.profit.toFixed(2)} (${plPrefix}${percent.toFixed(2)}%)`;
 
             ordDiv.innerText = `${data.open_positions} ต้น`;
             timeDiv.innerText = new Date(data.lastUpdated).toLocaleTimeString('th-TH');
@@ -1012,7 +1024,6 @@
             plElem.className = 'summary-val ' + (totalProfit > 0 ? 'positive' : (totalProfit < 0 ? 'negative' : ''));
             plElem.innerText = `${plPrefix}$${totalProfit.toFixed(2)}`;
 
-            // คำนวณ % กำไร/ขาดทุนรวมแยกมาแสดงช่องข้างๆ
             const totalPercent = (totalInitial > 0) ? (totalProfit / totalInitial) * 100 : 0;
             const percentElem = document.getElementById('sum-percent');
             const percentPrefix = totalPercent > 0 ? '+' : '';
