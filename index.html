@@ -139,7 +139,7 @@
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่องสวยงาม) */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) */
         .summary-dashboard {
             background: rgba(14, 38, 26, 0.6);
             border: 1px solid var(--forest-border);
@@ -550,7 +550,7 @@
             <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">💰 Total Balance</div>
@@ -896,7 +896,6 @@
             balDiv.innerText = `$${data.balance.toFixed(2)}`;
             eqDiv.innerText = `$${data.equity.toFixed(2)}`;
 
-            // 🟢 เพิ่มแสดงผล (%) กำไร/ขาดทุน ในการ์ดแต่ละฟาร์ม
             const plClass = data.profit < 0 ? 'negative' : (data.profit > 0 ? 'positive' : '');
             const plPrefix = data.profit > 0 ? '+' : '';
             plDiv.className = `metric-value ${plClass}`;
@@ -950,18 +949,19 @@
                     }
                     if (data.balance <= 0) level = 0;
 
+                    // 🌿 10 ระดับต้นไม้ (ไม่มีผลไม้แล้ว)
                     switch(level) {
                         case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
                         case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
                         case 2: treeEmoji = '🪴'; treeName = 'ไม้ประดับกระถาง (Level 2)'; break;
                         case 3: treeEmoji = '🌿'; treeName = 'พุ่มไม้ใบอ่อน (Level 3)'; break;
                         case 4: treeEmoji = '☘️'; treeName = 'พุ่มไม้เขียวขจี (Level 4)'; break;
-                        case 5: treeEmoji = '🎋'; treeName = 'ต้นไม้กำลังโต (Level 5)'; break;
-                        case 6: treeEmoji = '🌴'; treeName = 'ไม้ยืนต้นขนาดกลาง (Level 6)'; break;
-                        case 7: treeEmoji = '🌳'; treeName = 'ต้นไม้ให้ร่มเงา (Level 7)'; break;
-                        case 8: treeEmoji = '🌲'; treeName = 'พฤกษาตระหง่าน (Level 8)'; break;
-                        case 9: treeEmoji = '🍒'; treeName = 'พฤกษาผลิดอก (Level 9)'; break;
-                        case 10: treeEmoji = '🍎'; treeName = 'มหาพฤกษาใหญ่ (Level 10)'; break;
+                        case 5: treeEmoji = '🎋'; treeName = 'กอไผ่ตั้งตรง (Level 5)'; break;
+                        case 6: treeEmoji = '🌴'; treeName = 'ต้นปาล์มพลิ้วไหว (Level 6)'; break;
+                        case 7: treeEmoji = '🌳'; treeName = 'ไม้ผลัดใบให้ร่มเงา (Level 7)'; break;
+                        case 8: treeEmoji = '🌲'; treeName = 'ต้นสนสูงตระหง่าน (Level 8)'; break;
+                        case 9: treeEmoji = '🌵'; treeName = 'พฤกษาแกร่งทนทาน (Level 9)'; break;
+                        case 10: treeEmoji = '🪵'; treeName = 'มหาพฤกษาโบราณ (Level 10)'; break;
                     }
                     
                     let sparklesHTML = `
