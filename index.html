@@ -86,7 +86,7 @@
         }
 
         .container {
-            max-width: 1300px; /* ปรับขนาดให้กระชับขึ้น */
+            max-width: 1300px;
             margin: 0 auto;
             position: relative;
             z-index: 10;
@@ -104,7 +104,7 @@
             background: var(--forest-card);
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
-            border-radius: 30px; /* มนขึ้น */
+            border-radius: 30px;
             margin-bottom: 30px;
             backdrop-filter: blur(10px);
         }
@@ -124,7 +124,7 @@
         }
 
         h1 {
-            font-size: 42px; /* ใหญ่ขึ้นเล็กน้อย */
+            font-size: 42px;
             font-weight: 700;
             margin: 0 0 10px 0;
             background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 100%);
@@ -139,9 +139,9 @@
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด ดีไซน์ใหม่ */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด */
         .summary-dashboard {
-            background: rgba(14, 38, 26, 0.6); /* โปร่งแสงขึ้นนิดหน่อย */
+            background: rgba(14, 38, 26, 0.6);
             border: 1px solid var(--forest-border);
             border-radius: 30px;
             padding: 25px;
@@ -182,7 +182,7 @@
         }
 
         .summary-val {
-            font-size: 24px; /* ใหญ่ขึ้น */
+            font-size: 24px;
             font-weight: 700;
             color: #fff;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
@@ -226,7 +226,7 @@
         input[type="text"]:focus {
             border-color: var(--leaf-green);
             box-shadow: 0 0 0 4px var(--leaf-glow);
-            width: 280px; /* ขยายตอน focus */
+            width: 280px;
         }
 
         .input-icon {
@@ -275,7 +275,7 @@
             gap: 30px;
         }
 
-        /* 🌳 การ์ดต้นไม้ ดีไซน์ใหม่ */
+        /* 🌳 การ์ดต้นไม้ */
         .tree-card {
             background: var(--forest-card);
             backdrop-filter: blur(20px);
@@ -334,7 +334,7 @@
             border: 1px solid rgba(248, 113, 113, 0.2);
             color: var(--danger-red);
             width: 32px; height: 32px;
-            border-radius: 50%; /* เปลี่ยนเป็นวงกลม */
+            border-radius: 50%;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             font-size: 14px;
@@ -518,7 +518,7 @@
             <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด (แสดงทั้งรวมแปลง และรวมต้น) ดีไซน์ใหม่ -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">💰 Total Balance</div>
@@ -665,7 +665,7 @@
                 overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
                 overlay.style.borderColor = 'var(--leaf-green)';
                 overlay.style.color = 'var(--leaf-green)';
-                overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
                 overlay.style.display = 'none';
             }
         };
@@ -825,8 +825,9 @@
             let weatherText = '';
             const percent = data.percent;
             
-            if (data.balance <= 0) {
-                weatherEmoji = '🚧'; weatherText = 'รอหว่านเมล็ด';
+            // 🟢 ปรับข้อความสภาพอากาศตอนไม่มีออเดอร์ให้ตรงกับเต็นท์
+            if (data.open_positions === 0) {
+                weatherEmoji = '🏕️'; weatherText = 'พักผ่อนรอปลูก';
             } else if (percent > 15) {
                 weatherEmoji = '🌈'; weatherText = 'รุ้งงามทอประกาย';
             } else if (percent > 10 && percent <= 15) {
@@ -877,10 +878,14 @@
 
             farms.forEach(f => {
                 const data = globalPortfolioData[f];
-                if (data.equity < minEq) minEq = data.equity;
-                if (data.equity > maxEq) maxEq = data.equity;
+                if (data.open_positions >= 1) {
+                    if (data.equity < minEq) minEq = data.equity;
+                    if (data.equity > maxEq) maxEq = data.equity;
+                }
                 if (data.percent > maxPercent) maxPercent = data.percent;
             });
+
+            if(minEq === Infinity) { minEq = 0; maxEq = 0; }
 
             farms.forEach(f => {
                 const data = globalPortfolioData[f];
@@ -890,29 +895,36 @@
                 
                 if (!avatarDiv || !tierDiv) return;
 
-                let level = 1;
-                if (maxEq > minEq) {
-                    const score = (data.equity - minEq) / (maxEq - minEq);
-                    level = Math.floor(score * 9) + 1;
-                } else {
-                    level = 10;
-                }
-                if (data.balance <= 0) level = 0;
-
                 let treeEmoji = '';
                 let treeName = '';
-                switch(level) {
-                    case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
-                    case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
-                    case 2: treeEmoji = '🪴'; treeName = 'ไม้ประดับกระถาง (Level 2)'; break;
-                    case 3: treeEmoji = '🌿'; treeName = 'พุ่มไม้ใบอ่อน (Level 3)'; break;
-                    case 4: treeEmoji = '☘️'; treeName = 'พุ่มไม้เขียวขจี (Level 4)'; break;
-                    case 5: treeEmoji = '🎋'; treeName = 'ต้นไม้กำลังโต (Level 5)'; break;
-                    case 6: treeEmoji = '🌴'; treeName = 'ไม้ยืนต้นขนาดกลาง (Level 6)'; break;
-                    case 7: treeEmoji = '🌳'; treeName = 'ต้นไม้ให้ร่มเงา (Level 7)'; break;
-                    case 8: treeEmoji = '🌲'; treeName = 'พฤกษาตระหง่าน (Level 8)'; break;
-                    case 9: treeEmoji = '🍒'; treeName = 'พฤกษาผลิดอก (Level 9)'; break;
-                    case 10: treeEmoji = '🍎'; treeName = 'มหาพฤกษาใหญ่ (Level 10)'; break;
+
+                // 🟢 เปลี่ยนจากดินน้ำตาล เป็น เต็นท์แคมป์ปิ้ง 🏕️
+                if (data.open_positions === 0) {
+                    treeEmoji = '🏕️'; 
+                    treeName = 'แคมป์เตรียมปลูก (Empty)';
+                } else {
+                    let level = 1;
+                    if (maxEq > minEq) {
+                        const score = (data.equity - minEq) / (maxEq - minEq);
+                        level = Math.floor(score * 9) + 1;
+                    } else {
+                        level = 10;
+                    }
+                    if (data.balance <= 0) level = 0;
+
+                    switch(level) {
+                        case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
+                        case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
+                        case 2: treeEmoji = '🪴'; treeName = 'ไม้ประดับกระถาง (Level 2)'; break;
+                        case 3: treeEmoji = '🌿'; treeName = 'พุ่มไม้ใบอ่อน (Level 3)'; break;
+                        case 4: treeEmoji = '☘️'; treeName = 'พุ่มไม้เขียวขจี (Level 4)'; break;
+                        case 5: treeEmoji = '🎋'; treeName = 'ต้นไม้กำลังโต (Level 5)'; break;
+                        case 6: treeEmoji = '🌴'; treeName = 'ไม้ยืนต้นขนาดกลาง (Level 6)'; break;
+                        case 7: treeEmoji = '🌳'; treeName = 'ต้นไม้ให้ร่มเงา (Level 7)'; break;
+                        case 8: treeEmoji = '🌲'; treeName = 'พฤกษาตระหง่าน (Level 8)'; break;
+                        case 9: treeEmoji = '🍒'; treeName = 'พฤกษาผลิดอก (Level 9)'; break;
+                        case 10: treeEmoji = '🍎'; treeName = 'มหาพฤกษาใหญ่ (Level 10)'; break;
+                    }
                 }
 
                 avatarDiv.innerText = treeEmoji;
@@ -920,7 +932,7 @@
 
                 if (starsSpan) {
                     let starsCount = 0;
-                    if (data.percent > 0 && maxPercent > 0) {
+                    if (data.percent > 0 && maxPercent > 0 && data.open_positions > 0) {
                         starsCount = Math.ceil((data.percent / maxPercent) * 5);
                         if(starsCount < 1) starsCount = 1;
                         if(starsCount > 5) starsCount = 5;
