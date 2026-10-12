@@ -16,6 +16,7 @@
             --text-dim: #9ca3af;
             --danger-red: #f87171;
             --sun-gold: #fbbf24;
+            --card-hover: rgba(20, 48, 35, 0.95);
         }
 
         * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -49,7 +50,7 @@
         .river-wave-track {
             display: flex;
             white-space: nowrap;
-            animation: flowRiver 12s linear infinite;
+            animation: flowRiver 15s linear infinite;
         }
 
         .river-wave-item {
@@ -85,7 +86,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1300px; /* ปรับขนาดให้กระชับขึ้น */
             margin: 0 auto;
             position: relative;
             z-index: 10;
@@ -93,7 +94,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .user-bar {
@@ -103,8 +104,8 @@
             background: var(--forest-card);
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
-            border-radius: 20px;
-            margin-bottom: 25px;
+            border-radius: 30px; /* มนขึ้น */
+            margin-bottom: 30px;
             backdrop-filter: blur(10px);
         }
 
@@ -123,9 +124,9 @@
         }
 
         h1 {
-            font-size: 40px;
+            font-size: 42px; /* ใหญ่ขึ้นเล็กน้อย */
             font-weight: 700;
-            margin: 0 0 8px 0;
+            margin: 0 0 10px 0;
             background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -134,44 +135,57 @@
 
         p.subtitle {
             color: var(--text-dim);
-            font-size: 15px;
+            font-size: 16px;
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (5 ช่อง: Balance, Equity, Floating, รวมแปลง, รวมต้น) */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด ดีไซน์ใหม่ */
         .summary-dashboard {
-            background: var(--forest-card);
+            background: rgba(14, 38, 26, 0.6); /* โปร่งแสงขึ้นนิดหน่อย */
             border: 1px solid var(--forest-border);
-            border-radius: 24px;
-            padding: 20px 30px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
         }
 
         .summary-item {
+            background: rgba(6, 23, 15, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 15px;
+            border-radius: 20px;
             text-align: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);
         }
 
-        .summary-item:last-child { border-right: none; }
+        .summary-item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(52, 211, 153, 0.3);
+            background: rgba(6, 23, 15, 0.9);
+        }
 
         .summary-label {
             font-size: 12px;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
         .summary-val {
-            font-size: 20px;
+            font-size: 24px; /* ใหญ่ขึ้น */
             font-weight: 700;
             color: #fff;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         .summary-val.positive { color: var(--leaf-green); }
         .summary-val.negative { color: var(--danger-red); }
@@ -181,12 +195,12 @@
             background: var(--forest-card);
             backdrop-filter: blur(15px);
             border: 1px solid var(--forest-border);
-            padding: 18px 28px;
-            border-radius: 24px;
+            padding: 15px 25px;
+            border-radius: 30px;
             display: inline-flex;
             gap: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 35px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
@@ -200,18 +214,19 @@
 
         input[type="text"] {
             background: rgba(6, 23, 15, 0.85);
-            border: 1px solid rgba(52, 211, 153, 0.25);
-            padding: 14px 20px 14px 45px;
-            border-radius: 16px;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            padding: 12px 20px 12px 45px;
+            border-radius: 20px;
             color: white;
             font-size: 15px;
             font-family: inherit;
-            width: 270px;
+            width: 250px;
             outline: none;
         }
         input[type="text"]:focus {
             border-color: var(--leaf-green);
             box-shadow: 0 0 0 4px var(--leaf-glow);
+            width: 280px; /* ขยายตอน focus */
         }
 
         .input-icon {
@@ -222,149 +237,164 @@
         }
 
         .btn {
-            padding: 14px 28px;
-            border-radius: 16px;
+            padding: 12px 25px;
+            border-radius: 20px;
             font-weight: 600;
             font-size: 15px;
             font-family: inherit;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             border: none;
         }
         .btn-plant {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
         }
         .btn-plant:hover {
             background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
         }
         .btn-water {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--text-light);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .btn-water:hover {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         #forest-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 30px;
         }
 
-        /* 🌳 การ์ดต้นไม้ */
+        /* 🌳 การ์ดต้นไม้ ดีไซน์ใหม่ */
         .tree-card {
             background: var(--forest-card);
             backdrop-filter: blur(20px);
             border: 1px solid var(--forest-border);
             border-radius: 30px;
-            padding: 30px;
+            padding: 25px;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
             overflow: hidden;
             transform-origin: bottom center;
             animation: breezeSway 6s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
         }
-        @keyframes breezeSway {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(0.8deg) translateY(-2px); }
+        
+        .tree-card:hover {
+            background: var(--card-hover);
+            border-color: rgba(52, 211, 153, 0.5);
+            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.2);
+            transform: translateY(-5px);
+            z-index: 2;
         }
+
         .tree-card::after {
             content: '';
             position: absolute;
             bottom: 0; left: 0; right: 0;
-            height: 6px;
+            height: 5px;
             background: linear-gradient(90deg, transparent, var(--leaf-green), transparent);
-            opacity: 0.7;
+            opacity: 0.5;
+            transition: opacity 0.3s;
         }
+        .tree-card:hover::after { opacity: 1; }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .plot-number {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: #fff;
             display: flex;
             align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .delete-btn {
-            background: rgba(248, 113, 113, 0.1);
-            border: 1px solid rgba(248, 113, 113, 0.25);
+            background: rgba(248, 113, 113, 0.05);
+            border: 1px solid rgba(248, 113, 113, 0.2);
             color: var(--danger-red);
-            width: 36px; height: 36px;
-            border-radius: 12px;
+            width: 32px; height: 32px;
+            border-radius: 50%; /* เปลี่ยนเป็นวงกลม */
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
         }
         .delete-btn:hover {
             background: var(--danger-red);
             color: white;
-            box-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.6);
+            transform: rotate(90deg);
         }
 
-        /* ------------------ เลย์เอาต์: สภาพอากาศซ้อนมุมขวาล่าง ------------------ */
+        /* ------------------ เลย์เอาต์: สภาพอากาศ ------------------ */
         .nature-pod {
-            background: rgba(6, 23, 15, 0.6);
-            border: 1px solid rgba(52, 211, 153, 0.15);
-            border-radius: 22px;
-            padding: 30px 20px 25px;
+            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+            padding: 20px 10px 15px;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            flex-grow: 1;
         }
 
         .avatar-container {
             position: relative;
             display: inline-block;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .tree-avatar {
-            font-size: 85px;
-            filter: drop-shadow(0 12px 18px rgba(0,0,0,0.35));
-            animation: floatTree 3.5s ease-in-out infinite;
+            font-size: 90px;
+            filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
+            animation: floatTree 4s ease-in-out infinite;
             transform-origin: bottom center;
             line-height: 1;
         }
 
         @keyframes floatTree {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(-2deg); }
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            50% { transform: translateY(-5px) rotate(-1deg) scale(1.02); }
         }
 
         .weather-badge {
             position: absolute;
-            bottom: -5px;
-            right: -40px;
-            font-size: 11px;
+            bottom: 0;
+            right: -35px;
+            font-size: 12px;
             color: var(--leaf-green);
             background: rgba(6, 43, 31, 0.95);
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 1px solid rgba(52, 211, 153, 0.5);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-weight: 500;
+            gap: 6px;
+            font-weight: 600;
             z-index: 2;
+            backdrop-filter: blur(5px);
         }
 
         .forest-tier-title {
@@ -372,29 +402,39 @@
             font-weight: 700;
             color: #fff;
             margin: 0;
-            padding-top: 10px;
-            border-top: 1px dashed rgba(255,255,255,0.1);
-            width: 100%;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
+        /* ------------------ ข้อมูล Metrics ------------------ */
         .metrics-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
         .metric-card {
-            background: rgba(6, 23, 15, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 14px 16px;
-            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 12px 15px;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .tree-card:hover .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255,255,255,0.06);
         }
 
         .metric-title {
             font-size: 11px;
             color: var(--text-dim);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -414,31 +454,44 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
             padding-top: 15px;
+            margin-top: auto;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+            background-color: currentColor;
+            box-shadow: 0 0 8px currentColor;
         }
 
         .empty-forest {
             grid-column: 1 / -1;
-            background: var(--forest-card);
-            border: 1px dashed var(--forest-border);
-            padding: 60px;
-            border-radius: 30px;
+            background: rgba(14, 38, 26, 0.5);
+            border: 2px dashed rgba(52, 211, 153, 0.2);
+            padding: 80px 20px;
+            border-radius: 40px;
             text-align: center;
             color: var(--text-dim);
+            backdrop-filter: blur(10px);
         }
         .empty-forest span {
-            font-size: 55px;
+            font-size: 60px;
             display: block;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             animation: floatTree 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
         }
         
         #syncing-overlay {
             position: fixed; top: 20px; right: 20px;
-            background: rgba(16, 185, 129, 0.2); border: 1px solid var(--leaf-green);
-            color: var(--leaf-green); padding: 8px 16px; border-radius: 20px;
-            font-size: 13px; z-index: 1000; font-weight: 500; backdrop-filter: blur(10px);
+            background: rgba(16, 185, 129, 0.15); border: 1px solid var(--leaf-green);
+            color: var(--leaf-green); padding: 10px 20px; border-radius: 30px;
+            font-size: 14px; z-index: 1000; font-weight: 600; backdrop-filter: blur(15px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             display: none; transition: 0.3s;
         }
     </style>
@@ -465,26 +518,26 @@
             <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด (แสดงทั้งรวมแปลง และรวมต้น) -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด (แสดงทั้งรวมแปลง และรวมต้น) ดีไซน์ใหม่ -->
         <div class="summary-dashboard">
             <div class="summary-item">
-                <div class="summary-label">Total Balance</div>
+                <div class="summary-label">💰 Total Balance</div>
                 <div class="summary-val" id="sum-balance">$0.00</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Total Equity</div>
+                <div class="summary-label">💎 Total Equity</div>
                 <div class="summary-val" id="sum-equity">$0.00</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Total Floating P/L</div>
+                <div class="summary-label">📈 Total Floating P/L</div>
                 <div class="summary-val" id="sum-pl">$0.00</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">รวมแปลงทั้งหมด</div>
+                <div class="summary-label">🌲 รวมแปลงทั้งหมด</div>
                 <div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">รวมจำนวนต้น</div>
+                <div class="summary-label">🌱 รวมจำนวนต้น</div>
                 <div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div>
             </div>
         </div>
@@ -626,8 +679,8 @@
                 grid.innerHTML = `
                     <div class="empty-forest">
                         <span>🍃</span>
-                        <h3 style="color:#fff; margin:0 0 5px 0; font-size: 20px;">กำลังซิงค์หรือผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบนแล้วกดปลูกต้นไม้ใหม่เพื่อเริ่มต้น</p>
+                        <h3 style="color:#fff; margin:0 0 10px 0; font-size: 24px;">ผืนป่ายังว่างเปล่า</h3>
+                        <p style="margin:0; line-height: 1.6;">กำลังซิงค์ข้อมูล หรือ พิมพ์เลขพอร์ต MT4 ด้านบน<br>แล้วกดปลูกต้นไม้ใหม่เพื่อเริ่มต้นสร้างระบบนิเวศของคุณ</p>
                     </div>
                 `;
                 updatePortfolioSummary();
@@ -641,7 +694,7 @@
                     <div class="card-header">
                         <div class="plot-number">
                             🌲 #${login}
-                            <span id="stars-${login}" style="font-size: 14px; margin-left: 8px; color: #fbbf24; text-shadow: 0 2px 4px rgba(251,191,36,0.3); letter-spacing: 1px;"></span>
+                            <span id="stars-${login}" style="font-size: 14px; margin-left: 10px; color: #fbbf24; text-shadow: 0 2px 4px rgba(251,191,36,0.3); letter-spacing: 2px;"></span>
                         </div>
                         <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ลบถาวร">✕</button>
                     </div>
@@ -676,7 +729,9 @@
                     </div>
 
                     <div class="card-footer">
-                        <span id="status-${login}" style="color: var(--leaf-green);">● กำลังเชื่อมต่อผืนป่า</span>
+                        <span id="status-${login}" style="color: var(--leaf-green); display: flex; align-items: center;">
+                            <span class="status-dot"></span> กำลังเชื่อมต่อผืนป่า
+                        </span>
                         <span id="time-${login}">--:--:--</span>
                     </div>
                 `;
@@ -753,7 +808,7 @@
             if (!statusDiv) return;
 
             if (data.error) {
-                statusDiv.innerHTML = '● ขาดการติดต่อ';
+                statusDiv.innerHTML = '<span class="status-dot"></span> ขาดการติดต่อ';
                 statusDiv.style.color = 'var(--danger-red)';
                 weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย';
                 weatherBadge.style.color = 'var(--danger-red)';
@@ -761,7 +816,7 @@
                 return;
             }
 
-            statusDiv.innerHTML = '● ป่าไม้อุดมสมบูรณ์';
+            statusDiv.innerHTML = '<span class="status-dot"></span> ป่าไม้อุดมสมบูรณ์';
             statusDiv.style.color = 'var(--leaf-green)';
             weatherBadge.style.color = 'var(--leaf-green)';
             weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
