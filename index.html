@@ -398,20 +398,6 @@
             100% { opacity: 0; transform: scale(0.5) rotate(30deg); }
         }
 
-        /* 🐝 ผึ้งงานกำลังบินหาสัญญาณ (สื่อว่าบอทแสตนด์บาย) */
-        .bee-avatar {
-            font-size: 80px;
-            display: inline-block;
-            animation: flyBee 3s ease-in-out infinite;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-        }
-        @keyframes flyBee {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(8px, -12px) rotate(10deg); }
-            50% { transform: translate(15px, 0) rotate(-5deg); }
-            75% { transform: translate(-8px, -10px) rotate(8deg); }
-        }
-
         .weather-badge {
             position: absolute;
             bottom: 0;
@@ -860,9 +846,9 @@
             let weatherText = '';
             const percent = data.percent;
             
-            // 🟢 เปลี่ยนจากเต็นท์พักผ่อน เป็น เรดาร์สแกนหาจุดเข้าเทรด
+            // 🟢 เปลี่ยนข้อความสภาพอากาศกลับมาเป็นตั้งแคมป์
             if (data.open_positions === 0) {
-                weatherEmoji = '📡'; weatherText = 'สแกนหาจุดเข้า';
+                weatherEmoji = '🏕️'; weatherText = 'ตั้งแคมป์รอจังหวะ';
                 weatherBadge.style.color = '#fbbf24';
                 weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
             } else if (percent > 15) {
@@ -935,10 +921,10 @@
                 let treeEmoji = '';
                 let treeName = '';
 
-                // 🟢 พอร์ตว่าง = ผึ้งงานกำลังบินหาสัญญาณ
+                // 🟢 พอร์ตว่าง = ตั้งแคมป์พักแรมรอออเดอร์
                 if (data.open_positions === 0) {
-                    treeEmoji = '<span class="bee-avatar">🐝</span>'; 
-                    treeName = 'ผึ้งงานสแกนหาจังหวะ (Scanning)';
+                    treeEmoji = '🏕️'; 
+                    treeName = 'แคมป์พักแรมรอออเดอร์';
                     avatarDiv.innerHTML = treeEmoji;
                 } else {
                     let level = 1;
@@ -964,7 +950,7 @@
                         case 10: treeEmoji = '🍎'; treeName = 'มหาพฤกษาใหญ่ (Level 10)'; break;
                     }
                     
-                    // ✨ ใส่ดาววิบวับกระพริบให้ลอยรอบๆ ต้นไม้ สื่อถึงกำลังทำงานทำเงิน
+                    // ✨ ใส่ดาววิบวับกระพริบเฉพาะเวลาที่เปิดออเดอร์ (ต้นไม้)
                     let sparklesHTML = `
                         <span class="sparkle sparkle-1">✨</span>
                         <span class="sparkle sparkle-2">✨</span>
