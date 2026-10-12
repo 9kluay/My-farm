@@ -298,7 +298,6 @@
             color: #fff;
             display: flex;
             align-items: center;
-            gap: 8px;
         }
 
         .delete-btn {
@@ -435,7 +434,6 @@
             animation: floatTree 3s ease-in-out infinite;
         }
         
-        /* Loading Overlay ตอนซิงค์ข้อมูล/ลบข้อมูล */
         #syncing-overlay {
             position: fixed; top: 20px; right: 20px;
             background: rgba(16, 185, 129, 0.2); border: 1px solid var(--leaf-green);
@@ -464,7 +462,7 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ควบคุม เพิ่ม และลบพอร์ตจากหน้าแดชบอร์ดโดยตรง</p>
+            <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
         </header>
 
         <!-- แถบรวมยอดพอร์ตทั้งหมด -->
@@ -557,11 +555,15 @@
             }, 1200);
         }
 
+        // 🟢 ดึงรายชื่อพอร์ตและ "เรียงลำดับจากน้อยไปมาก" อัตโนมัติทุกครั้ง
         function getFarmsList() { 
-            return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
+            let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
+            return farms.sort((a, b) => parseInt(a) - parseInt(b));
         }
         
         function saveFarmsList(farms) { 
+            // เรียงลำดับก่อนบันทึกลงเครื่อง
+            farms.sort((a, b) => parseInt(a) - parseInt(b));
             localStorage.setItem('my_forest_farms', JSON.stringify(farms)); 
         }
 
@@ -581,7 +583,6 @@
             fetchNodeData(login);
         }
 
-        // 🟢 ฟังก์ชันลบต้นไม้แบบถอนรากถอนโคนไปถึง Google Sheet
         window.removeFarm = async function(login) {
             if(confirm(`ต้องการถอนพอร์ต ${login} ออกถาวรใช่หรือไม่?\n(ข้อมูลใน Google Sheet จะถูกลบทิ้งด้วย)`)) {
                 
@@ -593,23 +594,19 @@
                 overlay.style.display = 'block';
 
                 try {
-                    // ส่งคำสั่ง API ไปบอก Google Sheet ให้ลบ Sheet ของพอร์ตนี้ทิ้งเลย
                     await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
                     
-                    // ลบออกจากหน่วยความจำของหน้าจอ (LocalStorage)
                     let farms = getFarmsList();
                     farms = farms.filter(f => f !== login);
                     saveFarmsList(farms);
                     
                     delete globalPortfolioData[login];
                     updatePortfolioSummary();
-                    updateTreeRanks(); 
-                    renderForest();
+                    renderForest(); // วาดหน้าจอใหม่ทันที
                 } catch(e) {
                     alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
                 }
 
-                // คืนค่าปุ่มแจ้งเตือน
                 overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
                 overlay.style.borderColor = 'var(--leaf-green)';
                 overlay.style.color = 'var(--leaf-green)';
@@ -618,6 +615,7 @@
             }
         };
 
+        // 🟢 ฟังก์ชันวาดการ์ดต้นไม้ + อัปเดตข้อมูล UI ล่าสุดทันทีกันจอกระพริบ
         function renderForest() {
             const grid = document.getElementById('forest-grid');
             grid.innerHTML = '';
@@ -640,7 +638,10 @@
                 card.className = 'tree-card';
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="plot-number">🌲 #${login}</div>
+                        <div class="plot-number">
+                            🌲 #${login}
+                            <span id="stars-${login}" style="font-size: 14px; margin-left: 8px; color: #fbbf24; text-shadow: 0 2px 4px rgba(251,191,36,0.3); letter-spacing: 1px;"></span>
+                        </div>
                         <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ลบถาวร">✕</button>
                     </div>
 
@@ -680,6 +681,14 @@
                 `;
                 grid.appendChild(card);
             });
+
+            // 🟢 เมื่อวาดการ์ดเสร็จ ให้ใส่ข้อมูลเดิมที่โหลดมาแล้วทันที (ถ้ามี)
+            farms.forEach(login => {
+                if (globalPortfolioData[login]) {
+                    updateUICard(login);
+                }
+            });
+            updateTreeRanks();
         }
 
         function refreshAll() {
@@ -690,149 +699,158 @@
         }
 
         async function fetchNodeData(login) {
-            const avatarDiv = document.getElementById(`avatar-${login}`);
-            const weatherBadge = document.getElementById(`weather-badge-${login}`);
-            const tierDiv = document.getElementById(`tier-${login}`);
-            const statusDiv = document.getElementById(`status-${login}`);
-            
-            const balDiv = document.getElementById(`bal-${login}`);
-            const eqDiv = document.getElementById(`eq-${login}`);
-            const plDiv = document.getElementById(`pl-${login}`);
-            const ordDiv = document.getElementById(`ord-${login}`);
-            const timeDiv = document.getElementById(`time-${login}`);
-
-            if(!avatarDiv) return;
-
             try {
                 const response = await fetch(`${SCRIPT_URL}?login=${login}`);
                 const data = await response.json();
 
                 if (data.error || data.length === 0) {
-                    statusDiv.innerHTML = '● ขาดการติดต่อ';
-                    statusDiv.style.color = 'var(--danger-red)';
+                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, error: true };
+                } else {
+                    const latest = data[0];
+                    const balance = parseFloat(latest.balance);
+                    const equity = parseFloat(latest.equity);
+                    const profitLoss = parseFloat(latest.floating_pl);
+                    const openPositions = parseInt(latest.open_positions || 0);
+                    const initialDeposit = parseFloat(latest.initial_deposit || balance);
+                    const diff = equity - initialDeposit;
+                    const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
                     
-                    weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย';
-                    weatherBadge.style.color = 'var(--danger-red)';
-                    weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
-                    
-                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, error: true };
-                    updatePortfolioSummary();
-                    updateTreeRanks();
-                    return;
+                    globalPortfolioData[login] = { 
+                        balance: balance, 
+                        equity: equity, 
+                        profit: profitLoss, 
+                        initial: initialDeposit,
+                        percent: percent,
+                        open_positions: openPositions,
+                        lastUpdated: latest.lastUpdated,
+                        error: false 
+                    };
                 }
 
-                const latest = data[0];
-                const balance = parseFloat(latest.balance);
-                const equity = parseFloat(latest.equity);
-                const profitLoss = parseFloat(latest.floating_pl);
-                const openPositions = parseInt(latest.open_positions || 0);
-                const initialDeposit = parseFloat(latest.initial_deposit || balance);
-                
-                globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss, error: false };
                 updatePortfolioSummary();
-
-                const diff = equity - initialDeposit;
-                const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
-
-                statusDiv.innerHTML = '● ป่าไม้อุดมสมบูรณ์';
-                statusDiv.style.color = 'var(--leaf-green)';
-                weatherBadge.style.color = 'var(--leaf-green)';
-                weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
-
-                let weatherEmoji = '';
-                let weatherText = '';
-                
-                if (balance <= 0) {
-                    weatherEmoji = '🚧'; weatherText = 'รอหว่านเมล็ด';
-                } else if (percent > 15) {
-                    weatherEmoji = '🌈'; weatherText = 'รุ้งงามทอประกาย';
-                } else if (percent > 10 && percent <= 15) {
-                    weatherEmoji = '☀️'; weatherText = 'แดดออกอบอุ่น';
-                } else if (percent > 5 && percent <= 10) {
-                    weatherEmoji = '🌤️'; weatherText = 'เมฆประดับบางส่วน';
-                } else if (percent > 0 && percent <= 5) {
-                    weatherEmoji = '⛅'; weatherText = 'ร่มรื่น แดดอ่อนๆ';
-                } else if (percent === 0) {
-                    weatherEmoji = '🌫️'; weatherText = 'สงบเงียบ';
-                } else if (percent < 0 && percent >= -5) {
-                    weatherEmoji = '🌧️'; weatherText = 'ฝนตกปรอยๆ';
-                } else if (percent < -5 && percent >= -10) {
-                    weatherEmoji = '☔'; weatherText = 'ฝนตกชุก';
-                    weatherBadge.style.color = '#fbbf24';
-                    weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
-                } else if (percent < -10 && percent >= -15) {
-                    weatherEmoji = '⛈️'; weatherText = 'พายุฝนรุนแรง!';
-                    weatherBadge.style.color = 'var(--danger-red)';
-                    weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
-                } else if (percent < -15) {
-                    weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโด!';
-                    weatherBadge.style.color = 'var(--danger-red)';
-                    weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
-                }
-
-                weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
-
-                balDiv.innerText = `$${balance.toFixed(2)}`;
-                eqDiv.innerText = `$${equity.toFixed(2)}`;
-
-                const plClass = profitLoss < 0 ? 'negative' : (profitLoss > 0 ? 'positive' : '');
-                const plPrefix = profitLoss > 0 ? '+' : '';
-                plDiv.className = `metric-value ${plClass}`;
-                plDiv.innerText = `${plPrefix}$${profitLoss.toFixed(2)} (${plPrefix}${percent.toFixed(2)}%)`;
-
-                ordDiv.innerText = `${openPositions} แปลง`;
-                timeDiv.innerText = new Date(latest.lastUpdated).toLocaleTimeString('th-TH');
-
+                updateUICard(login);
                 updateTreeRanks();
 
             } catch (err) {
-                statusDiv.innerHTML = '● ระบบขัดข้อง';
-                statusDiv.style.color = 'var(--danger-red)';
-                weatherBadge.innerHTML = '<span>⚠️</span> ภัยแล้งชั่วคราว';
-                weatherBadge.style.color = 'var(--danger-red)';
-                weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
-                
-                globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, error: true };
+                globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, error: true };
+                updateUICard(login);
                 updateTreeRanks();
             }
         }
 
+        // 🟢 ฟังก์ชันอัปเดตตัวหนังสือในการ์ด (แยกออกมาเพื่อไม่ให้ต้องโหลดข้อมูลใหม่เวลาย้ายการ์ด)
+        function updateUICard(login) {
+            const data = globalPortfolioData[login];
+            if (!data) return;
+
+            const statusDiv = document.getElementById(`status-${login}`);
+            const weatherBadge = document.getElementById(`weather-badge-${login}`);
+            const balDiv = document.getElementById(`bal-${login}`);
+            const eqDiv = document.getElementById(`eq-${login}`);
+            const plDiv = document.getElementById(`pl-${login}`);
+            const ordDiv = document.getElementById(`ord-${login}`);
+            const timeDiv = document.getElementById(`time-${login}`);
+            
+            if (!statusDiv) return;
+
+            if (data.error) {
+                statusDiv.innerHTML = '● ขาดการติดต่อ';
+                statusDiv.style.color = 'var(--danger-red)';
+                weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย';
+                weatherBadge.style.color = 'var(--danger-red)';
+                weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
+                return;
+            }
+
+            statusDiv.innerHTML = '● ป่าไม้อุดมสมบูรณ์';
+            statusDiv.style.color = 'var(--leaf-green)';
+            weatherBadge.style.color = 'var(--leaf-green)';
+            weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+
+            let weatherEmoji = '';
+            let weatherText = '';
+            const percent = data.percent;
+            
+            if (data.balance <= 0) {
+                weatherEmoji = '🚧'; weatherText = 'รอหว่านเมล็ด';
+            } else if (percent > 15) {
+                weatherEmoji = '🌈'; weatherText = 'รุ้งงามทอประกาย';
+            } else if (percent > 10 && percent <= 15) {
+                weatherEmoji = '☀️'; weatherText = 'แดดออกอบอุ่น';
+            } else if (percent > 5 && percent <= 10) {
+                weatherEmoji = '🌤️'; weatherText = 'เมฆประดับบางส่วน';
+            } else if (percent > 0 && percent <= 5) {
+                weatherEmoji = '⛅'; weatherText = 'ร่มรื่น แดดอ่อนๆ';
+            } else if (percent === 0) {
+                weatherEmoji = '🌫️'; weatherText = 'สงบเงียบ';
+            } else if (percent < 0 && percent >= -5) {
+                weatherEmoji = '🌧️'; weatherText = 'ฝนตกปรอยๆ';
+            } else if (percent < -5 && percent >= -10) {
+                weatherEmoji = '☔'; weatherText = 'ฝนตกชุก';
+                weatherBadge.style.color = '#fbbf24';
+                weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
+            } else if (percent < -10 && percent >= -15) {
+                weatherEmoji = '⛈️'; weatherText = 'พายุฝนรุนแรง!';
+                weatherBadge.style.color = 'var(--danger-red)';
+                weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
+            } else if (percent < -15) {
+                weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโด!';
+                weatherBadge.style.color = 'var(--danger-red)';
+                weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
+            }
+
+            weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
+
+            balDiv.innerText = `$${data.balance.toFixed(2)}`;
+            eqDiv.innerText = `$${data.equity.toFixed(2)}`;
+
+            const plClass = data.profit < 0 ? 'negative' : (data.profit > 0 ? 'positive' : '');
+            const plPrefix = data.profit > 0 ? '+' : '';
+            plDiv.className = `metric-value ${plClass}`;
+            plDiv.innerText = `${plPrefix}$${data.profit.toFixed(2)} (${plPrefix}${percent.toFixed(2)}%)`;
+
+            ordDiv.innerText = `${data.open_positions} แปลง`;
+            timeDiv.innerText = new Date(data.lastUpdated).toLocaleTimeString('th-TH');
+        }
+
+        // 🟢 ฟังก์ชันจัดการรูปร่างต้นไม้ 10 ระดับ + จัดอันดับให้ดาว 1-5 ดาว
         function updateTreeRanks() {
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
 
+            // 1. หาพอร์ตที่ Equity ต่ำสุด-สูงสุด สำหรับคำนวณขนาดต้นไม้
             let minEq = Infinity;
             let maxEq = -Infinity;
+            // 2. หาพอร์ตที่ทำกำไรเป็น % สูงสุด สำหรับคำนวณจำนวนดาว
+            let maxPercent = 0;
 
             farms.forEach(f => {
-                const eq = globalPortfolioData[f].equity;
-                if (eq < minEq) minEq = eq;
-                if (eq > maxEq) maxEq = eq;
+                const data = globalPortfolioData[f];
+                if (data.equity < minEq) minEq = data.equity;
+                if (data.equity > maxEq) maxEq = data.equity;
+                if (data.percent > maxPercent) maxPercent = data.percent;
             });
 
             farms.forEach(f => {
-                const eq = globalPortfolioData[f].equity;
-                const balance = globalPortfolioData[f].balance;
+                const data = globalPortfolioData[f];
                 const avatarDiv = document.getElementById(`avatar-${f}`);
                 const tierDiv = document.getElementById(`tier-${f}`);
+                const starsSpan = document.getElementById(`stars-${f}`);
                 
                 if (!avatarDiv || !tierDiv) return;
 
+                // 🌳 จัดระดับต้นไม้ (1-10) ตาม Equity
                 let level = 1;
                 if (maxEq > minEq) {
-                    const score = (eq - minEq) / (maxEq - minEq);
+                    const score = (data.equity - minEq) / (maxEq - minEq);
                     level = Math.floor(score * 9) + 1;
                 } else {
                     level = 10;
                 }
-
-                if (balance <= 0) {
-                    level = 0;
-                }
+                if (data.balance <= 0) level = 0;
 
                 let treeEmoji = '';
                 let treeName = '';
-
                 switch(level) {
                     case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
                     case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
@@ -849,14 +867,29 @@
 
                 avatarDiv.innerText = treeEmoji;
                 tierDiv.innerText = treeName;
+
+                // 🌟 จัดอันดับดาว (1-5 ดวง) ตาม % กำไร
+                if (starsSpan) {
+                    let starsCount = 0;
+                    // ถ้าพอร์ตมีกำไร (>0) ให้คำนวณดาวโดยเปรียบเทียบกับพอร์ตที่กำไรเยอะสุด
+                    if (data.percent > 0 && maxPercent > 0) {
+                        starsCount = Math.ceil((data.percent / maxPercent) * 5);
+                        if(starsCount < 1) starsCount = 1;
+                        if(starsCount > 5) starsCount = 5;
+                    }
+                    starsSpan.innerText = '⭐'.repeat(starsCount);
+                }
             });
             
+            // หน้าตาพอร์ตที่ Error
             Object.keys(globalPortfolioData).forEach(f => {
                 if(globalPortfolioData[f].error) {
                     const avatarDiv = document.getElementById(`avatar-${f}`);
                     const tierDiv = document.getElementById(`tier-${f}`);
+                    const starsSpan = document.getElementById(`stars-${f}`);
                     if(avatarDiv) avatarDiv.innerText = '🥀';
                     if(tierDiv) tierDiv.innerText = 'ดินแห้งแล้ง';
+                    if(starsSpan) starsSpan.innerText = '';
                 }
             });
         }
