@@ -527,7 +527,10 @@
                 
                 if(Array.isArray(cloudFarms) && cloudFarms.length > 0) {
                     let localFarms = getFarmsList();
+                    // นำรายชื่อพอร์ตจากคลาวด์ มารวมกับรายชื่อที่เคยเก็บบนเครื่อง (ตัดตัวที่ซ้ำกันออก)
                     let mergedFarms = [...new Set([...localFarms, ...cloudFarms])];
+                    
+                    // 🟢 บันทึกทับรายชื่อพอร์ตใหม่ทั้งหมดกลับไปที่คลาวด์และเครื่อง
                     saveFarmsList(mergedFarms);
                     renderForest();
                 }
@@ -557,10 +560,12 @@
             }, 1200);
         }
 
+        // 🟢 ฟังก์ชันดึงรายชื่อพอร์ตที่ถูกบันทึกไว้ในเครื่อง
         function getFarmsList() { 
             return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
         }
         
+        // 🟢 ฟังก์ชันบันทึกรายชื่อพอร์ตลงในเครื่อง
         function saveFarmsList(farms) { 
             localStorage.setItem('my_forest_farms', JSON.stringify(farms)); 
         }
@@ -573,8 +578,10 @@
             let farms = getFarmsList();
             if (farms.includes(login)) { alert('พอร์ตนี้ถูกปลูกไว้ในป่าของคุณแล้วครับ'); return; }
             
+            // 🟢 เพิ่มพอร์ตใหม่เข้าไปใน Local Storage
             farms.push(login);
             saveFarmsList(farms);
+            
             loginInput.value = '';
             renderForest();
             fetchNodeData(login);
@@ -584,6 +591,8 @@
             if(confirm(`ต้องการซ่อนพอร์ต ${login} จากหน้านี้ใช่หรือไม่? (หากต้องการลบถาวร ต้องไปลบ Sheet ใน Google Sheet)`)) {
                 let farms = getFarmsList();
                 farms = farms.filter(f => f !== login);
+                
+                // 🟢 อัปเดตข้อมูลพอร์ตหลังจากลบ
                 saveFarmsList(farms);
                 delete globalPortfolioData[login];
                 updatePortfolioSummary();
@@ -774,7 +783,7 @@
             }
         }
 
-        // 🟢 ฟังก์ชันใหม่: จำแนกขนาดต้นไม้ 10 ระดับ โดยเปรียบเทียบพอร์ตทั้งหมด
+        // 🟢 ฟังก์ชันจำแนกขนาดต้นไม้ 10 ระดับ โดยเปรียบเทียบพอร์ตทั้งหมด
         function updateTreeRanks() {
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
