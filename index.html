@@ -138,7 +138,7 @@
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (5 ช่อง: Balance, Equity, Floating, รวมแปลง, รวมต้น) */
         .summary-dashboard {
             background: var(--forest-card);
             border: 1px solid var(--forest-border);
@@ -148,7 +148,7 @@
             backdrop-filter: blur(15px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
         }
 
@@ -465,7 +465,7 @@
             <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด (แสดงทั้งรวมแปลง และรวมต้น) -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">Total Balance</div>
@@ -480,8 +480,12 @@
                 <div class="summary-val" id="sum-pl">$0.00</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Total Farms</div>
+                <div class="summary-label">รวมแปลงทั้งหมด</div>
                 <div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">รวมจำนวนต้น</div>
+                <div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div>
             </div>
         </div>
 
@@ -555,14 +559,12 @@
             }, 1200);
         }
 
-        // 🟢 ดึงรายชื่อพอร์ตและ "เรียงลำดับจากน้อยไปมาก" อัตโนมัติทุกครั้ง
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
             return farms.sort((a, b) => parseInt(a) - parseInt(b));
         }
         
         function saveFarmsList(farms) { 
-            // เรียงลำดับก่อนบันทึกลงเครื่อง
             farms.sort((a, b) => parseInt(a) - parseInt(b));
             localStorage.setItem('my_forest_farms', JSON.stringify(farms)); 
         }
@@ -602,7 +604,7 @@
                     
                     delete globalPortfolioData[login];
                     updatePortfolioSummary();
-                    renderForest(); // วาดหน้าจอใหม่ทันที
+                    renderForest(); 
                 } catch(e) {
                     alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
                 }
@@ -615,7 +617,6 @@
             }
         };
 
-        // 🟢 ฟังก์ชันวาดการ์ดต้นไม้ + อัปเดตข้อมูล UI ล่าสุดทันทีกันจอกระพริบ
         function renderForest() {
             const grid = document.getElementById('forest-grid');
             grid.innerHTML = '';
@@ -670,7 +671,7 @@
                         </div>
                         <div class="metric-card">
                             <div class="metric-title">Active Orders</div>
-                            <div class="metric-value" id="ord-${login}">0 แปลง</div>
+                            <div class="metric-value" id="ord-${login}">0 ต้น</div>
                         </div>
                     </div>
 
@@ -682,7 +683,6 @@
                 grid.appendChild(card);
             });
 
-            // 🟢 เมื่อวาดการ์ดเสร็จ ให้ใส่ข้อมูลเดิมที่โหลดมาแล้วทันที (ถ้ามี)
             farms.forEach(login => {
                 if (globalPortfolioData[login]) {
                     updateUICard(login);
@@ -704,7 +704,7 @@
                 const data = await response.json();
 
                 if (data.error || data.length === 0) {
-                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, error: true };
+                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, open_positions: 0, error: true };
                 } else {
                     const latest = data[0];
                     const balance = parseFloat(latest.balance);
@@ -732,13 +732,12 @@
                 updateTreeRanks();
 
             } catch (err) {
-                globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, error: true };
+                globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, open_positions: 0, error: true };
                 updateUICard(login);
                 updateTreeRanks();
             }
         }
 
-        // 🟢 ฟังก์ชันอัปเดตตัวหนังสือในการ์ด (แยกออกมาเพื่อไม่ให้ต้องโหลดข้อมูลใหม่เวลาย้ายการ์ด)
         function updateUICard(login) {
             const data = globalPortfolioData[login];
             if (!data) return;
@@ -809,19 +808,16 @@
             plDiv.className = `metric-value ${plClass}`;
             plDiv.innerText = `${plPrefix}$${data.profit.toFixed(2)} (${plPrefix}${percent.toFixed(2)}%)`;
 
-            ordDiv.innerText = `${data.open_positions} แปลง`;
+            ordDiv.innerText = `${data.open_positions} ต้น`;
             timeDiv.innerText = new Date(data.lastUpdated).toLocaleTimeString('th-TH');
         }
 
-        // 🟢 ฟังก์ชันจัดการรูปร่างต้นไม้ 10 ระดับ + จัดอันดับให้ดาว 1-5 ดาว
         function updateTreeRanks() {
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
 
-            // 1. หาพอร์ตที่ Equity ต่ำสุด-สูงสุด สำหรับคำนวณขนาดต้นไม้
             let minEq = Infinity;
             let maxEq = -Infinity;
-            // 2. หาพอร์ตที่ทำกำไรเป็น % สูงสุด สำหรับคำนวณจำนวนดาว
             let maxPercent = 0;
 
             farms.forEach(f => {
@@ -839,7 +835,6 @@
                 
                 if (!avatarDiv || !tierDiv) return;
 
-                // 🌳 จัดระดับต้นไม้ (1-10) ตาม Equity
                 let level = 1;
                 if (maxEq > minEq) {
                     const score = (data.equity - minEq) / (maxEq - minEq);
@@ -868,10 +863,8 @@
                 avatarDiv.innerText = treeEmoji;
                 tierDiv.innerText = treeName;
 
-                // 🌟 จัดอันดับดาว (1-5 ดวง) ตาม % กำไร
                 if (starsSpan) {
                     let starsCount = 0;
-                    // ถ้าพอร์ตมีกำไร (>0) ให้คำนวณดาวโดยเปรียบเทียบกับพอร์ตที่กำไรเยอะสุด
                     if (data.percent > 0 && maxPercent > 0) {
                         starsCount = Math.ceil((data.percent / maxPercent) * 5);
                         if(starsCount < 1) starsCount = 1;
@@ -881,7 +874,6 @@
                 }
             });
             
-            // หน้าตาพอร์ตที่ Error
             Object.keys(globalPortfolioData).forEach(f => {
                 if(globalPortfolioData[f].error) {
                     const avatarDiv = document.getElementById(`avatar-${f}`);
@@ -898,6 +890,7 @@
             let totalBalance = 0;
             let totalEquity = 0;
             let totalProfit = 0;
+            let totalTrees = 0;
             const farms = getFarmsList();
 
             farms.forEach(login => {
@@ -905,6 +898,7 @@
                     totalBalance += globalPortfolioData[login].balance || 0;
                     totalEquity += globalPortfolioData[login].equity || 0;
                     totalProfit += globalPortfolioData[login].profit || 0;
+                    totalTrees += globalPortfolioData[login].open_positions || 0;
                 }
             });
 
@@ -917,6 +911,7 @@
             plElem.innerText = `${plPrefix}$${totalProfit.toFixed(2)}`;
 
             document.getElementById('sum-farms').innerText = `${farms.length} แปลง`;
+            document.getElementById('sum-trees').innerText = `${totalTrees} ต้น`;
         }
     </script>
 </body>
