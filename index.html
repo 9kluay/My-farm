@@ -377,7 +377,6 @@
             border-top: 1px dashed rgba(255,255,255,0.1);
             width: 100%;
         }
-        /* ------------------------------------------------------------------------- */
 
         .metrics-container {
             display: grid;
@@ -435,9 +434,20 @@
             margin-bottom: 15px;
             animation: floatTree 3s ease-in-out infinite;
         }
+        
+        /* Loading Overlay ตอนซิงค์ข้อมูล */
+        #syncing-overlay {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(16, 185, 129, 0.2); border: 1px solid var(--leaf-green);
+            color: var(--leaf-green); padding: 8px 16px; border-radius: 20px;
+            font-size: 13px; z-index: 1000; font-weight: 500; backdrop-filter: blur(10px);
+            display: none; transition: 0.3s;
+        }
     </style>
 </head>
 <body>
+
+    <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
 
     <!-- สายน้ำไหล -->
     <div class="river-container">
@@ -454,7 +464,7 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">จำลองสายลม สายน้ำ และสภาพอากาศเคลื่อนไหวเฉพาะพอร์ตของคุณ</p>
+            <p class="subtitle">จำแนกขนาดต้นไม้ 10 ระดับ ตามขนาด Equity ของทุกพอร์ตที่คุณมี</p>
         </header>
 
         <!-- แถบรวมยอดพอร์ตทั้งหมด -->
@@ -499,13 +509,33 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
-
-        window.onload = () => {
+        
+        window.onload = async () => {
             initRiver();
             startWindEffect();
-            renderForest();
+            renderForest(); 
+            await syncFarmsFromCloud(); 
             refreshAll(); 
         };
+
+        async function syncFarmsFromCloud() {
+            const overlay = document.getElementById('syncing-overlay');
+            overlay.style.display = 'block';
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
+                const cloudFarms = await response.json();
+                
+                if(Array.isArray(cloudFarms) && cloudFarms.length > 0) {
+                    let localFarms = getFarmsList();
+                    let mergedFarms = [...new Set([...localFarms, ...cloudFarms])];
+                    saveFarmsList(mergedFarms);
+                    renderForest();
+                }
+            } catch(e) {
+                console.error("Cloud Sync Failed", e);
+            }
+            overlay.style.display = 'none';
+        }
 
         function initRiver() {
             const track = document.getElementById('riverTrack');
@@ -551,12 +581,13 @@
         }
 
         window.removeFarm = function(login) {
-            if(confirm(`ต้องการถอนต้นไม้พอร์ต ${login} ออกจากผืนป่าของคุณใช่หรือไม่?`)) {
+            if(confirm(`ต้องการซ่อนพอร์ต ${login} จากหน้านี้ใช่หรือไม่? (หากต้องการลบถาวร ต้องไปลบ Sheet ใน Google Sheet)`)) {
                 let farms = getFarmsList();
                 farms = farms.filter(f => f !== login);
                 saveFarmsList(farms);
                 delete globalPortfolioData[login];
                 updatePortfolioSummary();
+                updateTreeRanks(); // รีคำนวณขนาดต้นไม้ใหม่หลังลบ
                 renderForest();
             }
         };
@@ -570,8 +601,8 @@
                 grid.innerHTML = `
                     <div class="empty-forest">
                         <span>🍃</span>
-                        <h3 style="color:#fff; margin:0 0 5px 0; font-size: 20px;">ผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบน แล้วกด "ปลูกต้นไม้ใหม่" เพื่อเริ่มสร้างระบบนิเวศน์ส่วนตัวของคุณ</p>
+                        <h3 style="color:#fff; margin:0 0 5px 0; font-size: 20px;">กำลังซิงค์หรือผืนป่ายังว่างเปล่า</h3>
+                        <p style="margin:0;">หาก EA ทำงานอยู่ ระบบจะดึงพอร์ตมาแสดงอัตโนมัติ<br>หรือพิมพ์เลขพอร์ต MT4 ด้านบนแล้วกดปลูกต้นไม้ด้วยตัวเอง</p>
                     </div>
                 `;
                 updatePortfolioSummary();
@@ -584,7 +615,7 @@
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">🌲 #${login}</div>
-                        <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ถอนต้นไม้">✕</button>
+                        <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ซ่อนต้นไม้">✕</button>
                     </div>
 
                     <div class="nature-pod">
@@ -653,15 +684,14 @@
                 if (data.error || data.length === 0) {
                     statusDiv.innerHTML = '● ขาดการติดต่อ';
                     statusDiv.style.color = 'var(--danger-red)';
-                    tierDiv.innerText = 'ดินแห้งแล้ง';
                     
                     weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย';
                     weatherBadge.style.color = 'var(--danger-red)';
                     weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
                     
-                    avatarDiv.innerText = '🍂';
-                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0 };
+                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, error: true };
                     updatePortfolioSummary();
+                    updateTreeRanks(); // รีคำนวณแรงค์ต้นไม้อื่นๆ
                     return;
                 }
 
@@ -670,14 +700,13 @@
                 const equity = parseFloat(latest.equity);
                 const profitLoss = parseFloat(latest.floating_pl);
                 const openPositions = parseInt(latest.open_positions || 0);
-                
-                // 🟢 ดึงยอดเงินฝากจริง (initial_deposit) มาใช้คำนวณ % การเติบโต
                 const initialDeposit = parseFloat(latest.initial_deposit || balance);
                 
-                globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss };
+                // บันทึกข้อมูลเพื่อนำไปคำนวณขนาดต้นไม้เปรียบเทียบกับพอร์ตอื่น
+                globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss, error: false };
                 updatePortfolioSummary();
 
-                // คำนวณเปอร์เซ็นต์เทียบกับเงินฝากจริง
+                // 🟢 ระบบสภาพอากาศ (อิงจาก % กำไรของพอร์ตตัวเอง)
                 const diff = equity - initialDeposit;
                 const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
 
@@ -686,40 +715,6 @@
                 weatherBadge.style.color = 'var(--leaf-green)';
                 weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
 
-                // 🌳 ระบบไล่ระดับต้นไม้ตามเปอร์เซ็นต์เทียบกับเงินฝากจริง
-                let treeEmoji = '🌱';
-                let treeName = 'ต้นกล้าเล็กๆ (Sprout)';
-                
-                if (balance <= 0) {
-                    treeEmoji = '🌰'; 
-                    treeName = 'เมล็ดพันธุ์ในดิน (Seed)';
-                } else if (percent >= 100) {
-                    treeEmoji = '🍎';
-                    treeName = 'ต้นแอปเปิลทองคำ (Golden Fruit Tree)';
-                } else if (percent >= 80) {
-                    treeEmoji = '🍒';
-                    treeName = 'ต้นไม้ผลิดอกออกผล (Blooming Tree)';
-                } else if (percent >= 60) {
-                    treeEmoji = '🌲';
-                    treeName = 'มหาพฤกษาใหญ่ (Ancient Giant)';
-                } else if (percent >= 40) {
-                    treeEmoji = '🌳';
-                    treeName = 'ต้นไม้ร่มรื่น (Mature Tree)';
-                } else if (percent >= 25) {
-                    treeEmoji = '🌿';
-                    treeName = 'พุ่มไม้เขียวขจี (Growing Bush)';
-                } else if (percent >= 10) {
-                    treeEmoji = '🪴';
-                    treeName = 'ไม้ประดับในกระถาง (Pot Plant)';
-                } else if (percent > 0) {
-                    treeEmoji = '🌱';
-                    treeName = 'ต้นกล้าแรกแย้ม (Sprout)';
-                } else {
-                    treeEmoji = '🌰';
-                    treeName = 'เมล็ดพันธุ์รอเติบโต (Seed)';
-                }
-
-                // ☀️ ระบบสภาพอากาศ
                 let weatherEmoji = '';
                 let weatherText = '';
                 
@@ -751,8 +746,6 @@
                     weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
                 }
 
-                avatarDiv.innerText = treeEmoji;
-                tierDiv.innerText = treeName;
                 weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
 
                 balDiv.innerText = `$${balance.toFixed(2)}`;
@@ -766,17 +759,91 @@
                 ordDiv.innerText = `${openPositions} แปลง`;
                 timeDiv.innerText = new Date(latest.lastUpdated).toLocaleTimeString('th-TH');
 
+                // 🌳 อัปเดตขนาดต้นไม้ (เปรียบเทียบกับทุกพอร์ต) ทุกครั้งที่โหลดข้อมูลแต่ละพอร์ตเสร็จ
+                updateTreeRanks();
+
             } catch (err) {
                 statusDiv.innerHTML = '● ระบบขัดข้อง';
                 statusDiv.style.color = 'var(--danger-red)';
-                tierDiv.innerText = 'ดินแห้งแล้ง';
-                
                 weatherBadge.innerHTML = '<span>⚠️</span> ภัยแล้งชั่วคราว';
                 weatherBadge.style.color = 'var(--danger-red)';
                 weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
                 
-                avatarDiv.innerText = '🥀';
+                globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, error: true };
+                updateTreeRanks();
             }
+        }
+
+        // 🟢 ฟังก์ชันใหม่: จำแนกขนาดต้นไม้ 10 ระดับ โดยเปรียบเทียบพอร์ตทั้งหมด
+        function updateTreeRanks() {
+            const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
+            if (farms.length === 0) return;
+
+            // หาพอร์ตที่มี Equity ต่ำสุด และ สูงสุด ในหน้าจอนี้
+            let minEq = Infinity;
+            let maxEq = -Infinity;
+
+            farms.forEach(f => {
+                const eq = globalPortfolioData[f].equity;
+                if (eq < minEq) minEq = eq;
+                if (eq > maxEq) maxEq = eq;
+            });
+
+            // ไล่กำหนดรูปร่างต้นไม้ให้แต่ละพอร์ต
+            farms.forEach(f => {
+                const eq = globalPortfolioData[f].equity;
+                const balance = globalPortfolioData[f].balance;
+                const avatarDiv = document.getElementById(`avatar-${f}`);
+                const tierDiv = document.getElementById(`tier-${f}`);
+                
+                if (!avatarDiv || !tierDiv) return;
+
+                let level = 1;
+                
+                // หากมียอด Equity แตกต่างกัน ให้จัดเข้า 10 ระดับ
+                if (maxEq > minEq) {
+                    const score = (eq - minEq) / (maxEq - minEq); // จะได้ค่าตั้งแต่ 0.0 ถึง 1.0
+                    level = Math.floor(score * 9) + 1; // แปลงเป็นระดับ 1 ถึง 10
+                } else {
+                    // หากมีแค่ 1 พอร์ต หรือทุกพอร์ตเงินเท่ากันเป๊ะ ให้เป็นต้นไม้ใหญ่สุด Level 10
+                    level = 10;
+                }
+
+                // ข้อยกเว้น: หากพอร์ตเพิ่งเปิด ทุน 0 หรือติดลบ ให้เป็นเมล็ดพันธุ์เสมอ
+                if (balance <= 0) {
+                    level = 0;
+                }
+
+                let treeEmoji = '';
+                let treeName = '';
+
+                switch(level) {
+                    case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
+                    case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
+                    case 2: treeEmoji = '🪴'; treeName = 'ไม้ประดับกระถาง (Level 2)'; break;
+                    case 3: treeEmoji = '🌿'; treeName = 'พุ่มไม้ใบอ่อน (Level 3)'; break;
+                    case 4: treeEmoji = '☘️'; treeName = 'พุ่มไม้เขียวขจี (Level 4)'; break;
+                    case 5: treeEmoji = '🎋'; treeName = 'ต้นไม้กำลังโต (Level 5)'; break;
+                    case 6: treeEmoji = '🌴'; treeName = 'ไม้ยืนต้นขนาดกลาง (Level 6)'; break;
+                    case 7: treeEmoji = '🌳'; treeName = 'ต้นไม้ให้ร่มเงา (Level 7)'; break;
+                    case 8: treeEmoji = '🌲'; treeName = 'พฤกษาตระหง่าน (Level 8)'; break;
+                    case 9: treeEmoji = '🍒'; treeName = 'พฤกษาผลิดอก (Level 9)'; break;
+                    case 10: treeEmoji = '🍎'; treeName = 'มหาพฤกษาใหญ่ (Level 10)'; break;
+                }
+
+                avatarDiv.innerText = treeEmoji;
+                tierDiv.innerText = treeName;
+            });
+            
+            // จัดการหน้าตาของพอร์ตที่ Error ให้เป็นต้นไม้แห้งเหี่ยว
+            Object.keys(globalPortfolioData).forEach(f => {
+                if(globalPortfolioData[f].error) {
+                    const avatarDiv = document.getElementById(`avatar-${f}`);
+                    const tierDiv = document.getElementById(`tier-${f}`);
+                    if(avatarDiv) avatarDiv.innerText = '🥀';
+                    if(tierDiv) tierDiv.innerText = 'ดินแห้งแล้ง';
+                }
+            });
         }
 
         function updatePortfolioSummary() {
@@ -786,7 +853,7 @@
             const farms = getFarmsList();
 
             farms.forEach(login => {
-                if (globalPortfolioData[login]) {
+                if (globalPortfolioData[login] && !globalPortfolioData[login].error) {
                     totalBalance += globalPortfolioData[login].balance || 0;
                     totalEquity += globalPortfolioData[login].equity || 0;
                     totalProfit += globalPortfolioData[login].profit || 0;
