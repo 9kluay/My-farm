@@ -435,7 +435,7 @@
             animation: floatTree 3s ease-in-out infinite;
         }
         
-        /* Loading Overlay ตอนซิงค์ข้อมูล */
+        /* Loading Overlay ตอนซิงค์ข้อมูล/ลบข้อมูล */
         #syncing-overlay {
             position: fixed; top: 20px; right: 20px;
             background: rgba(16, 185, 129, 0.2); border: 1px solid var(--leaf-green);
@@ -464,7 +464,7 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">จำแนกขนาดต้นไม้ 10 ระดับ ตามขนาด Equity ของทุกพอร์ตที่คุณมี</p>
+            <p class="subtitle">ควบคุม เพิ่ม และลบพอร์ตจากหน้าแดชบอร์ดโดยตรง</p>
         </header>
 
         <!-- แถบรวมยอดพอร์ตทั้งหมด -->
@@ -525,12 +525,9 @@
                 const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
                 const cloudFarms = await response.json();
                 
-                if(Array.isArray(cloudFarms) && cloudFarms.length > 0) {
+                if(Array.isArray(cloudFarms)) {
                     let localFarms = getFarmsList();
-                    // นำรายชื่อพอร์ตจากคลาวด์ มารวมกับรายชื่อที่เคยเก็บบนเครื่อง (ตัดตัวที่ซ้ำกันออก)
                     let mergedFarms = [...new Set([...localFarms, ...cloudFarms])];
-                    
-                    // 🟢 บันทึกทับรายชื่อพอร์ตใหม่ทั้งหมดกลับไปที่คลาวด์และเครื่อง
                     saveFarmsList(mergedFarms);
                     renderForest();
                 }
@@ -560,12 +557,10 @@
             }, 1200);
         }
 
-        // 🟢 ฟังก์ชันดึงรายชื่อพอร์ตที่ถูกบันทึกไว้ในเครื่อง
         function getFarmsList() { 
             return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
         }
         
-        // 🟢 ฟังก์ชันบันทึกรายชื่อพอร์ตลงในเครื่อง
         function saveFarmsList(farms) { 
             localStorage.setItem('my_forest_farms', JSON.stringify(farms)); 
         }
@@ -578,7 +573,6 @@
             let farms = getFarmsList();
             if (farms.includes(login)) { alert('พอร์ตนี้ถูกปลูกไว้ในป่าของคุณแล้วครับ'); return; }
             
-            // 🟢 เพิ่มพอร์ตใหม่เข้าไปใน Local Storage
             farms.push(login);
             saveFarmsList(farms);
             
@@ -587,17 +581,40 @@
             fetchNodeData(login);
         }
 
-        window.removeFarm = function(login) {
-            if(confirm(`ต้องการซ่อนพอร์ต ${login} จากหน้านี้ใช่หรือไม่? (หากต้องการลบถาวร ต้องไปลบ Sheet ใน Google Sheet)`)) {
-                let farms = getFarmsList();
-                farms = farms.filter(f => f !== login);
+        // 🟢 ฟังก์ชันลบต้นไม้แบบถอนรากถอนโคนไปถึง Google Sheet
+        window.removeFarm = async function(login) {
+            if(confirm(`ต้องการถอนพอร์ต ${login} ออกถาวรใช่หรือไม่?\n(ข้อมูลใน Google Sheet จะถูกลบทิ้งด้วย)`)) {
                 
-                // 🟢 อัปเดตข้อมูลพอร์ตหลังจากลบ
-                saveFarmsList(farms);
-                delete globalPortfolioData[login];
-                updatePortfolioSummary();
-                updateTreeRanks(); // รีคำนวณขนาดต้นไม้ใหม่หลังลบ
-                renderForest();
+                const overlay = document.getElementById('syncing-overlay');
+                overlay.innerText = `🔥 กำลังเผาถอนรากพอร์ต ${login} ออกจากคลาวด์...`;
+                overlay.style.borderColor = 'var(--danger-red)';
+                overlay.style.color = 'var(--danger-red)';
+                overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)';
+                overlay.style.display = 'block';
+
+                try {
+                    // ส่งคำสั่ง API ไปบอก Google Sheet ให้ลบ Sheet ของพอร์ตนี้ทิ้งเลย
+                    await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
+                    
+                    // ลบออกจากหน่วยความจำของหน้าจอ (LocalStorage)
+                    let farms = getFarmsList();
+                    farms = farms.filter(f => f !== login);
+                    saveFarmsList(farms);
+                    
+                    delete globalPortfolioData[login];
+                    updatePortfolioSummary();
+                    updateTreeRanks(); 
+                    renderForest();
+                } catch(e) {
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
+                }
+
+                // คืนค่าปุ่มแจ้งเตือน
+                overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
+                overlay.style.borderColor = 'var(--leaf-green)';
+                overlay.style.color = 'var(--leaf-green)';
+                overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                overlay.style.display = 'none';
             }
         };
 
@@ -611,7 +628,7 @@
                     <div class="empty-forest">
                         <span>🍃</span>
                         <h3 style="color:#fff; margin:0 0 5px 0; font-size: 20px;">กำลังซิงค์หรือผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0;">หาก EA ทำงานอยู่ ระบบจะดึงพอร์ตมาแสดงอัตโนมัติ<br>หรือพิมพ์เลขพอร์ต MT4 ด้านบนแล้วกดปลูกต้นไม้ด้วยตัวเอง</p>
+                        <p style="margin:0;">พิมพ์เลขพอร์ต MT4 ด้านบนแล้วกดปลูกต้นไม้ใหม่เพื่อเริ่มต้น</p>
                     </div>
                 `;
                 updatePortfolioSummary();
@@ -624,7 +641,7 @@
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">🌲 #${login}</div>
-                        <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ซ่อนต้นไม้">✕</button>
+                        <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ลบถาวร">✕</button>
                     </div>
 
                     <div class="nature-pod">
@@ -700,7 +717,7 @@
                     
                     globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, error: true };
                     updatePortfolioSummary();
-                    updateTreeRanks(); // รีคำนวณแรงค์ต้นไม้อื่นๆ
+                    updateTreeRanks();
                     return;
                 }
 
@@ -711,11 +728,9 @@
                 const openPositions = parseInt(latest.open_positions || 0);
                 const initialDeposit = parseFloat(latest.initial_deposit || balance);
                 
-                // บันทึกข้อมูลเพื่อนำไปคำนวณขนาดต้นไม้เปรียบเทียบกับพอร์ตอื่น
                 globalPortfolioData[login] = { balance: balance, equity: equity, profit: profitLoss, error: false };
                 updatePortfolioSummary();
 
-                // 🟢 ระบบสภาพอากาศ (อิงจาก % กำไรของพอร์ตตัวเอง)
                 const diff = equity - initialDeposit;
                 const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
 
@@ -768,7 +783,6 @@
                 ordDiv.innerText = `${openPositions} แปลง`;
                 timeDiv.innerText = new Date(latest.lastUpdated).toLocaleTimeString('th-TH');
 
-                // 🌳 อัปเดตขนาดต้นไม้ (เปรียบเทียบกับทุกพอร์ต) ทุกครั้งที่โหลดข้อมูลแต่ละพอร์ตเสร็จ
                 updateTreeRanks();
 
             } catch (err) {
@@ -783,12 +797,10 @@
             }
         }
 
-        // 🟢 ฟังก์ชันจำแนกขนาดต้นไม้ 10 ระดับ โดยเปรียบเทียบพอร์ตทั้งหมด
         function updateTreeRanks() {
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
 
-            // หาพอร์ตที่มี Equity ต่ำสุด และ สูงสุด ในหน้าจอนี้
             let minEq = Infinity;
             let maxEq = -Infinity;
 
@@ -798,7 +810,6 @@
                 if (eq > maxEq) maxEq = eq;
             });
 
-            // ไล่กำหนดรูปร่างต้นไม้ให้แต่ละพอร์ต
             farms.forEach(f => {
                 const eq = globalPortfolioData[f].equity;
                 const balance = globalPortfolioData[f].balance;
@@ -808,17 +819,13 @@
                 if (!avatarDiv || !tierDiv) return;
 
                 let level = 1;
-                
-                // หากมียอด Equity แตกต่างกัน ให้จัดเข้า 10 ระดับ
                 if (maxEq > minEq) {
-                    const score = (eq - minEq) / (maxEq - minEq); // จะได้ค่าตั้งแต่ 0.0 ถึง 1.0
-                    level = Math.floor(score * 9) + 1; // แปลงเป็นระดับ 1 ถึง 10
+                    const score = (eq - minEq) / (maxEq - minEq);
+                    level = Math.floor(score * 9) + 1;
                 } else {
-                    // หากมีแค่ 1 พอร์ต หรือทุกพอร์ตเงินเท่ากันเป๊ะ ให้เป็นต้นไม้ใหญ่สุด Level 10
                     level = 10;
                 }
 
-                // ข้อยกเว้น: หากพอร์ตเพิ่งเปิด ทุน 0 หรือติดลบ ให้เป็นเมล็ดพันธุ์เสมอ
                 if (balance <= 0) {
                     level = 0;
                 }
@@ -844,7 +851,6 @@
                 tierDiv.innerText = treeName;
             });
             
-            // จัดการหน้าตาของพอร์ตที่ Error ให้เป็นต้นไม้แห้งเหี่ยว
             Object.keys(globalPortfolioData).forEach(f => {
                 if(globalPortfolioData[f].error) {
                     const avatarDiv = document.getElementById(`avatar-${f}`);
