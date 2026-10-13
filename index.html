@@ -180,7 +180,7 @@
         }
         .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); z-index: 2; }
 
-        /* 🔍 คลาสสำหรับขยายการ์ดเต็มจอ */
+        /* 🔍 ขยายการ์ดเต็มจอแบบคมชัด (ไม่เบลอ) */
         .tree-card.expanded {
             position: fixed !important;
             top: 50% !important; left: 50% !important;
@@ -188,15 +188,16 @@
             width: 90% !important; max-width: 700px !important;
             max-height: 90vh !important; overflow-y: auto !important;
             z-index: 9999 !important;
-            background: rgba(10, 32, 22, 0.95) !important;
+            background: #081c13 !important;
             border: 2px solid var(--leaf-green) !important;
-            box-shadow: 0 0 100px rgba(0,0,0,0.8), 0 0 30px rgba(52, 211, 153, 0.4) !important;
+            box-shadow: 0 0 100px rgba(0,0,0,0.9), 0 0 40px rgba(52, 211, 153, 0.3) !important;
+            backdrop-filter: none !important;
         }
 
-        /* ฉากหลังมืดเวลาขยายการ์ด */
+        /* ฉากหลังมืดสนิทแบบไร้ความเบลอ */
         #backdrop-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            background: rgba(3, 12, 8, 0.85);
             z-index: 9990; display: none; transition: 0.3s;
         }
 
@@ -473,15 +474,12 @@
         }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🔍 ฟังก์ชันคลิกขยาย/ยุบการ์ดฟาร์มเต็มจอ
         function handleCardClick(event, cardElement) {
-            // ถ้ายกเลิกหรือกดปุ่มลบ (X) ไม่ต้องเปิดขยายจอ
             if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) return;
             
             const overlay = document.getElementById('backdrop-overlay');
             const isCurrentlyExpanded = cardElement.classList.contains('expanded');
             
-            // ปิดการขยายการ์ดอื่นๆ ทั้งหมดก่อน
             document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('expanded'));
 
             if (!isCurrentlyExpanded) {
@@ -524,7 +522,7 @@
                 const card = document.createElement('div'); 
                 card.className = 'tree-card'; 
                 card.setAttribute('data-login', login);
-                card.onclick = (e) => handleCardClick(e, card); // เพิ่มฟังก์ชันคลิกขยาย/ยุบ
+                card.onclick = (e) => handleCardClick(e, card);
 
                 card.innerHTML = `
                     <div class="card-header">
