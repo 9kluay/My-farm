@@ -90,7 +90,7 @@
             z-index: 10;
         }
 
-        /* 🌿 แถบ Command Center ด้านบนสุด (จัดวางสมดุลซ้าย-ขวา) */
+        /* 🌿 แถบ Command Center ด้านบนสุด */
         .command-bar {
             display: flex;
             justify-content: space-between;
@@ -130,7 +130,27 @@
 
         p.subtitle { color: var(--text-dim); font-size: 15px; margin: 0; }
 
-        /* 📊 แผงควบคุมและค้นหาตรงกลางแบบ Professional Toolbar */
+        /* 📊 แผงสรุปตัวเลขการเงิน (Financial Summary Dashboard) แบบขยาย */
+        .summary-dashboard {
+            background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 30px; padding: 22px; margin-bottom: 30px; backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+        }
+
+        @media (max-width: 1200px) { .summary-dashboard { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 700px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 16px 12px; border-radius: 18px; text-align: center; transition: 0.3s;
+        }
+        .summary-item:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.07); border-color: rgba(52, 211, 153, 0.3); }
+        .summary-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+        .summary-val { font-size: 20px; font-weight: 700; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .summary-val.positive { color: var(--leaf-green); } .summary-val.negative { color: var(--danger-red); }
+
+        /* 🛠️ Professional Toolbar */
         .professional-toolbar {
             display: flex;
             justify-content: space-between;
@@ -175,26 +195,6 @@
             padding: 10px 18px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.08);
             color: var(--text-light); font-weight: 400; font-size: 13px; cursor: pointer;
         }
-
-        /* 💎 แผงสรุปตัวเลขการเงิน (Financial Summary Dashboard) */
-        .summary-dashboard {
-            background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 30px; padding: 22px; margin-bottom: 30px; backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
-        }
-
-        @media (max-width: 1100px) { .summary-dashboard { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 600px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
-
-        .summary-item {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 16px 10px; border-radius: 18px; text-align: center; transition: 0.3s;
-        }
-        .summary-item:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.07); border-color: rgba(52, 211, 153, 0.3); }
-        .summary-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
-        .summary-val { font-size: 20px; font-weight: 700; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .summary-val.positive { color: var(--leaf-green); } .summary-val.negative { color: var(--danger-red); }
 
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
 
@@ -345,7 +345,6 @@
 
     <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
     
-    <!-- 🌟 โครงสร้าง Popup แบบพอดีเนื้อหา -->
     <div id="popup-overlay" onclick="closePopup(event)">
         <div class="popup-content" id="popup-inner-content" onclick="event.stopPropagation()">
             <button class="popup-close-btn" onclick="closePopup()">✕</button>
@@ -356,7 +355,7 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- 🌿 1. Command Center Bar (แถบบังคับการด้านบนสุด) -->
+        <!-- 🌿 Command Center Bar -->
         <div class="command-bar">
             <div class="badges-group">
                 <div class="badge-item" id="season-badge">☀️ ฤดูกาล</div>
@@ -372,17 +371,16 @@
             <p class="subtitle">ระบบนิเวศฟาร์มพอร์ตการลงทุนอัจฉริยะ (Professional Living Forest)</p>
         </header>
 
-        <!-- 📊 2. Financial Summary Dashboard (แผงสรุปยอดการเงินหลัก) -->
+        <!-- 📊 Financial Summary Dashboard (เพิ่มสรุป วัน, สัปดาห์, เดือน และแยกต้นไม้ เขียว/แดง/รวม) -->
         <div class="summary-dashboard">
-            <div class="summary-item"><div class="summary-label">💰 Total Balance</div><div class="summary-val" id="sum-balance">$0.00</div></div>
-            <div class="summary-item"><div class="summary-label">💎 Total Equity</div><div class="summary-val" id="sum-equity">$0.00</div></div>
-            <div class="summary-item"><div class="summary-label">📈 Floating P/L</div><div class="summary-val" id="sum-pl">$0.00</div></div>
-            <div class="summary-item"><div class="summary-label">📊 Profit %</div><div class="summary-val" id="sum-percent">0.00%</div></div>
-            <div class="summary-item"><div class="summary-label">🌲 รวมแปลงทั้งหมด</div><div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div></div>
-            <div class="summary-item"><div class="summary-label">🌱 รวมจำนวนต้น</div><div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div></div>
+            <div class="summary-item"><div class="summary-label">💰 Balance / Equity</div><div class="summary-val" id="sum-balance">$0.00</div><div style="font-size: 11px; color: var(--text-dim); margin-top: 2px;" id="sum-equity">Eq: $0.00</div></div>
+            <div class="summary-item"><div class="summary-label">📈 Floating P/L</div><div class="summary-val" id="sum-pl">$0.00</div><div style="font-size: 11px;" id="sum-percent">0.00%</div></div>
+            <div class="summary-item"><div class="summary-label">📅 กำไรสะสม (วันนี้ / สัปดาห์ / เดือน)</div><div style="font-size: 12px; font-weight: 600; margin-top: 4px;"><span id="sum-today" class="positive">+$0.00</span> | <span id="sum-week" class="positive">+$0.00</span> | <span id="sum-month" class="positive">+$0.00</span></div></div>
+            <div class="summary-item"><div class="summary-label">🌲 จำนวนแปลงทั้งหมด</div><div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div></div>
+            <div class="summary-item"><div class="summary-label">🌱 ต้นไม้ (เขียว / แดง / รวม)</div><div style="font-size: 13px; font-weight: 700; margin-top: 4px;"><span style="color: var(--leaf-green);" id="sum-trees-green">0</span> | <span style="color: var(--danger-red);" id="sum-trees-red">0</span> | <span style="color: var(--sun-gold);" id="sum-trees-total">0 ต้น</span></div></div>
         </div>
 
-        <!-- 🛠️ 3. Professional Toolbar (แถวควบคุมและค้นหา) -->
+        <!-- 🛠️ Professional Toolbar -->
         <div class="professional-toolbar">
             <div class="toolbar-left">
                 <button class="btn-water" onclick="syncAndRefreshAll()"><span>💧 ซิงค์ข้อมูลทั้งหมด</span></button>
@@ -412,12 +410,12 @@
         function getSeasonInfo() {
             const m = new Date().getMonth();
             if (m === 10 || m === 11 || m === 0 || m === 1) {
-                return { name: 'ฤดูหนาว', icon: '❄️', defaultParticles: ['❄️', '⛄', '🌨️'], tint: 'rgba(56, 189, 248, 0.08)' };
+                return { name: 'ฤดูหนาว', icon: '❄️', tint: 'rgba(56, 189, 248, 0.08)' };
             }
             if (m >= 2 && m <= 4) {
-                return { name: 'ฤดูร้อน', icon: '☀️', defaultParticles: ['☀️', '🍃', '✨'], tint: 'rgba(251, 191, 36, 0.08)' };
+                return { name: 'ฤดูร้อน', icon: '☀️', tint: 'rgba(251, 191, 36, 0.08)' };
             }
-            return { name: 'ฤดูฝน', icon: '🌧️', defaultParticles: ['💧', '🌧️', '🍃'], tint: 'rgba(16, 185, 129, 0.1)' };
+            return { name: 'ฤดูฝน', icon: '🌧️', tint: 'rgba(16, 185, 129, 0.1)' };
         }
 
         window.onload = async () => {
@@ -537,7 +535,6 @@
             }, 800);
         }
 
-        // 🌟 เรียงพอร์ตตามยอด Balance มากไปน้อยเสมอ (ค่าเริ่มต้นระดับโปร)
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
             return farms.sort((a, b) => {
@@ -548,10 +545,8 @@
         }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🌟 เปิด Popup แสดงรายละเอียด
         function handleCardClick(event, login) {
             if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) return;
-            
             const cardElement = document.querySelector(`.tree-card[data-login="${login}"]`);
             if (!cardElement) return;
 
@@ -561,13 +556,11 @@
             const innerDelete = popupBody.querySelector('.delete-btn');
             if (innerDelete) innerDelete.remove();
 
-            const overlay = document.getElementById('popup-overlay');
-            overlay.classList.add('show');
+            document.getElementById('popup-overlay').classList.add('show');
         }
 
         function closePopup() {
-            const overlay = document.getElementById('popup-overlay');
-            overlay.classList.remove('show');
+            document.getElementById('popup-overlay').classList.remove('show');
         }
 
         window.removeFarm = async function(login) {
@@ -765,23 +758,55 @@
         }
 
         function updatePortfolioSummary() {
-            let tb = 0, te = 0, tp = 0, tTrees = 0;
+            let tb = 0, te = 0, tp = 0;
+            let sumToday = 0, sumWeek = 0, sumMonth = 0;
+            let treesGreen = 0, treesRed = 0, treesTotal = 0;
+
             getFarmsList().forEach(login => {
                 const d = globalPortfolioData[login]; 
                 if (d && !d.error && d.balance > 0) { 
                     tb += d.balance; 
                     te += d.equity; 
                     tp += d.profit; 
-                    tTrees += d.open_positions; 
+                    sumToday += (d.profit_today || 0);
+                    sumWeek += (d.profit_week || 0);
+                    sumMonth += (d.profit_month || 0);
+                    
+                    treesTotal += (d.open_positions || 0);
+                    treesGreen += (d.profit_orders || 0);
+                    treesRed += (d.loss_orders || 0);
                 }
             });
+
             document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; 
-            document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
-            const plElem = document.getElementById('sum-pl'); plElem.className = 'summary-val ' + getColorClass(tp); plElem.innerText = formatMoney(tp);
+            document.getElementById('sum-equity').innerText = `Eq: $${te.toFixed(2)}`;
+            
+            const plElem = document.getElementById('sum-pl'); 
+            plElem.className = 'summary-val ' + getColorClass(tp); 
+            plElem.innerText = formatMoney(tp);
+            
             const totalPercent = (tb > 0) ? (tp / tb) * 100 : 0;
-            const percentElem = document.getElementById('sum-percent'); percentElem.className = 'summary-val ' + getColorClass(totalPercent); percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
+            const percentElem = document.getElementById('sum-percent'); 
+            percentElem.className = getColorClass(totalPercent); 
+            percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
+            
+            // อัปเดตกำไรสะสม วัน, สัปดาห์, เดือน
+            const tEl = document.getElementById('sum-today');
+            tEl.className = getColorClass(sumToday); tEl.innerText = formatMoney(sumToday);
+            
+            const wEl = document.getElementById('sum-week');
+            wEl.className = getColorClass(sumWeek); wEl.innerText = formatMoney(sumWeek);
+            
+            const mEl = document.getElementById('sum-month');
+            mEl.className = getColorClass(sumMonth); mEl.innerText = formatMoney(sumMonth);
+
             document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; 
-            document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
+            
+            // อัปเดตจำนวนต้นไม้ (เขียว / แดง / รวม)
+            document.getElementById('sum-trees-green').innerText = treesGreen;
+            document.getElementById('sum-trees-red').innerText = treesRed;
+            document.getElementById('sum-trees-total').innerText = `${treesTotal} ต้น`;
+
             updateGlobalWeather(totalPercent);
         }
     </script>
