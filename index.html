@@ -138,6 +138,34 @@
             margin: 0;
         }
 
+        /* 🔍 ช่องค้นหาฟาร์ม */
+        .search-box-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            background: rgba(6, 23, 15, 0.85);
+            border: 1px solid var(--forest-border);
+            color: var(--text-light);
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-family: inherit;
+            width: 100%;
+            max-width: 450px;
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .search-input:focus {
+            border-color: var(--leaf-green);
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+        }
+
         /* 📊 แถบรวมยอดพอร์ตทั้งหมด */
         .summary-dashboard {
             background: rgba(14, 38, 26, 0.6);
@@ -513,6 +541,11 @@
             <p class="subtitle">ระบบจัดอันดับอัตโนมัติ และแสดงสถานะป่าตาม % กำไร 🌟</p>
         </header>
 
+        <!-- 🔍 ช่องค้นหาฟาร์มตามเลขพอร์ต -->
+        <div class="search-box-container">
+            <input type="text" id="farmSearchInput" class="search-input" placeholder="🔍 ค้นหาแปลงฟาร์มด้วยเลขพอร์ต..." oninput="filterForestCards()">
+        </div>
+
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">💰 Total Balance</div>
@@ -612,31 +645,39 @@
         function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
+        // 🔒 ระบบลบฟาร์มต้องใส่รหัสยืนยันเป็นเลขพอร์ต
         window.removeFarm = async function(login) {
-            if(confirm(`ต้องการถอนพอร์ต ${login} ออกถาวรใช่หรือไม่?`)) {
-                const overlay = document.getElementById('syncing-overlay');
-                overlay.innerText = `🔥 กำลังเผาถอนรากพอร์ต ${login} ออกจากคลาวด์...`;
-                overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)';
-                overlay.style.borderColor = 'var(--danger-red)';
-                overlay.style.color = 'var(--danger-red)';
-                overlay.style.display = 'block';
-                try {
-                    await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
-                    let farms = getFarmsList();
-                    farms = farms.filter(f => f !== login);
-                    saveFarmsList(farms);
-                    delete globalPortfolioData[login];
-                    updatePortfolioSummary();
-                    renderForest(); 
-                } catch(e) {
-                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
-                }
-                overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
-                overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
-                overlay.style.borderColor = 'var(--leaf-green)';
-                overlay.style.color = 'var(--leaf-green)';
-                overlay.style.display = 'none';
+            const confirmCode = prompt(`⚠️ คำเตือน: คุณกำลังจะถอนพอร์ต #${login} ออกถาวร\nกรุณากรอก "เลขพอร์ต" ให้ถูกต้องเพื่อยืนยันการลบ:`);
+            
+            if (confirmCode === null) return; // กด Cancel
+
+            if (confirmCode.trim() !== String(login)) {
+                alert('❌ รหัสเลขพอร์ตไม่ถูกต้อง! ยกเลิกการลบพอร์ต');
+                return;
             }
+
+            const overlay = document.getElementById('syncing-overlay');
+            overlay.innerText = `🔥 กำลังเผาถอนรากพอร์ต ${login} ออกจากคลาวด์...`;
+            overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)';
+            overlay.style.borderColor = 'var(--danger-red)';
+            overlay.style.color = 'var(--danger-red)';
+            overlay.style.display = 'block';
+            try {
+                await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
+                let farms = getFarmsList();
+                farms = farms.filter(f => f !== login);
+                saveFarmsList(farms);
+                delete globalPortfolioData[login];
+                updatePortfolioSummary();
+                renderForest(); 
+            } catch(e) {
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
+            }
+            overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
+            overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+            overlay.style.borderColor = 'var(--leaf-green)';
+            overlay.style.color = 'var(--leaf-green)';
+            overlay.style.display = 'none';
         };
 
         function renderForest() {
@@ -725,6 +766,7 @@
                 if (globalPortfolioData[login]) updateUICard(login);
             });
             updateTreeRanks();
+            filterForestCards();
         }
 
         async function fetchNodeData(login) {
@@ -741,7 +783,6 @@
                     const profitLoss = parseFloat(latest.floating_pl);
                     const openPositions = parseInt(latest.open_positions || 0);
                     
-                    // 📐 คำนวณ % จาก Balance ปัจจุบัน
                     const percent = (balance > 0) ? (profitLoss / balance) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
@@ -957,6 +998,21 @@
             cards.forEach((card, index) => {
                 card.style.order = index; 
                 grid.appendChild(card);
+            });
+        }
+
+        // 🔍 ฟังก์ชันค้นหาและกรองการ์ดฟาร์มตามเลขพอร์ต
+        function filterForestCards() {
+            const query = document.getElementById('farmSearchInput').value.toLowerCase().trim();
+            const cards = document.getElementsByClassName('tree-card');
+            
+            Array.from(cards).forEach(card => {
+                const login = card.getAttribute('data-login').toLowerCase();
+                if (login.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
             });
         }
 
