@@ -645,14 +645,14 @@
         function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🔒 ระบบลบฟาร์มต้องใส่รหัสยืนยันเป็นเลขพอร์ต
+        // 🔒 ระบบยืนยันรหัสผ่านเพื่อลบฟาร์ม (ต้องใส่เลขพอร์ตให้ถูกต้องโดยไม่มีการแสดงรหัสผ่านบอก)
         window.removeFarm = async function(login) {
-            const confirmCode = prompt(`⚠️ คำเตือน: คุณกำลังจะถอนพอร์ต #${login} ออกถาวร\nกรุณากรอก "เลขพอร์ต" ให้ถูกต้องเพื่อยืนยันการลบ:`);
+            const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบพอร์ต:`);
             
-            if (confirmCode === null) return; // กด Cancel
+            if (confirmCode === null) return;
 
             if (confirmCode.trim() !== String(login)) {
-                alert('❌ รหัสเลขพอร์ตไม่ถูกต้อง! ยกเลิกการลบพอร์ต');
+                alert('❌ รหัสยืนยันไม่ถูกต้อง! ยกเลิกการลบพอร์ต');
                 return;
             }
 
@@ -783,6 +783,7 @@
                     const profitLoss = parseFloat(latest.floating_pl);
                     const openPositions = parseInt(latest.open_positions || 0);
                     
+                    // 📐 คำนวณ % จาก Balance ณ ปัจจุบัน
                     const percent = (balance > 0) ? (profitLoss / balance) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
