@@ -130,100 +130,92 @@
 
         p.subtitle { color: var(--text-dim); font-size: 15px; margin: 0; }
 
-        /* 📊 แผงสรุปภาพรวมออกแบบใหม่ (Master Summary Grid) ให้เข้ากับดีไซน์การ์ดฟอร์ต */
-        .summary-dashboard {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-
-        @media (max-width: 1100px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .summary-dashboard { grid-template-columns: 1fr; } }
-
-        .summary-master-card {
+        /* 📊 MASTER SUMMARY BOX (แผงสรุปใหญ่รวมกันอยู่ในการ์ดเดียวแบบมืออาชีพ) */
+        .master-summary-container {
             background: var(--forest-card);
             backdrop-filter: blur(25px);
             border: 1px solid var(--forest-border);
             border-radius: 30px;
-            padding: 22px;
-            position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-        .summary-master-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(52, 211, 153, 0.6);
-            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.22);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.4);
         }
 
-        .summary-card-header {
-            font-size: 13px;
-            font-weight: 600;
+        .master-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 1100px) { .master-summary-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .master-summary-grid { grid-template-columns: 1fr; } }
+
+        .master-card-item {
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .master-card-item:hover {
+            border-color: rgba(52, 211, 153, 0.4);
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        .master-card-title {
+            font-size: 11px;
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
-        .summary-main-display {
-            font-size: 26px;
+        .master-card-val {
+            font-size: 22px;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 15px;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
         }
-        .summary-main-display.positive { color: var(--leaf-green); }
-        .summary-main-display.negative { color: var(--danger-red); }
+        .master-card-val.positive { color: var(--leaf-green); }
+        .master-card-val.negative { color: var(--danger-red); }
 
-        /* กล่องย่อยภายใน (จำลองสไตล์ history-bar หรือ metric-card) */
-        .summary-sub-grid {
+        /* แถบย่อยภายในกล่องสรุป */
+        .master-sub-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 18px;
-            padding: 10px 8px;
-            gap: 5px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 8px 6px;
+            gap: 4px;
+            text-align: center;
             margin-top: auto;
         }
-        .summary-sub-item {
-            text-align: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .summary-sub-item:last-child { border-right: none; }
-        .summary-sub-label {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
-        }
-        .summary-sub-val {
-            font-size: 12px;
-            font-weight: 600;
-            color: #fff;
-        }
-        .summary-sub-val.positive { color: var(--leaf-green); }
-        .summary-sub-val.negative { color: var(--danger-red); }
+        .master-sub-col { border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .master-sub-col:last-child { border-right: none; }
+        .master-sub-lbl { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
+        .master-sub-val { font-size: 11px; font-weight: 600; color: #fff; }
+        .master-sub-val.positive { color: var(--leaf-green); }
+        .master-sub-val.negative { color: var(--danger-red); }
 
-        /* รูปแบบพิเศษสำหรับการ์ดแปลงและต้นไม้ (2 คอลัมน์ย่อย) */
-        .summary-dual-grid {
+        .master-dual-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 18px;
-            padding: 10px 12px;
-            gap: 10px;
-            margin-top: auto;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 8px 10px;
+            gap: 8px;
             text-align: center;
+            margin-top: auto;
         }
-        .summary-dual-item .sub-lbl { font-size: 10px; color: var(--text-dim); margin-bottom: 3px; }
-        .summary-dual-item .sub-v { font-size: 15px; font-weight: 700; color: #fff; }
+        .master-dual-col .col-l { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
+        .master-dual-col .col-v { font-size: 13px; font-weight: 700; color: #fff; }
 
         /* 🛠️ Professional Toolbar */
         .professional-toolbar {
@@ -446,64 +438,69 @@
             <p class="subtitle">ระบบนิเวศฟาร์มพอร์ตการลงทุนอัจฉริยะ (Professional Living Forest)</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมออกแบบใหม่ (Master Summary Grid) สไตล์การ์ดพอร์ต หรูหราและเป็นระเบียบ -->
-        <div class="summary-dashboard">
-            <!-- การ์ดที่ 1: Balance & Equity -->
-            <div class="summary-master-card">
-                <div class="summary-card-header">💰 ทุนรวม / ทุนสุทธิ</div>
-                <div class="summary-main-display" id="sum-balance">$0.00</div>
-                <div class="summary-dual-grid">
-                    <div class="summary-dual-item"><div class="sub-lbl">Equity รวม</div><div class="sub-v" id="sum-equity">$0.00</div></div>
-                    <div class="summary-dual-item"><div class="sub-lbl">สถานะภาพรวม</div><div class="sub-v" style="color: var(--leaf-green);">มั่นคง</div></div>
-                </div>
+        <!-- 📊 MASTER SUMMARY BOX (แผงสรุปใหญ่รวมกันอยู่ในการ์ดเดียว คุมโทนพรีเมียมสอดรับกับการ์ดฟาร์ม) -->
+        <div class="master-summary-container">
+            <div style="font-size: 14px; font-weight: 700; color: var(--leaf-green); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                <span>🌲</span> แผงควบคุมและสรุปภาพรวมพอร์ตป่าไม้ (Master Dashboard)
             </div>
-
-            <!-- การ์ดที่ 2: Floating P/L -->
-            <div class="summary-master-card">
-                <div class="summary-card-header">📈 กำไร/ขาดทุนลอยตัว</div>
-                <div class="summary-main-display" id="sum-pl">$0.00</div>
-                <div class="summary-dual-grid">
-                    <div class="summary-dual-item"><div class="sub-lbl">อัตราส่วนกำไร %</div><div class="sub-v" id="sum-percent">0.00%</div></div>
-                    <div class="summary-dual-item"><div class="sub-lbl">แนวโน้มตลาด</div><div class="sub-v" id="sum-trend" style="color: var(--sun-gold);">ปกติ</div></div>
-                </div>
-            </div>
-
-            <!-- การ์ดที่ 3: กำไรสะสม (วัน / สัปดาห์ / เดือน) -->
-            <div class="summary-master-card">
-                <div class="summary-card-header">📅 กำไรสะสมย้อนหลัง</div>
-                <div class="summary-main-display" id="sum-today" style="font-size: 22px; margin-bottom: 12px;">+$0.00</div>
-                <div class="summary-sub-grid">
-                    <div class="summary-sub-item">
-                        <div class="summary-sub-label">วันนี้</div>
-                        <div class="summary-sub-val positive" id="sum-today-sub">+$0.00</div>
-                    </div>
-                    <div class="summary-sub-item">
-                        <div class="summary-sub-label">สัปดาห์นี้</div>
-                        <div class="summary-sub-val positive" id="sum-week">+$0.00</div>
-                    </div>
-                    <div class="summary-sub-item">
-                        <div class="summary-sub-label">เดือนนี้</div>
-                        <div class="summary-sub-val positive" id="sum-month">+$0.00</div>
+            <div class="master-summary-grid">
+                <!-- 1. Total Balance & Equity -->
+                <div class="master-card-item">
+                    <div class="master-card-title">💰 Total Balance</div>
+                    <div class="master-card-val" id="sum-balance">$0.00</div>
+                    <div class="master-dual-row">
+                        <div class="master-dual-col"><div class="col-l">Equity รวม</div><div class="col-v" id="sum-equity">$0.00</div></div>
+                        <div class="master-dual-col"><div class="col-l">สถานะพอร์ต</div><div class="col-v" style="color: var(--leaf-green);">ปกติ</div></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- การ์ดที่ 4: สถิติแปลงและต้นไม้ (แปลง / เขียว / แดง / รวม) -->
-            <div class="summary-master-card">
-                <div class="summary-card-header">🌲 สถานะผืนป่าทั้งหมด</div>
-                <div class="summary-main-display" id="sum-farms" style="font-size: 22px; margin-bottom: 12px; color: var(--leaf-green);">0 แปลง</div>
-                <div class="summary-sub-grid" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="summary-sub-item">
-                        <div class="summary-sub-label">ต้นเขียว 🟢</div>
-                        <div class="summary-sub-val" style="color: var(--leaf-green);" id="sum-trees-green">0</div>
+                <!-- 2. Floating P/L -->
+                <div class="master-card-item">
+                    <div class="master-card-title">📈 Floating P/L</div>
+                    <div class="master-card-val" id="sum-pl">$0.00</div>
+                    <div class="master-dual-row">
+                        <div class="master-dual-col"><div class="col-l">Profit %</div><div class="col-v" id="sum-percent">0.00%</div></div>
+                        <div class="master-dual-col"><div class="col-l">แนวโน้มตลาด</div><div class="col-v" id="sum-trend" style="color: var(--sun-gold);">ทรงตัว</div></div>
                     </div>
-                    <div class="summary-sub-item">
-                        <div class="summary-sub-label">ต้นแดง 🔴</div>
-                        <div class="summary-sub-val" style="color: var(--danger-red);" id="sum-trees-red">0</div>
+                </div>
+
+                <!-- 3. Profit History (วัน / สัปดาห์ / เดือน) -->
+                <div class="master-card-item">
+                    <div class="master-card-title">📅 กำไรสะสมย้อนหลัง</div>
+                    <div class="master-card-val" id="sum-today" style="font-size: 20px; margin-bottom: 10px;">+$0.00</div>
+                    <div class="master-sub-row">
+                        <div class="master-sub-col">
+                            <div class="master-sub-lbl">วันนี้</div>
+                            <div class="master-sub-val positive" id="sum-today-sub">+$0.00</div>
+                        </div>
+                        <div class="master-sub-col">
+                            <div class="master-sub-lbl">สัปดาห์นี้</div>
+                            <div class="master-sub-val positive" id="sum-week">+$0.00</div>
+                        </div>
+                        <div class="master-sub-col">
+                            <div class="master-sub-lbl">เดือนนี้</div>
+                            <div class="master-sub-val positive" id="sum-month">+$0.00</div>
+                        </div>
                     </div>
-                    <div class="summary-sub-item">
-                        <div class="summary-sub-label">รวมต้นไม้</div>
-                        <div class="summary-sub-val" style="color: var(--sun-gold);" id="sum-trees-total">0 ต้น</div>
+                </div>
+
+                <!-- 4. Farms & Trees Stats -->
+                <div class="master-card-item">
+                    <div class="master-card-title">🌲 สถานะผืนป่าทั้งหมด</div>
+                    <div class="master-card-val" id="sum-farms" style="font-size: 20px; margin-bottom: 10px; color: var(--leaf-green);">0 แปลง</div>
+                    <div class="master-sub-row" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="master-sub-col">
+                            <div class="master-sub-lbl">เขียว 🟢</div>
+                            <div class="master-sub-val" style="color: var(--leaf-green);" id="sum-trees-green">0</div>
+                        </div>
+                        <div class="master-sub-col">
+                            <div class="master-sub-lbl">แดง 🔴</div>
+                            <div class="master-sub-val" style="color: var(--danger-red);" id="sum-trees-red">0</div>
+                        </div>
+                        <div class="master-sub-col">
+                            <div class="master-sub-lbl">รวมต้นไม้</div>
+                            <div class="master-sub-val" style="color: var(--sun-gold);" id="sum-trees-total">0 ต้น</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -913,7 +910,7 @@
             
             // 2. Floating P/L Master Card
             const plElem = document.getElementById('sum-pl'); 
-            plElem.className = 'summary-main-display ' + getColorClass(tp); 
+            plElem.className = 'master-card-val ' + getColorClass(tp); 
             plElem.innerText = formatMoney(tp);
             
             const totalPercent = (tb > 0) ? (tp / tb) * 100 : 0;
@@ -928,17 +925,17 @@
             
             // 3. Profit History Master Card (วัน / สัปดาห์ / เดือน)
             const todayMain = document.getElementById('sum-today');
-            todayMain.className = 'summary-main-display ' + getColorClass(sumToday);
+            todayMain.className = 'master-card-val ' + getColorClass(sumToday);
             todayMain.innerText = formatMoney(sumToday);
 
             const tSub = document.getElementById('sum-today-sub');
-            tSub.className = 'summary-sub-val ' + getColorClass(sumToday); tSub.innerText = formatMoney(sumToday);
+            tSub.className = 'master-sub-val ' + getColorClass(sumToday); tSub.innerText = formatMoney(sumToday);
 
             const wSub = document.getElementById('sum-week');
-            wSub.className = 'summary-sub-val ' + getColorClass(sumWeek); wSub.innerText = formatMoney(sumWeek);
+            wSub.className = 'master-sub-val ' + getColorClass(sumWeek); wSub.innerText = formatMoney(sumWeek);
             
             const mSub = document.getElementById('sum-month');
-            mSub.className = 'summary-sub-val ' + getColorClass(sumMonth); mSub.innerText = formatMoney(sumMonth);
+            mSub.className = 'master-sub-val ' + getColorClass(sumMonth); mSub.innerText = formatMoney(sumMonth);
 
             // 4. Farms & Trees Master Card
             document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; 
