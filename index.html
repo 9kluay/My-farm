@@ -777,7 +777,7 @@
         function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🔒 ระบบยืนยันรหัสผ่านเพื่อลบฟาร์ม (ต้องใส่เลขพอร์ตให้ถูกต้องโดยไม่มีการแสดงรหัสผ่านบอก)
+        // 🔒 ระบบยืนยันรหัสผ่านเพื่อลบฟาร์ม
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบพอร์ต:`);
             
@@ -1053,11 +1053,11 @@
                 let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
 
                 if (data.open_positions === 0) {
-                    // 🏕️ แคมป์พักแรมใหญ่ขึ้นและเพิ่มกองไฟ 
+                    // 🏕️ จัดตำแหน่งกองไฟใหม่ ให้อยู่ข้างเต็นท์พอดีและไม่ทับป้าย พร้อมเพิ่มแสงเรืองรอง
                     avatarContainer.innerHTML = `
                         <div class="forest-cluster">
-                            <div class="tree-base" style="font-size: 80px; animation: none;">🏕️</div>
-                            <div class="tree-extra" style="font-size: 40px; right: 20px; bottom: 0;">🔥</div>
+                            <div class="tree-base" style="font-size: 80px; animation: none; position: relative; z-index: 5;">🏕️</div>
+                            <div class="tree-extra" style="font-size: 38px; left: 50%; margin-left: 30px; bottom: -2px; z-index: 6; filter: drop-shadow(0 0 12px rgba(251, 146, 60, 0.8));">🔥</div>
                         </div>` + badgeHTML;
                     tierDiv.innerText = 'แคมป์พักแรมรอออเดอร์';
                 } else {
