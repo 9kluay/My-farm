@@ -139,7 +139,7 @@
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (6 ช่อง) */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) */
         .summary-dashboard {
             background: rgba(14, 38, 26, 0.6);
             border: 1px solid var(--forest-border);
@@ -201,93 +201,47 @@
         .summary-val.positive { color: var(--leaf-green); }
         .summary-val.negative { color: var(--danger-red); }
 
-        /* ส่วนควบคุม */
+        /* ส่วนควบคุมซิงค์ข้อมูลอย่างเดียว */
         .control-box {
-            background: var(--forest-card);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--forest-border);
-            padding: 15px 25px;
-            border-radius: 30px;
-            display: inline-flex;
-            gap: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            margin-bottom: 35px;
-            flex-wrap: wrap;
+            background: transparent;
+            margin-bottom: 45px;
+            display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
         }
 
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        input[type="text"] {
-            background: rgba(6, 23, 15, 0.85);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            padding: 12px 20px 12px 45px;
-            border-radius: 20px;
-            color: white;
-            font-size: 15px;
-            font-family: inherit;
-            width: 200px;
-            outline: none;
-        }
-        input[type="text"]:focus {
-            border-color: var(--leaf-green);
-            box-shadow: 0 0 0 4px var(--leaf-glow);
-            width: 220px;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 16px;
-            font-size: 18px;
-            pointer-events: none;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border-radius: 20px;
+        .btn-water {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            padding: 16px 45px;
+            border-radius: 30px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 18px;
             font-family: inherit;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            border: none;
-        }
-        .btn-plant {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
-        }
-        .btn-plant:hover {
-            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
-        }
-        .btn-water {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #fff;
-            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+            gap: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .btn-water:hover {
             background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
         }
 
+        /* 🌳 ลานป่าจัดอันดับอัตโนมัติ */
         #forest-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 30px;
+            /* เพิ่ม Transition เวลาสลับตำแหน่งการจัดอันดับ */
+            position: relative;
         }
 
-        /* 🌳 การ์ดต้นไม้ */
         .tree-card {
             background: var(--forest-card);
             backdrop-filter: blur(20px);
@@ -301,6 +255,7 @@
             animation: breezeSway 6s ease-in-out infinite;
             display: flex;
             flex-direction: column;
+            order: 999; /* ลำดับพื้นฐาน */
         }
         
         .tree-card:hover {
@@ -358,7 +313,7 @@
             transform: rotate(90deg);
         }
 
-        /* ------------------ เลย์เอาต์: สภาพอากาศ และ อีโมจิ ------------------ */
+        /* ------------------ เลย์เอาต์: สภาพอากาศ และ ป่าไม้ ------------------ */
         .nature-pod {
             background: radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
             padding: 20px 10px 15px;
@@ -374,34 +329,59 @@
             position: relative;
             display: inline-block;
             margin-bottom: 20px;
+            min-height: 100px;
+            width: 100%;
         }
 
-        .tree-avatar {
+        /* 🌳 ระบบป่าไม้ซ้อนทับ (Forest Cluster) */
+        .forest-cluster {
             position: relative;
-            font-size: 90px;
-            filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 100px;
+            width: 100%;
+        }
+        
+        .tree-base {
+            font-size: 85px;
+            position: relative;
+            z-index: 5;
             animation: floatTree 4s ease-in-out infinite;
-            transform-origin: bottom center;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
             line-height: 1;
         }
 
+        /* ต้นไม้เสริม (เพิ่มตาม % กำไร ทุกๆ 10%) */
+        .tree-extra {
+            position: absolute;
+            bottom: -5px; /* ให้เตี้ยกว่าต้นหลักเล็กน้อย */
+            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.5)) brightness(0.85);
+            line-height: 1;
+        }
+        .extra-1 { right: 50%; margin-right: 25px; font-size: 65px; z-index: 4; animation: floatTree 4.5s ease-in-out infinite 0.5s; }
+        .extra-2 { left: 50%; margin-left: 25px; font-size: 60px; z-index: 3; animation: floatTree 5s ease-in-out infinite 1s; }
+        .extra-3 { right: 50%; margin-right: 55px; font-size: 50px; z-index: 2; animation: floatTree 5.5s ease-in-out infinite 1.5s; }
+        .extra-4 { left: 50%; margin-left: 55px; font-size: 45px; z-index: 1; animation: floatTree 6s ease-in-out infinite 2s; }
+
         @keyframes floatTree {
             0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-            50% { transform: translateY(-5px) rotate(-1deg) scale(1.02); }
+            50% { transform: translateY(-5px) rotate(-2deg) scale(1.02); }
         }
 
+        /* ✨ ดาวกระพริบวิบวับรอบป่า */
         .sparkle {
             position: absolute;
-            font-size: 28px;
+            font-size: 24px;
             color: #fbbf24;
             animation: blinkStar 1.5s ease-in-out infinite alternate;
-            z-index: 5;
+            z-index: 10;
             pointer-events: none;
             filter: drop-shadow(0 0 8px rgba(251,191,36,0.6));
         }
-        .sparkle-1 { top: -10px; right: -15px; animation-delay: 0s; }
-        .sparkle-2 { top: 35px; left: -25px; animation-delay: 0.5s; font-size: 22px; }
-        .sparkle-3 { bottom: 15px; right: -10px; animation-delay: 1s; font-size: 20px; }
+        .sparkle-1 { top: -10px; right: 20%; animation-delay: 0s; }
+        .sparkle-2 { top: 35px; left: 15%; animation-delay: 0.5s; font-size: 18px; }
+        .sparkle-3 { bottom: 15px; right: 10%; animation-delay: 1s; font-size: 20px; }
 
         @keyframes blinkStar {
             0% { opacity: 0; transform: scale(0.5) rotate(0deg); }
@@ -411,8 +391,8 @@
 
         .weather-badge {
             position: absolute;
-            bottom: 0;
-            right: -35px;
+            bottom: -5px;
+            right: 0;
             font-size: 12px;
             color: var(--leaf-green);
             background: rgba(6, 43, 31, 0.95);
@@ -425,8 +405,9 @@
             align-items: center;
             gap: 6px;
             font-weight: 600;
-            z-index: 10;
+            z-index: 15;
             backdrop-filter: blur(5px);
+            transform: translateX(20%);
         }
 
         .forest-tier-title {
@@ -547,7 +528,7 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ดึงข้อมูลและสร้างป่าจาก Google Sheet อัตโนมัติ 🌟</p>
+            <p class="subtitle">ระบบดึงข้อมูลและจัดอันดับพอร์ตยอดเยี่ยมโดยอัตโนมัติ 🌟</p>
         </header>
 
         <!-- แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) -->
@@ -580,24 +561,14 @@
 
         <div style="text-align: center;">
             <div class="control-box">
-                <!-- ปุ่มดึงข้อมูลอัตโนมัติจากชีตเป็นหลัก -->
+                <!-- ปุ่มเดียวเอาอยู่ ซิงค์ข้อมูลอัตโนมัติ -->
                 <button class="btn btn-water" onclick="syncAndRefreshAll()">
-                    <span>💧 ซิงค์ข้อมูลทั้งหมด (Auto Sync)</span>
-                </button>
-                
-                <div style="width: 2px; height: 30px; background: rgba(255,255,255,0.1); margin: 0 10px;"></div>
-                
-                <!-- ช่องเพิ่มพอร์ตแบบแมนนวล เผื่อไว้ใช้ตอนทดสอบ -->
-                <div class="input-wrapper">
-                    <span class="input-icon">🌱</span>
-                    <input type="text" id="loginId" placeholder="เลขพอร์ต (Manual)">
-                </div>
-                <button class="btn btn-plant" onclick="addFarm()">
-                    <span>🌲 เพิ่มเอง</span>
+                    <span>💧 ซิงค์และโหลดข้อมูลฟาร์มทั้งหมด (Auto Sync)</span>
                 </button>
             </div>
         </div>
 
+        <!-- กล่องตารางฟาร์ม -->
         <div id="forest-grid"></div>
     </div>
 
@@ -615,7 +586,7 @@
             await syncAndRefreshAll(); 
         };
 
-        // ฟังก์ชันใหม่: ดึงรายชื่อพอร์ตทั้งหมด + โหลดข้อมูล
+        // ฟังก์ชันซิงค์ข้อมูลทั้งหมด
         async function syncAndRefreshAll() {
             await syncFarmsFromCloud();
             
@@ -669,29 +640,12 @@
 
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
-            return farms.sort((a, b) => parseInt(a) - parseInt(b));
+            return farms; 
         }
         
         function saveFarmsList(farms) { 
-            farms.sort((a, b) => parseInt(a) - parseInt(b));
+            // ไม่ต้องเรียงตามเลขแล้ว เพราะเดี๋ยวจะไปเรียงตามเปอร์เซ็นต์กำไร
             localStorage.setItem('my_forest_farms', JSON.stringify(farms)); 
-        }
-
-        // ยังเก็บปุ่ม Manual ไว้เผื่อฉุกเฉิน
-        function addFarm() {
-            const loginInput = document.getElementById('loginId');
-            const login = loginInput.value.trim();
-            if (!login) { alert('กรุณากรอกเลขพอร์ต MT4 ครับ'); return; }
-            
-            let farms = getFarmsList();
-            if (farms.includes(login)) { alert('พอร์ตนี้ถูกปลูกไว้ในป่าของคุณแล้วครับ'); return; }
-            
-            farms.push(login);
-            saveFarmsList(farms);
-            
-            loginInput.value = '';
-            renderForest();
-            fetchNodeData(login);
         }
 
         window.removeFarm = async function(login) {
@@ -736,7 +690,7 @@
                     <div class="empty-forest">
                         <span>🍃</span>
                         <h3 style="color:#fff; margin:0 0 10px 0; font-size: 24px;">ผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0; line-height: 1.6;">กำลังซิงค์ข้อมูลจาก Google Sheet...<br>หาก EA เพิ่งส่งข้อมูลไป โปรดรอสักครู่แล้วกดปุ่ม Auto Sync</p>
+                        <p style="margin:0; line-height: 1.6;">กำลังซิงค์ข้อมูลจาก Google Sheet...<br>ระบบจะสร้างพอร์ตให้อัตโนมัติเมื่อตรวจพบข้อมูลใหม่</p>
                     </div>
                 `;
                 updatePortfolioSummary();
@@ -746,6 +700,7 @@
             farms.forEach(login => {
                 const card = document.createElement('div');
                 card.className = 'tree-card';
+                card.setAttribute('data-login', login); // เก็บไว้สำหรับการจัดเรียง (Sorting)
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">
@@ -756,8 +711,8 @@
                     </div>
 
                     <div class="nature-pod">
-                        <div class="avatar-container">
-                            <div class="tree-avatar" id="avatar-${login}">🌱</div>
+                        <div class="avatar-container" id="avatar-container-${login}">
+                            <div class="tree-avatar">🌱</div>
                             <div class="weather-badge" id="weather-badge-${login}">
                                 <span>⏳</span> รอรับข้อมูล
                             </div>
@@ -939,19 +894,23 @@
 
             farms.forEach(f => {
                 const data = globalPortfolioData[f];
-                const avatarDiv = document.getElementById(`avatar-${f}`);
+                const avatarContainer = document.getElementById(`avatar-container-${f}`);
                 const tierDiv = document.getElementById(`tier-${f}`);
                 const starsSpan = document.getElementById(`stars-${f}`);
+                const weatherBadge = document.getElementById(`weather-badge-${f}`);
                 
-                if (!avatarDiv || !tierDiv) return;
+                if (!avatarContainer || !tierDiv) return;
 
                 let treeEmoji = '';
                 let treeName = '';
 
+                // ดึงป้ายสภาพอากาศเดิมเก็บไว้ใส่กลับเข้าไป
+                let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
+
                 if (data.open_positions === 0) {
                     treeEmoji = '🏕️'; 
                     treeName = 'แคมป์พักแรมรอออเดอร์';
-                    avatarDiv.innerHTML = treeEmoji;
+                    avatarContainer.innerHTML = `<div class="tree-avatar">${treeEmoji}</div>` + badgeHTML;
                 } else {
                     let level = 1;
                     if (maxEq > minEq) {
@@ -977,12 +936,28 @@
                         case 10: treeEmoji = '🪵'; treeName = 'มหาพฤกษาโบราณ (Level 10)'; break;
                     }
                     
-                    let sparklesHTML = `
+                    // 🌲 ทุกๆ 10% เพิ่มต้นไม้โคลน 1 ต้น (สูงสุดเพิ่ม 4 ต้น รวมเป็น 5 ต้น)
+                    let extraTreesCount = 0;
+                    if (data.percent >= 10) extraTreesCount = 1;
+                    if (data.percent >= 20) extraTreesCount = 2;
+                    if (data.percent >= 30) extraTreesCount = 3;
+                    if (data.percent >= 40) extraTreesCount = 4;
+
+                    let clusterHTML = `<div class="forest-cluster">
+                                          <div class="tree-base">${treeEmoji}</div>`;
+                    
+                    if (extraTreesCount >= 1) clusterHTML += `<div class="tree-extra extra-1">${treeEmoji}</div>`;
+                    if (extraTreesCount >= 2) clusterHTML += `<div class="tree-extra extra-2">${treeEmoji}</div>`;
+                    if (extraTreesCount >= 3) clusterHTML += `<div class="tree-extra extra-3">${treeEmoji}</div>`;
+                    if (extraTreesCount >= 4) clusterHTML += `<div class="tree-extra extra-4">${treeEmoji}</div>`;
+
+                    clusterHTML += `
                         <span class="sparkle sparkle-1">✨</span>
                         <span class="sparkle sparkle-2">✨</span>
                         <span class="sparkle sparkle-3">✨</span>
-                    `;
-                    avatarDiv.innerHTML = treeEmoji + sparklesHTML;
+                    </div>`;
+
+                    avatarContainer.innerHTML = clusterHTML + badgeHTML;
                 }
 
                 tierDiv.innerText = treeName;
@@ -1000,13 +975,43 @@
             
             Object.keys(globalPortfolioData).forEach(f => {
                 if(globalPortfolioData[f].error) {
-                    const avatarDiv = document.getElementById(`avatar-${f}`);
+                    const avatarContainer = document.getElementById(`avatar-container-${f}`);
                     const tierDiv = document.getElementById(`tier-${f}`);
                     const starsSpan = document.getElementById(`stars-${f}`);
-                    if(avatarDiv) avatarDiv.innerText = '🥀';
+                    if(avatarContainer) avatarContainer.innerHTML = `<div class="tree-avatar">🥀</div>`;
                     if(tierDiv) tierDiv.innerText = 'ดินแห้งแล้ง';
                     if(starsSpan) starsSpan.innerText = '';
                 }
+            });
+
+            // 🏆 ใช้งานระบบเรียงอันดับการ์ดอัตโนมัติ (เรียงตาม % กำไร)
+            autoSortForestCards();
+        }
+
+        // 🏆 ฟังก์ชันจัดเรียงฟาร์มอัตโนมัติ (นำพอร์ตกำไรสูงสุดไว้บน)
+        function autoSortForestCards() {
+            const grid = document.getElementById('forest-grid');
+            const cards = Array.from(grid.getElementsByClassName('tree-card'));
+            
+            cards.sort((a, b) => {
+                const loginA = a.getAttribute('data-login');
+                const loginB = b.getAttribute('data-login');
+                
+                // หาค่าเปรียบเทียบ (ถ้าขาดการติดต่อให้ค่าติดลบเยอะๆ จะได้ไปอยู่ท้ายสุด)
+                const percentA = (globalPortfolioData[loginA] && !globalPortfolioData[loginA].error && globalPortfolioData[loginA].percent !== undefined) 
+                                 ? globalPortfolioData[loginA].percent : -999999;
+                                 
+                const percentB = (globalPortfolioData[loginB] && !globalPortfolioData[loginB].error && globalPortfolioData[loginB].percent !== undefined) 
+                                 ? globalPortfolioData[loginB].percent : -999999;
+                
+                // เรียงจากมากไปน้อย (Descending)
+                return percentB - percentA;
+            });
+            
+            // นำการ์ดที่เรียงแล้วยัดกลับเข้าไปใน Grid ตามลำดับใหม่
+            cards.forEach((card, index) => {
+                card.style.order = index; 
+                grid.appendChild(card);
             });
         }
 
