@@ -746,8 +746,8 @@
                         initialDeposit = balance;
                     }
                     
-                    // 📐 สูตรคำนวณ % ที่ถูกต้อง: (Floating P/L / Initial Deposit) * 100
-                    const percent = (initialDeposit > 0) ? (profitLoss / initialDeposit) * 100 : 0;
+                    // 📐 คำนวณ % จากทุน/มูลค่าปัจจุบัน (Current Equity)
+                    const percent = (equity > 0) ? (profitLoss / equity) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
                     const lOrders = parseInt(latest.loss_orders || 0);
