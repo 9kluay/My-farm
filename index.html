@@ -139,7 +139,7 @@
             margin: 0;
         }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) */
+        /* 📊 แถบรวมยอดพอร์ตทั้งหมด (6 ช่อง) */
         .summary-dashboard {
             background: rgba(14, 38, 26, 0.6);
             border: 1px solid var(--forest-border);
@@ -215,6 +215,7 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
+            width: 100%;
         }
 
         .input-wrapper {
@@ -231,13 +232,13 @@
             color: white;
             font-size: 15px;
             font-family: inherit;
-            width: 250px;
+            width: 200px;
             outline: none;
         }
         input[type="text"]:focus {
             border-color: var(--leaf-green);
             box-shadow: 0 0 0 4px var(--leaf-glow);
-            width: 280px;
+            width: 220px;
         }
 
         .input-icon {
@@ -270,14 +271,14 @@
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
         }
         .btn-water {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-light);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
         }
         .btn-water:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
             transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
         }
 
         #forest-grid {
@@ -389,7 +390,6 @@
             50% { transform: translateY(-5px) rotate(-1deg) scale(1.02); }
         }
 
-        /* ✨ ดาวกระพริบวิบวับรอบต้นไม้ (สื่อว่าทำเงินอยู่) */
         .sparkle {
             position: absolute;
             font-size: 28px;
@@ -547,10 +547,10 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ระบบเรียงลำดับอัตโนมัติ พร้อมจัดอันดับ 1-5 ดาว ตามผลกำไรพอร์ต 🌟</p>
+            <p class="subtitle">ดึงข้อมูลและสร้างป่าจาก Google Sheet อัตโนมัติ 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด -->
+        <!-- แถบรวมยอดพอร์ตทั้งหมด (จัดสมดุล 6 ช่อง) -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">💰 Total Balance</div>
@@ -580,15 +580,20 @@
 
         <div style="text-align: center;">
             <div class="control-box">
+                <!-- ปุ่มดึงข้อมูลอัตโนมัติจากชีตเป็นหลัก -->
+                <button class="btn btn-water" onclick="syncAndRefreshAll()">
+                    <span>💧 ซิงค์ข้อมูลทั้งหมด (Auto Sync)</span>
+                </button>
+                
+                <div style="width: 2px; height: 30px; background: rgba(255,255,255,0.1); margin: 0 10px;"></div>
+                
+                <!-- ช่องเพิ่มพอร์ตแบบแมนนวล เผื่อไว้ใช้ตอนทดสอบ -->
                 <div class="input-wrapper">
                     <span class="input-icon">🌱</span>
-                    <input type="text" id="loginId" placeholder="ระบุเลขพอร์ต MT4...">
+                    <input type="text" id="loginId" placeholder="เลขพอร์ต (Manual)">
                 </div>
                 <button class="btn btn-plant" onclick="addFarm()">
-                    <span>🌲 ปลูกต้นไม้ใหม่</span>
-                </button>
-                <button class="btn btn-water" onclick="refreshAll()">
-                    <span>💧 รดน้ำซิงค์ข้อมูล</span>
+                    <span>🌲 เพิ่มเอง</span>
                 </button>
             </div>
         </div>
@@ -597,6 +602,7 @@
     </div>
 
     <script>
+        // ใส่ URL ของ Google Apps Script ของคุณที่นี่
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -605,19 +611,32 @@
             initRiver();
             startWindEffect();
             renderForest(); 
-            await syncFarmsFromCloud(); 
-            refreshAll(); 
+            // เมื่อเปิดหน้าเว็บ จะวิ่งไปเช็คพอร์ตใหม่จาก Sheet อัตโนมัติทันที
+            await syncAndRefreshAll(); 
         };
+
+        // ฟังก์ชันใหม่: ดึงรายชื่อพอร์ตทั้งหมด + โหลดข้อมูล
+        async function syncAndRefreshAll() {
+            await syncFarmsFromCloud();
+            
+            const farms = getFarmsList();
+            if(farms.length > 0) {
+                farms.forEach(login => fetchNodeData(login));
+            }
+        }
 
         async function syncFarmsFromCloud() {
             const overlay = document.getElementById('syncing-overlay');
             overlay.style.display = 'block';
             try {
+                // ยิง API ไปหาชีต เพื่อขอรายชื่อพอร์ตทั้งหมดที่ EA ส่งมา
                 const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
                 const cloudFarms = await response.json();
                 
+                // หากได้ array กลับมา ให้นำมาผสานกับของเดิมและวาดการ์ดใหม่
                 if(Array.isArray(cloudFarms)) {
                     let localFarms = getFarmsList();
+                    // รวมพอร์ตในเครื่องกับในคลาวด์เข้าด้วยกัน (ป้องกันการซ้ำ)
                     let mergedFarms = [...new Set([...localFarms, ...cloudFarms])];
                     saveFarmsList(mergedFarms);
                     renderForest();
@@ -658,6 +677,7 @@
             localStorage.setItem('my_forest_farms', JSON.stringify(farms)); 
         }
 
+        // ยังเก็บปุ่ม Manual ไว้เผื่อฉุกเฉิน
         function addFarm() {
             const loginInput = document.getElementById('loginId');
             const login = loginInput.value.trim();
@@ -716,7 +736,7 @@
                     <div class="empty-forest">
                         <span>🍃</span>
                         <h3 style="color:#fff; margin:0 0 10px 0; font-size: 24px;">ผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0; line-height: 1.6;">กำลังซิงค์ข้อมูล หรือ พิมพ์เลขพอร์ต MT4 ด้านบน<br>แล้วกดปลูกต้นไม้ใหม่เพื่อเริ่มต้นสร้างระบบนิเวศของคุณ</p>
+                        <p style="margin:0; line-height: 1.6;">กำลังซิงค์ข้อมูลจาก Google Sheet...<br>หาก EA เพิ่งส่งข้อมูลไป โปรดรอสักครู่แล้วกดปุ่ม Auto Sync</p>
                     </div>
                 `;
                 updatePortfolioSummary();
@@ -780,13 +800,6 @@
                 }
             });
             updateTreeRanks();
-        }
-
-        function refreshAll() {
-            const farms = getFarmsList();
-            if(farms.length > 0) {
-                farms.forEach(login => fetchNodeData(login));
-            }
         }
 
         async function fetchNodeData(login) {
@@ -949,7 +962,7 @@
                     }
                     if (data.balance <= 0) level = 0;
 
-                    // 🌿 10 ระดับต้นไม้ (ไม่มีผลไม้แล้ว)
+                    // 🌿 10 ระดับต้นไม้ธรรมชาติ (ไม่มีผลไม้)
                     switch(level) {
                         case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
                         case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
