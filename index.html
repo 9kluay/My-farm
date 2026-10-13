@@ -424,7 +424,7 @@
             <p class="subtitle">ระบบนิเวศจำลองสวนป่าและเกษตรดิจิทัล พร้อมระบบวิเคราะห์เรียลไทม์ ✨</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (ลบหัวข้อด้านบนออก) -->
+        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ -->
         <div class="summary-dashboard-wrapper">
             <div class="summary-dashboard">
                 <div class="summary-item">
@@ -637,7 +637,7 @@
         }
 
         window.removeFarm = async function(login) {
-            const confirmCode = prompt(`⚠️ กรุณากรอกรหัส PIN (17091709) เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
+            const confirmCode = prompt(`⚠️ กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
             
             const overlay = document.getElementById('syncing-overlay');
