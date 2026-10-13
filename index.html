@@ -115,8 +115,8 @@
         }
 
         .system-status-indicator {
-            display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-dim);
-            background: rgba(0,0,0,0.35); padding: 6px 16px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.06);
+            display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-light);
+            background: rgba(0,0,0,0.35); padding: 6px 16px; border-radius: 18px; border: 1px solid rgba(52, 211, 153, 0.3);
         }
 
         header { text-align: center; margin-bottom: 25px; }
@@ -130,7 +130,7 @@
 
         p.subtitle { color: var(--text-dim); font-size: 14px; margin: 0; font-weight: 400; }
 
-        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (รวมแถวประวัติกำไรในบล็อกเดียวกัน) */
+        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (ลบหัวข้อด้านบนออกตามสั่ง) */
         .summary-dashboard-wrapper {
             background: rgba(8, 25, 17, 0.85);
             border: 1px solid var(--forest-border);
@@ -139,18 +139,6 @@
             margin-bottom: 22px;
             backdrop-filter: blur(20px);
             box-shadow: 0 20px 45px rgba(0,0,0,0.45);
-        }
-
-        .summary-dashboard-header {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--leaf-green);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
         }
 
         .summary-dashboard {
@@ -414,14 +402,14 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- 🌾 Farm Command Center Bar -->
+        <!-- 🌾 Farm Command Center Bar (ปรับสถานะขวาบนเป็น ระบบออนไลน์ Real Time ตามวงสีเหลือง) -->
         <div class="command-bar">
             <div class="badges-group">
                 <div class="badge-item" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge-item" id="theme-badge">⏳ สภาพอากาศฟาร์ม...</div>
             </div>
             <div class="system-status-indicator">
-                <span class="status-dot" style="color: var(--leaf-green);"></span> สวนป่าการลงทุนส่วนตัว (Smart Agro Farm)
+                <span class="status-dot" style="color: var(--leaf-green); animation: pulseDot 1.5s infinite;"></span> ระบบออนไลน์ Real Time
             </div>
         </div>
 
@@ -430,11 +418,8 @@
             <p class="subtitle">ระบบนิเวศจำลองสวนป่าและเกษตรดิจิทัล พร้อมระบบวิเคราะห์เรียลไทม์ ✨</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ พร้อมแถวรวมกำไร วัน / สัปดาห์ / เดือน ในบล็อกเดียวกัน -->
+        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (ลบหัวข้อด้านบนออกตามวงสีแดง) -->
         <div class="summary-dashboard-wrapper">
-            <div class="summary-dashboard-header">
-                <span>📊</span> แผงควบคุมภาพรวมฟาร์มเกษตรการลงทุน (Agro-Financial Summary)
-            </div>
             <div class="summary-dashboard">
                 <div class="summary-item">
                     <div class="summary-label">💰 Total Balance</div>
@@ -659,7 +644,7 @@
                 delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); 
                 closePopup();
             } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่อ'); }
-            overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.25)'; overlay.style.color = 'var(--leaf-green)';
+            overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.25); overlay.style.color = 'var(--leaf-green)';
         };
 
         function renderForest() {
@@ -678,7 +663,8 @@
 
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="plot-number">🌾 แปลง #${login}<span id="stars-${login}" style="font-size:13px; margin-left:8px; color:#fbbf24; text-shadow:0 2px 4px rgba(251,191,36,0.3); letter-spacing:2px;"></span></div>
+                        <!-- เปลี่ยนไอคอนหัวข้อแปลงเป็นต้นไม้สวยๆ ตามวงสีม่วง -->
+                        <div class="plot-number">🌳 แปลง #${login}<span id="stars-${login}" style="font-size:13px; margin-left:8px; color:#fbbf24; text-shadow:0 2px 4px rgba(251,191,36,0.3); letter-spacing:2px;"></span></div>
                         <button class="delete-btn" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
                     <div class="nature-pod">
@@ -871,7 +857,6 @@
             document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; 
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
-            // อัปเดตตัวเลขกำไรสะสมรวมในบล็อกเดียวกัน
             const todayElem = document.getElementById('sum-today');
             todayElem.innerText = formatMoney(tToday);
             todayElem.className = 'sum-history-val ' + getColorClass(tToday);
