@@ -130,7 +130,7 @@
 
         p.subtitle { color: var(--text-dim); font-size: 14px; margin: 0; font-weight: 400; }
 
-        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ */
+        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (รวมแถวประวัติกำไรในบล็อกเดียวกัน) */
         .summary-dashboard-wrapper {
             background: rgba(8, 25, 17, 0.85);
             border: 1px solid var(--forest-border);
@@ -157,6 +157,7 @@
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
+            margin-bottom: 18px;
         }
 
         @media (max-width: 1200px) { .summary-dashboard { grid-template-columns: repeat(3, 1fr); } }
@@ -195,6 +196,23 @@
         }
         .summary-val.positive { color: var(--leaf-green); }
         .summary-val.negative { color: var(--danger-red); }
+
+        /* แถวรวมกำไร วัน / สัปดาห์ / เดือน ในบล็อกเดียวกัน */
+        .summary-history-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 12px 15px;
+            gap: 10px;
+        }
+        .sum-history-item { text-align: center; border-right: 1px solid rgba(255, 255, 255, 0.06); }
+        .sum-history-item:last-child { border-right: none; }
+        .sum-history-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; }
+        .sum-history-val { font-size: 16px; font-weight: 700; color: #fff; }
+        .sum-history-val.positive { color: var(--leaf-green); }
+        .sum-history-val.negative { color: var(--danger-red); }
 
         /* 🛠️ Professional Farm Toolbar */
         .professional-toolbar {
@@ -412,7 +430,7 @@
             <p class="subtitle">ระบบนิเวศจำลองสวนป่าและเกษตรดิจิทัล พร้อมระบบวิเคราะห์เรียลไทม์ ✨</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ -->
+        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ พร้อมแถวรวมกำไร วัน / สัปดาห์ / เดือน ในบล็อกเดียวกัน -->
         <div class="summary-dashboard-wrapper">
             <div class="summary-dashboard-header">
                 <span>📊</span> แผงควบคุมภาพรวมฟาร์มเกษตรการลงทุน (Agro-Financial Summary)
@@ -441,6 +459,22 @@
                 <div class="summary-item">
                     <div class="summary-label">🌱 ผลผลิตรวม (ต้นไม้)</div>
                     <div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div>
+                </div>
+            </div>
+
+            <!-- แถวรวมกำไร วัน / สัปดาห์ / เดือน อยู่ในบล็อกเดียวกัน -->
+            <div class="summary-history-bar">
+                <div class="sum-history-item">
+                    <div class="sum-history-label">กำไรรวมวันนี้</div>
+                    <div class="sum-history-val" id="sum-today">$0.00</div>
+                </div>
+                <div class="sum-history-item">
+                    <div class="sum-history-label">กำไรรวมสัปดาห์นี้</div>
+                    <div class="sum-history-val" id="sum-week">$0.00</div>
+                </div>
+                <div class="sum-history-item">
+                    <div class="sum-history-label">กำไรรวมเดือนนี้</div>
+                    <div class="sum-history-val" id="sum-month">$0.00</div>
                 </div>
             </div>
         </div>
@@ -530,7 +564,6 @@
                 }
             }
 
-            // อัปเดตเฉพาะสีพื้นหลังหน้าเว็บ ไม่ยุ่งกับการ์ดข้อมูล
             root.style.setProperty('--forest-dark', bgColor);
             document.body.style.backgroundImage = `
                 radial-gradient(circle at 10% 10%, ${bg1} 0%, transparent 50%),
@@ -613,8 +646,8 @@
         }
 
         window.removeFarm = async function(login) {
-            const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบแปลงพอร์ต ${login}:`);
-            if (confirmCode === null || confirmCode.trim() !== String(login)) return alert('❌ รหัสยืนยันไม่ถูกต้อง!');
+            const confirmCode = prompt(`⚠️ กรุณากรอกรหัส PIN (17091709) เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
+            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
             
             const overlay = document.getElementById('syncing-overlay');
             overlay.innerText = `🔥 กำลังเคลียร์พื้นที่แปลงเกษตร ${login}...`;
@@ -776,7 +809,7 @@
                 } else {
                     let level = (maxEq > minEq) ? Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1 : 10;
                     const names = ['เมล็ดพันธุ์ในดิน','กล้าไม้สมบูรณ์','พืชคลุมดิน','ไม้พุ่มเขียวขจี','แปลงผักสวนครัว','กอไผ่เจริญเติบโต','สวนผลผลิตดก','ไม้ผลให้ร่มเงา','ไม้ยืนต้นพรีเมียม','พฤกษาแกร่งทนทาน','มหาพฤกษาขอนไม้'];
-                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵']; // เลเวลสูงสุดกลับมาเป็นขอนไม้ (🪵)
+                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵'];
                     let treeEmoji = emojis[level]; let treeName = `${names[level]} (Level ${level})`;
                     
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
@@ -808,6 +841,8 @@
 
         function updatePortfolioSummary() {
             let tb = 0, te = 0, tp = 0, tTrees = 0;
+            let tToday = 0, tWeek = 0, tMonth = 0;
+
             getFarmsList().forEach(login => {
                 const d = globalPortfolioData[login]; 
                 if (d && !d.error && d.balance > 0) { 
@@ -815,8 +850,12 @@
                     te += d.equity; 
                     tp += d.profit; 
                     tTrees += d.open_positions; 
+                    tToday += d.profit_today || 0;
+                    tWeek += d.profit_week || 0;
+                    tMonth += d.profit_month || 0;
                 }
             });
+
             document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; 
             document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
             
@@ -831,6 +870,20 @@
             
             document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; 
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
+
+            // อัปเดตตัวเลขกำไรสะสมรวมในบล็อกเดียวกัน
+            const todayElem = document.getElementById('sum-today');
+            todayElem.innerText = formatMoney(tToday);
+            todayElem.className = 'sum-history-val ' + getColorClass(tToday);
+
+            const weekElem = document.getElementById('sum-week');
+            weekElem.innerText = formatMoney(tWeek);
+            weekElem.className = 'sum-history-val ' + getColorClass(tWeek);
+
+            const monthElem = document.getElementById('sum-month');
+            monthElem.innerText = formatMoney(tMonth);
+            monthElem.className = 'sum-history-val ' + getColorClass(tMonth);
+
             updateGlobalWeather(totalPercent);
         }
     </script>
