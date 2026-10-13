@@ -8,7 +8,7 @@
     <style>
         :root {
             --forest-dark: #05130d;
-            --forest-card: rgba(11, 31, 21, 0.92); /* ตรึงสีการ์ดให้คงที่ ไม่อมน้ำตาล */
+            --forest-card: rgba(11, 31, 21, 0.92);
             --forest-border: rgba(52, 211, 153, 0.32);
             --leaf-green: #34d399;
             --text-light: #ecfdf5;
@@ -358,7 +358,7 @@
             display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; padding: 10px 8px; margin-bottom: 15px; gap: 5px;
         }
-        .history-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
+        .history-item { text-align: center; border-right: 1px solid rgba(255, 255, 255, 0.05); }
         .history-item:last-child { border-right: none; }
         .history-label { font-size: 10px; color: var(--text-dim); margin-bottom: 3px; }
         .history-val { font-size: 12px; font-weight: 600; color: #fff; }
@@ -501,7 +501,7 @@
             if (totalPercent <= -10) {
                 themeName = 'พายุเข้าฟาร์ม ⛈️';
                 window.weatherParticles = ['💧', '🌧️', '🌪️', '⚡'];
-                bgColor = '#1a0f0f'; // เปลี่ยนเฉพาะสีพื้นหลังเมื่อพายุเข้า
+                bgColor = '#1a0f0f'; 
                 bg1 = 'rgba(248, 113, 113, 0.15)'; bg2 = 'rgba(0, 0, 0, 0.4)';
             } else if (totalPercent <= -2) {
                 themeName = 'ฝนตกชุ่มฉ่ำ 🌧️';
@@ -775,8 +775,8 @@
                     tierDiv.innerText = 'พักแปลงเตรียมรอบใหม่';
                 } else {
                     let level = (maxEq > minEq) ? Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1 : 10;
-                    const names = ['เมล็ดพันธุ์ในดิน','กล้าไม้สมบูรณ์','พืชคลุมดิน','ไม้พุ่มเขียวขจี','แปลงผักสวนครัว','กอไผ่เจริญเติบโต','สวนผลผลิตดก','ไม้ผลให้ร่มเงา','ไม้ยืนต้นพรีเมียม','พฤกษาแกร่งทนทาน','มหาพฤกษาทองคำ'];
-                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🌲']; // แก้ไข Level สูงสุดให้เป็นต้นไม้พรีเมียมเขียว ไม่ใช้ตอไม้สีน้ำตาล
+                    const names = ['เมล็ดพันธุ์ในดิน','กล้าไม้สมบูรณ์','พืชคลุมดิน','ไม้พุ่มเขียวขจี','แปลงผักสวนครัว','กอไผ่เจริญเติบโต','สวนผลผลิตดก','ไม้ผลให้ร่มเงา','ไม้ยืนต้นพรีเมียม','พฤกษาแกร่งทนทาน','มหาพฤกษาขอนไม้'];
+                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵']; // เลเวลสูงสุดกลับมาเป็นขอนไม้ (🪵)
                     let treeEmoji = emojis[level]; let treeName = `${names[level]} (Level ${level})`;
                     
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
