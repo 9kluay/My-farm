@@ -468,8 +468,11 @@
                     window.weatherParticles = ['🍃', '🌾', '☁️'];
                     bgColor = '#141812'; cardBg = 'rgba(35, 25, 20, 0.75)';
                 } else {
-                    themeName = 'อากาศดี/สงบ 🌙';
-                    window.weatherParticles = ['✨', '🌟', '🍃'];
+                    // 🌟 โหมดกลางคืนอัตโนมัติ (Day & Night Dynamic Cycle)
+                    themeName = 'ค่ำคืนสงบ / หิ่งห้อยเรืองแสง 🌙✨';
+                    window.weatherParticles = ['✨', '🌟', '🐛', '🍃'];
+                    bgColor = '#030b08'; cardBg = 'rgba(8, 24, 16, 0.85)';
+                    bg1 = 'rgba(52, 211, 153, 0.08)'; bg2 = 'rgba(251, 191, 36, 0.05)';
                 }
             }
 
@@ -529,7 +532,7 @@
 
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
-            const sortMode = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'login-asc';
+            const sortMode = document.getElementById('sortSelect') ? document.getElementById('sortSelect'].value : 'login-asc';
             
             return farms.sort((a, b) => {
                 if (sortMode === 'login-asc') {
