@@ -742,6 +742,7 @@
                     const openPositions = parseInt(latest.open_positions || 0);
                     const initialDeposit = parseFloat(latest.initial_deposit || balance);
                     
+                    // 📐 สูตรคำนวณ % ที่ถูกต้อง: (Floating P/L / Initial Balance) * 100
                     const percent = (initialDeposit > 0) ? (profitLoss / initialDeposit) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
@@ -769,7 +770,6 @@
             }
         }
 
-        // ปรับปรุงฟังก์ชันจัดการเครื่องหมายให้สะอาด ไม่ชนกัน (+--)
         const formatMoney = (val) => {
             const absVal = Math.abs(val).toFixed(2);
             if (val > 0) return `+$${absVal}`;
