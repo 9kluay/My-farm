@@ -195,35 +195,51 @@
         }
         .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); }
 
-        /* 🌟 ระบบ Popup เต็มจอแบบเคลียร์ใสและปลอดภัย */
+        /* 🌟 ระบบ Popup เต็มจอ (Full Screen Modal) */
         #popup-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 12, 7, 0.85);
-            backdrop-filter: blur(12px);
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(2, 12, 7, 0.92);
+            backdrop-filter: blur(15px);
             z-index: 99999; display: none;
             justify-content: center; align-items: center;
             opacity: 0; transition: opacity 0.3s ease;
+            padding: 15px;
         }
         #popup-overlay.show { display: flex; opacity: 1; }
 
         .popup-content {
-            background: linear-gradient(145deg, #0d3822 0%, #082215 100%);
+            background: linear-gradient(145deg, #0d3822 0%, #061c11 100%);
             border: 2px solid var(--leaf-green);
-            border-radius: 40px; padding: 35px; width: 90%; max-width: 650px;
-            max-height: 90vh; overflow-y: auto; position: relative;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 50px rgba(52, 211, 153, 0.3);
-            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 35px; padding: 30px 25px; 
+            width: 100%; max-width: 850px; height: 92vh;
+            overflow-y: auto; position: relative;
+            box-shadow: 0 25px 90px rgba(0,0,0,0.95), 0 0 60px rgba(52, 211, 153, 0.4);
+            transform: scale(0.92); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         #popup-overlay.show .popup-content { transform: scale(1); }
 
         .popup-close-btn {
             position: absolute; top: 20px; right: 20px;
-            background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3);
-            color: var(--danger-red); width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(248, 113, 113, 0.2); border: 1px solid rgba(248, 113, 113, 0.4);
+            color: var(--danger-red); width: 45px; height: 45px; border-radius: 50%;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: bold; transition: 0.3s;
+            font-size: 20px; font-weight: bold; transition: 0.3s; z-index: 10;
         }
         .popup-close-btn:hover { background: var(--danger-red); color: white; transform: rotate(90deg) scale(1.1); }
+
+        /* ขยายขนาดองค์ประกอบภายใน Popup ให้ใหญ่เต็มตาขึ้น */
+        .popup-content .nature-pod { padding: 30px 10px 25px; }
+        .popup-content .tree-base { font-size: 110px !important; }
+        .popup-content .forest-cluster { height: 130px !important; }
+        .popup-content .forest-tier-title { font-size: 22px !important; padding: 12px 25px !important; margin-top: 10px; }
+        .popup-content .metrics-container { gap: 18px; margin-bottom: 20px; }
+        .popup-content .metric-card { padding: 20px !important; }
+        .popup-content .metric-title { font-size: 13px !important; }
+        .popup-content .metric-value { font-size: 22px !important; }
+        .popup-content .history-bar { padding: 16px 12px !important; margin-bottom: 20px; }
+        .popup-content .history-val { font-size: 16px !important; }
+        .popup-content .card-footer { font-size: 14px !important; padding-top: 20px !important; }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .plot-number {
@@ -319,11 +335,11 @@
 
     <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
     
-    <!-- 🌟 โครงสร้าง Popup Modal กลางจอ -->
+    <!-- 🌟 โครงสร้าง Popup เต็มจอ (Full Screen) -->
     <div id="popup-overlay" onclick="closePopup(event)">
         <div class="popup-content" id="popup-inner-content" onclick="event.stopPropagation()">
             <button class="popup-close-btn" onclick="closePopup()">✕</button>
-            <div id="popup-body-html"></div>
+            <div id="popup-body-html" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;"></div>
         </div>
     </div>
 
@@ -534,7 +550,7 @@
         }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🌟 ฟังก์ชันเปิด Popup แสดงรายละเอียดพอร์ตเมื่อคลิกการ์ด
+        // 🌟 เปิด Popup เต็มจอ
         function handleCardClick(event, login) {
             if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) return;
             
@@ -544,7 +560,6 @@
             const popupBody = document.getElementById('popup-body-html');
             popupBody.innerHTML = cardElement.innerHTML;
             
-            // ลบปุ่มกากบาทซ้ำซ้อนด้านใน (ถ้ามี) แล้วเปิด Popup
             const innerDelete = popupBody.querySelector('.delete-btn');
             if (innerDelete) innerDelete.remove();
 
