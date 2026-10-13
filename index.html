@@ -679,7 +679,7 @@
 
                     <div class="metrics-container">
                         <div class="metric-card">
-                            <div class="metric-title">Initial Balance</div>
+                            <div class="metric-title">Balance</div>
                             <div class="metric-value" id="bal-${login}">$0.00</div>
                         </div>
                         <div class="metric-card">
@@ -733,7 +733,7 @@
                 const data = await response.json();
 
                 if (data.error || data.length === 0) {
-                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, initial: 0, percent: 0, open_positions: 0, profit_orders: 0, loss_orders: 0, profit_today: 0, profit_week: 0, profit_month: 0, error: true };
+                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, open_positions: 0, profit_orders: 0, loss_orders: 0, profit_today: 0, profit_week: 0, profit_month: 0, error: true };
                 } else {
                     const latest = data.at(-1); 
                     const balance = parseFloat(latest.balance);
@@ -741,13 +741,8 @@
                     const profitLoss = parseFloat(latest.floating_pl);
                     const openPositions = parseInt(latest.open_positions || 0);
                     
-                    let initialDeposit = parseFloat(latest.initial_deposit);
-                    if (!initialDeposit || initialDeposit <= 0) {
-                        initialDeposit = balance;
-                    }
-                    
-                    // 📐 คำนวณ % จากทุน/มูลค่าปัจจุบัน (Current Equity)
-                    const percent = (equity > 0) ? (profitLoss / equity) * 100 : 0;
+                    // 📐 คำนวณ % จาก Balance ปัจจุบัน
+                    const percent = (balance > 0) ? (profitLoss / balance) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
                     const lOrders = parseInt(latest.loss_orders || 0);
@@ -756,7 +751,7 @@
                     const pMonth = parseFloat(latest.profit_month || 0);
                     
                     globalPortfolioData[login] = { 
-                        balance: balance, equity: equity, profit: profitLoss, initial: initialDeposit,
+                        balance: balance, equity: equity, profit: profitLoss,
                         percent: percent, open_positions: openPositions, 
                         profit_orders: pOrders, loss_orders: lOrders,
                         profit_today: pToday, profit_week: pWeek, profit_month: pMonth,
@@ -839,7 +834,7 @@
             } else { weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโด!'; weatherBadge.style.color = 'var(--danger-red)'; weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)'; }
 
             weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
-            balDiv.innerText = `$${data.initial.toFixed(2)}`;
+            balDiv.innerText = `$${data.balance.toFixed(2)}`;
             eqDiv.innerText = `$${data.equity.toFixed(2)}`;
 
             plDiv.className = `metric-value ${getColorClass(data.profit)}`;
@@ -972,7 +967,7 @@
                 const data = globalPortfolioData[login];
                 if (data && !data.error) {
                     totalBalance += data.balance || 0; totalEquity += data.equity || 0;
-                    totalProfit += data.profit || 0; totalInitial += data.initial || 0;
+                    totalProfit += data.profit || 0; totalInitial += data.balance || 0;
                     totalTrees += data.open_positions || 0;
                 }
             });
@@ -983,7 +978,7 @@
             plElem.className = 'summary-val ' + getColorClass(totalProfit);
             plElem.innerText = formatMoney(totalProfit);
 
-            const totalPercent = (totalInitial > 0) ? (totalProfit / totalInitial) * 100 : 0;
+            const totalPercent = (totalBalance > 0) ? (totalProfit / totalBalance) * 100 : 0;
             const percentElem = document.getElementById('sum-percent');
             percentElem.className = 'summary-val ' + getColorClass(totalPercent);
             percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
