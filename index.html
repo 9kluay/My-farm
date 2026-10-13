@@ -83,6 +83,12 @@
             100% { transform: translateY(105vh) translateX(10px) scale(0.8); opacity: 0; }
         }
 
+        @keyframes pulseDot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -130,7 +136,7 @@
 
         p.subtitle { color: var(--text-dim); font-size: 14px; margin: 0; font-weight: 400; }
 
-        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (ลบหัวข้อด้านบนออกตามสั่ง) */
+        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ */
         .summary-dashboard-wrapper {
             background: rgba(8, 25, 17, 0.85);
             border: 1px solid var(--forest-border);
@@ -402,7 +408,7 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- 🌾 Farm Command Center Bar (ปรับสถานะขวาบนเป็น ระบบออนไลน์ Real Time ตามวงสีเหลือง) -->
+        <!-- 🌾 Farm Command Center Bar (ระบบออนไลน์ Real Time) -->
         <div class="command-bar">
             <div class="badges-group">
                 <div class="badge-item" id="season-badge">☀️ ฤดูกาล</div>
@@ -418,7 +424,7 @@
             <p class="subtitle">ระบบนิเวศจำลองสวนป่าและเกษตรดิจิทัล พร้อมระบบวิเคราะห์เรียลไทม์ ✨</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (ลบหัวข้อด้านบนออกตามวงสีแดง) -->
+        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (ลบหัวข้อด้านบนออก) -->
         <div class="summary-dashboard-wrapper">
             <div class="summary-dashboard">
                 <div class="summary-item">
@@ -447,7 +453,7 @@
                 </div>
             </div>
 
-            <!-- แถวรวมกำไร วัน / สัปดาห์ / เดือน อยู่ในบล็อกเดียวกัน -->
+            <!-- แถวรวมกำไร วัน / สัปดาห์ / เดือน ในบล็อกเดียวกัน -->
             <div class="summary-history-bar">
                 <div class="sum-history-item">
                     <div class="sum-history-label">กำไรรวมวันนี้</div>
@@ -644,7 +650,7 @@
                 delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); 
                 closePopup();
             } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่อ'); }
-            overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.25); overlay.style.color = 'var(--leaf-green)';
+            overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.25)'; overlay.style.color = 'var(--leaf-green)';
         };
 
         function renderForest() {
@@ -663,7 +669,6 @@
 
                 card.innerHTML = `
                     <div class="card-header">
-                        <!-- เปลี่ยนไอคอนหัวข้อแปลงเป็นต้นไม้สวยๆ ตามวงสีม่วง -->
                         <div class="plot-number">🌳 แปลง #${login}<span id="stars-${login}" style="font-size:13px; margin-left:8px; color:#fbbf24; text-shadow:0 2px 4px rgba(251,191,36,0.3); letter-spacing:2px;"></span></div>
                         <button class="delete-btn" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
