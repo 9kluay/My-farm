@@ -8,7 +8,7 @@
     <style>
         :root {
             --forest-dark: #071911;
-            --forest-card: rgba(14, 38, 26, 0.82);
+            --forest-card: rgba(14, 38, 26, 0.85);
             --forest-border: rgba(52, 211, 153, 0.28);
             --leaf-green: #34d399;
             --text-light: #ecfdf5;
@@ -95,10 +95,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(8, 25, 17, 0.7);
+            background: rgba(8, 25, 17, 0.75);
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
-            border-radius: 25px;
+            border-radius: 22px;
             margin-bottom: 25px;
             backdrop-filter: blur(15px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -122,23 +122,26 @@
         header { text-align: center; margin-bottom: 25px; }
 
         h1 {
-            font-size: 38px; font-weight: 700; margin: 0 0 6px 0;
+            font-size: 36px; font-weight: 700; margin: 0 0 6px 0;
             background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px; filter: drop-shadow(0 4px 10px rgba(52,211,153,0.2));
         }
 
-        p.subtitle { color: var(--text-dim); font-size: 15px; margin: 0; }
+        p.subtitle { color: var(--text-dim); font-size: 14px; margin: 0; }
 
-        /* 📊 แผงสรุปภาพรวมแนวนอน 6 ช่อง (Exact Match ตามแบบในรูปต้นฉบับ) */
-        .summary-dashboard {
-            background: rgba(0, 0, 0, 0.25);
+        /* 📊 แผงสรุปภาพรวมโปรเฟสชันแนล (Professional Master Summary Panel) */
+        .summary-dashboard-wrapper {
+            background: rgba(10, 30, 20, 0.65);
             border: 1px solid var(--forest-border);
             border-radius: 30px;
-            padding: 22px;
+            padding: 20px;
             margin-bottom: 25px;
             backdrop-filter: blur(20px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .summary-dashboard {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
@@ -148,13 +151,16 @@
         @media (max-width: 700px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
 
         .summary-item {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 16px 12px;
             border-radius: 18px;
             text-align: center;
             transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .summary-item:hover {
             transform: translateY(-3px);
@@ -166,11 +172,11 @@
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
         }
         .summary-val {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 700;
             color: #fff;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
@@ -183,14 +189,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(8, 25, 17, 0.75);
+            border: 1px solid var(--forest-border);
             padding: 15px 25px;
-            border-radius: 25px;
+            border-radius: 22px;
             margin-bottom: 25px;
             backdrop-filter: blur(15px);
             gap: 15px;
             flex-wrap: wrap;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .toolbar-left, .toolbar-right {
@@ -199,7 +206,7 @@
 
         .search-professional {
             display: flex; align-items: center; background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 22px; padding: 6px 16px;
+            border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 18px; padding: 6px 16px;
             width: 280px; transition: 0.3s;
         }
         .search-professional:focus-within { border-color: var(--leaf-green); box-shadow: 0 0 15px rgba(52,211,153,0.2); }
@@ -211,18 +218,12 @@
 
         .btn-water {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); padding: 10px 22px; border-radius: 22px;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); padding: 10px 22px; border-radius: 18px;
             font-weight: 600; font-size: 14px; font-family: inherit; cursor: pointer;
             display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1);
             transition: 0.2s;
         }
         .btn-water:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); }
-
-        .auto-sync-container {
-            display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3);
-            padding: 10px 18px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.08);
-            color: var(--text-light); font-weight: 400; font-size: 13px; cursor: pointer;
-        }
 
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
 
@@ -399,31 +400,33 @@
             <p class="subtitle">ระบบจัดอันดับอัตโนมัติ พร้อมแสดงสถานะใบวก/ใบสบ ✨</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมแนวนอน 6 ช่อง (Exact Match ตามแบบในรูปต้นฉบับ) -->
-        <div class="summary-dashboard">
-            <div class="summary-item">
-                <div class="summary-label">💰 Total Balance</div>
-                <div class="summary-val" id="sum-balance">$0.00</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">💎 Total Equity</div>
-                <div class="summary-val" id="sum-equity">$0.00</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">📈 Floating P/L</div>
-                <div class="summary-val" id="sum-pl">$0.00</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">📊 Profit %</div>
-                <div class="summary-val" id="sum-percent">0.00%</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">🌲 รวมแปลงทั้งหมด</div>
-                <div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">🌱 รวมจำนวนต้น</div>
-                <div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div>
+        <!-- 📊 แผงสรุปภาพรวมแนวนอน 6 ช่อง (จัดวางสมดุล สวยงาม และดูมืออาชีพ) -->
+        <div class="summary-dashboard-wrapper">
+            <div class="summary-dashboard">
+                <div class="summary-item">
+                    <div class="summary-label">💰 Total Balance</div>
+                    <div class="summary-val" id="sum-balance">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">💎 Total Equity</div>
+                    <div class="summary-val" id="sum-equity">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">📈 Floating P/L</div>
+                    <div class="summary-val" id="sum-pl">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">📊 Profit %</div>
+                    <div class="summary-val" id="sum-percent">0.00%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">🌲 รวมแปลงทั้งหมด</div>
+                    <div class="summary-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">🌱 รวมจำนวนต้น</div>
+                    <div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div>
+                </div>
             </div>
         </div>
 
@@ -476,7 +479,7 @@
             const root = document.documentElement;
             
             let themeName = 'อากาศดี 🍃';
-            let bgColor = '#071911'; let cardBg = 'rgba(14, 38, 26, 0.82)';
+            let bgColor = '#071911'; let cardBg = 'rgba(14, 38, 26, 0.85)';
             let bg1 = 'rgba(16, 185, 129, 0.15)'; let bg2 = 'rgba(5, 150, 105, 0.1)';
 
             if (totalPercent <= -10) {
@@ -494,15 +497,15 @@
                 if (hour >= 6 && hour < 9) {
                     themeName = 'แดดอ่อนๆ/โปร่ง 🌅';
                     window.weatherParticles = ['🍃', '☀️', '✨'];
-                    bgColor = '#0a1f16'; cardBg = 'rgba(20, 45, 30, 0.8)';
+                    bgColor = '#0a1f16'; cardBg = 'rgba(20, 45, 30, 0.82)';
                 } else if (hour >= 9 && hour < 16) {
                     themeName = 'แดดจ้า ☀️';
                     window.weatherParticles = ['☀️', '🍃', '✨'];
-                    bgColor = '#0d261b'; cardBg = 'rgba(22, 55, 38, 0.8)';
+                    bgColor = '#0d261b'; cardBg = 'rgba(22, 55, 38, 0.82)';
                 } else if (hour >= 16 && hour < 19) {
                     themeName = 'ครึ้ม/ลมแรง ⛅';
                     window.weatherParticles = ['🍃', '🌾', '☁️'];
-                    bgColor = '#141812'; cardBg = 'rgba(35, 25, 20, 0.8)';
+                    bgColor = '#141812'; cardBg = 'rgba(35, 25, 20, 0.82)';
                 } else {
                     themeName = 'ค่ำคืนสงบ / หิ่งห้อยเรืองแสง 🌙✨';
                     window.weatherParticles = ['✨', '🌟', '🐛', '🍃'];
