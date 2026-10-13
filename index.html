@@ -130,27 +130,100 @@
 
         p.subtitle { color: var(--text-dim); font-size: 15px; margin: 0; }
 
-        /* 📊 Financial Summary Dashboard (ดีไซน์ใหม่ให้เป็นการ์ดพรีเมียม สไตล์เดียวกับตัวการ์ดฟาร์ม) */
+        /* 📊 แผงสรุปภาพรวมออกแบบใหม่ (Master Summary Grid) ให้เข้ากับดีไซน์การ์ดฟอร์ต */
         .summary-dashboard {
-            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--forest-border);
-            border-radius: 30px; padding: 22px; margin-bottom: 25px; backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 25px;
         }
 
-        @media (max-width: 1200px) { .summary-dashboard { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 700px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1100px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .summary-dashboard { grid-template-columns: 1fr; } }
 
-        .summary-card {
-            background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px 15px; border-radius: 20px; display: flex; flex-direction: column; justify-content: center;
-            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .summary-master-card {
+            background: var(--forest-card);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--forest-border);
+            border-radius: 30px;
+            padding: 22px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
         }
-        .summary-card:hover { transform: translateY(-3px); border-color: rgba(52, 211, 153, 0.4); background: rgba(255, 255, 255, 0.05); }
-        .summary-title { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .summary-main-val { font-size: 19px; font-weight: 700; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .summary-main-val.positive { color: var(--leaf-green); } 
-        .summary-main-val.negative { color: var(--danger-red); }
+        .summary-master-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(52, 211, 153, 0.6);
+            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.22);
+        }
+
+        .summary-card-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-main-display {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .summary-main-display.positive { color: var(--leaf-green); }
+        .summary-main-display.negative { color: var(--danger-red); }
+
+        /* กล่องย่อยภายใน (จำลองสไตล์ history-bar หรือ metric-card) */
+        .summary-sub-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            padding: 10px 8px;
+            gap: 5px;
+            margin-top: auto;
+        }
+        .summary-sub-item {
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .summary-sub-item:last-child { border-right: none; }
+        .summary-sub-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .summary-sub-val {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .summary-sub-val.positive { color: var(--leaf-green); }
+        .summary-sub-val.negative { color: var(--danger-red); }
+
+        /* รูปแบบพิเศษสำหรับการ์ดแปลงและต้นไม้ (2 คอลัมน์ย่อย) */
+        .summary-dual-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            padding: 10px 12px;
+            gap: 10px;
+            margin-top: auto;
+            text-align: center;
+        }
+        .summary-dual-item .sub-lbl { font-size: 10px; color: var(--text-dim); margin-bottom: 3px; }
+        .summary-dual-item .sub-v { font-size: 15px; font-weight: 700; color: #fff; }
 
         /* 🛠️ Professional Toolbar */
         .professional-toolbar {
@@ -373,36 +446,65 @@
             <p class="subtitle">ระบบนิเวศฟาร์มพอร์ตการลงทุนอัจฉริยะ (Professional Living Forest)</p>
         </header>
 
-        <!-- 📊 Financial Summary Dashboard (ดีไซน์ใหม่แยกเป็นการ์ดย่อยสไตล์เดียวกับตัวการ์ดฟาร์ม ดูสะอาดและสวยงามขึ้น) -->
+        <!-- 📊 แผงสรุปภาพรวมออกแบบใหม่ (Master Summary Grid) สไตล์การ์ดพอร์ต หรูหราและเป็นระเบียบ -->
         <div class="summary-dashboard">
-            <div class="summary-card">
-                <div class="summary-title">💰 Balance / Equity</div>
-                <div class="summary-main-val" id="sum-balance">$0.00</div>
-                <div style="font-size: 11px; color: var(--text-dim); margin-top: 3px;" id="sum-equity">Eq: $0.00</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-title">📈 Floating P/L</div>
-                <div class="summary-main-val" id="sum-pl">$0.00</div>
-                <div style="font-size: 11px; margin-top: 3px;" id="sum-percent">0.00%</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-title">📅 กำไร (วัน / สัปดาห์ / เดือน)</div>
-                <div style="font-size: 11px; font-weight: 600; margin-top: 4px; display: flex; justify-content: space-between; gap: 4px;">
-                    <span id="sum-today" class="positive">+$0.00</span> | 
-                    <span id="sum-week" class="positive">+$0.00</span> | 
-                    <span id="sum-month" class="positive">+$0.00</span>
+            <!-- การ์ดที่ 1: Balance & Equity -->
+            <div class="summary-master-card">
+                <div class="summary-card-header">💰 ทุนรวม / ทุนสุทธิ</div>
+                <div class="summary-main-display" id="sum-balance">$0.00</div>
+                <div class="summary-dual-grid">
+                    <div class="summary-dual-item"><div class="sub-lbl">Equity รวม</div><div class="sub-v" id="sum-equity">$0.00</div></div>
+                    <div class="summary-dual-item"><div class="sub-lbl">สถานะภาพรวม</div><div class="sub-v" style="color: var(--leaf-green);">มั่นคง</div></div>
                 </div>
             </div>
-            <div class="summary-card">
-                <div class="summary-title">🌲 จำนวนแปลงทั้งหมด</div>
-                <div class="summary-main-val" id="sum-farms" style="color: var(--leaf-green);">0 แปลง</div>
+
+            <!-- การ์ดที่ 2: Floating P/L -->
+            <div class="summary-master-card">
+                <div class="summary-card-header">📈 กำไร/ขาดทุนลอยตัว</div>
+                <div class="summary-main-display" id="sum-pl">$0.00</div>
+                <div class="summary-dual-grid">
+                    <div class="summary-dual-item"><div class="sub-lbl">อัตราส่วนกำไร %</div><div class="sub-v" id="sum-percent">0.00%</div></div>
+                    <div class="summary-dual-item"><div class="sub-lbl">แนวโน้มตลาด</div><div class="sub-v" id="sum-trend" style="color: var(--sun-gold);">ปกติ</div></div>
+                </div>
             </div>
-            <div class="summary-card">
-                <div class="summary-title">🌱 ต้นไม้ (เขียว / แดง / รวม)</div>
-                <div style="font-size: 14px; font-weight: 700; margin-top: 4px;">
-                    <span style="color: var(--leaf-green);" id="sum-trees-green">0</span> | 
-                    <span style="color: var(--danger-red);" id="sum-trees-red">0</span> | 
-                    <span style="color: var(--sun-gold);" id="sum-trees-total">0 ต้น</span>
+
+            <!-- การ์ดที่ 3: กำไรสะสม (วัน / สัปดาห์ / เดือน) -->
+            <div class="summary-master-card">
+                <div class="summary-card-header">📅 กำไรสะสมย้อนหลัง</div>
+                <div class="summary-main-display" id="sum-today" style="font-size: 22px; margin-bottom: 12px;">+$0.00</div>
+                <div class="summary-sub-grid">
+                    <div class="summary-sub-item">
+                        <div class="summary-sub-label">วันนี้</div>
+                        <div class="summary-sub-val positive" id="sum-today-sub">+$0.00</div>
+                    </div>
+                    <div class="summary-sub-item">
+                        <div class="summary-sub-label">สัปดาห์นี้</div>
+                        <div class="summary-sub-val positive" id="sum-week">+$0.00</div>
+                    </div>
+                    <div class="summary-sub-item">
+                        <div class="summary-sub-label">เดือนนี้</div>
+                        <div class="summary-sub-val positive" id="sum-month">+$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- การ์ดที่ 4: สถิติแปลงและต้นไม้ (แปลง / เขียว / แดง / รวม) -->
+            <div class="summary-master-card">
+                <div class="summary-card-header">🌲 สถานะผืนป่าทั้งหมด</div>
+                <div class="summary-main-display" id="sum-farms" style="font-size: 22px; margin-bottom: 12px; color: var(--leaf-green);">0 แปลง</div>
+                <div class="summary-sub-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="summary-sub-item">
+                        <div class="summary-sub-label">ต้นเขียว 🟢</div>
+                        <div class="summary-sub-val" style="color: var(--leaf-green);" id="sum-trees-green">0</div>
+                    </div>
+                    <div class="summary-sub-item">
+                        <div class="summary-sub-label">ต้นแดง 🔴</div>
+                        <div class="summary-sub-val" style="color: var(--danger-red);" id="sum-trees-red">0</div>
+                    </div>
+                    <div class="summary-sub-item">
+                        <div class="summary-sub-label">รวมต้นไม้</div>
+                        <div class="summary-sub-val" style="color: var(--sun-gold);" id="sum-trees-total">0 ต้น</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -805,31 +907,41 @@
                 }
             });
 
+            // 1. Balance & Equity Master Card
             document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; 
-            document.getElementById('sum-equity').innerText = `Eq: $${te.toFixed(2)}`;
+            document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
             
+            // 2. Floating P/L Master Card
             const plElem = document.getElementById('sum-pl'); 
-            plElem.className = 'summary-main-val ' + getColorClass(tp); 
+            plElem.className = 'summary-main-display ' + getColorClass(tp); 
             plElem.innerText = formatMoney(tp);
             
             const totalPercent = (tb > 0) ? (tp / tb) * 100 : 0;
             const percentElem = document.getElementById('sum-percent'); 
             percentElem.className = getColorClass(totalPercent); 
             percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
-            
-            // อัปเดตกำไรสะสม วัน, สัปดาห์, เดือน
-            const tEl = document.getElementById('sum-today');
-            tEl.className = getColorClass(sumToday); tEl.innerText = formatMoney(sumToday);
-            
-            const wEl = document.getElementById('sum-week');
-            wEl.className = getColorClass(sumWeek); wEl.innerText = formatMoney(sumWeek);
-            
-            const mEl = document.getElementById('sum-month');
-            mEl.className = getColorClass(sumMonth); mEl.innerText = formatMoney(sumMonth);
 
-            document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; 
+            const trendElem = document.getElementById('sum-trend');
+            if(totalPercent > 2) { trendElem.innerText = 'เติบโตดี 🚀'; trendElem.style.color = 'var(--leaf-green)'; }
+            else if(totalPercent < -2) { trendElem.innerText = 'ระวังตัว ⚠️'; trendElem.style.color = 'var(--danger-red)'; }
+            else { trendElem.innerText = 'ทรงตัว ⚖️'; trendElem.style.color = 'var(--sun-gold)'; }
             
-            // อัปเดตจำนวนต้นไม้ (เขียว / แดง / รวม)
+            // 3. Profit History Master Card (วัน / สัปดาห์ / เดือน)
+            const todayMain = document.getElementById('sum-today');
+            todayMain.className = 'summary-main-display ' + getColorClass(sumToday);
+            todayMain.innerText = formatMoney(sumToday);
+
+            const tSub = document.getElementById('sum-today-sub');
+            tSub.className = 'summary-sub-val ' + getColorClass(sumToday); tSub.innerText = formatMoney(sumToday);
+
+            const wSub = document.getElementById('sum-week');
+            wSub.className = 'summary-sub-val ' + getColorClass(sumWeek); wSub.innerText = formatMoney(sumWeek);
+            
+            const mSub = document.getElementById('sum-month');
+            mSub.className = 'summary-sub-val ' + getColorClass(sumMonth); mSub.innerText = formatMoney(sumMonth);
+
+            // 4. Farms & Trees Master Card
+            document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; 
             document.getElementById('sum-trees-green').innerText = treesGreen;
             document.getElementById('sum-trees-red').innerText = treesRed;
             document.getElementById('sum-trees-total').innerText = `${treesTotal} ต้น`;
