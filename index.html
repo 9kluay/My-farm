@@ -163,6 +163,17 @@
         }
         .btn-water:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6); }
 
+        .sort-select-container {
+            display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3);
+            padding: 12px 20px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-light); font-weight: 500; font-size: 15px; backdrop-filter: blur(10px);
+        }
+        .sort-select {
+            background: rgba(14, 38, 26, 0.9); border: 1px solid var(--forest-border); color: var(--text-light);
+            padding: 8px 15px; border-radius: 20px; font-family: inherit; font-size: 14px; outline: none; cursor: pointer;
+        }
+        .sort-select option { background: #071911; color: #fff; }
+
         .auto-sync-container {
             display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3);
             padding: 14px 25px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
@@ -180,7 +191,6 @@
         }
         .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); }
 
-        /* 🌟 เมื่อคลิกการ์ด จะเปลี่ยนเป็นไฮไลท์ขอบเรืองแสงแทนการขยายเต็มจอ ไร้ฝ้าดำบัง 100% */
         .tree-card.highlighted {
             border: 2px solid var(--leaf-green) !important;
             box-shadow: 0 0 35px rgba(52, 211, 153, 0.4) !important;
@@ -311,6 +321,18 @@
 
         <div class="control-box">
             <button class="btn-water" onclick="syncAndRefreshAll()"><span>💧 ซิงค์และโหลดข้อมูลฟาร์มทั้งหมด</span></button>
+            
+            <!-- 🔽 ช่องตัวเลือกจัดเรียงฟาร์ม -->
+            <div class="sort-select-container">
+                <label for="sortSelect">🗂️ เรียงลำดับ:</label>
+                <select id="sortSelect" class="sort-select" onchange="renderForest()">
+                    <option value="login-asc">เลขพอร์ต (น้อย ➔ มาก)</option>
+                    <option value="login-desc">เลขพอร์ต (มาก ➔ น้อย)</option>
+                    <option value="balance-desc">Balance (มาก ➔ น้อย)</option>
+                    <option value="balance-asc">Balance (น้อย ➔ มาก)</option>
+                </select>
+            </div>
+
             <div class="auto-sync-container">
                 <input type="checkbox" id="autoSyncCheck" onchange="toggleAutoSync()" style="accent-color: var(--leaf-green); transform: scale(1.3);">
                 <label for="autoSyncCheck">รดน้ำอัตโนมัติ (ทุก 3 นาที)</label>
@@ -455,7 +477,24 @@
 
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
-            return farms.sort((a, b) => parseInt(a) - parseInt(b));
+            const sortMode = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'login-asc';
+            
+            return farms.sort((a, b) => {
+                if (sortMode === 'login-asc') {
+                    return parseInt(a) - parseInt(b);
+                } else if (sortMode === 'login-desc') {
+                    return parseInt(b) - parseInt(a);
+                } else {
+                    const balA = globalPortfolioData[a] ? (globalPortfolioData[a].balance || 0) : 0;
+                    const balB = globalPortfolioData[b] ? (globalPortfolioData[b].balance || 0) : 0;
+                    if (sortMode === 'balance-desc') {
+                        return balB - balA;
+                    } else if (sortMode === 'balance-asc') {
+                        return balA - balB;
+                    }
+                }
+                return parseInt(a) - parseInt(b);
+            });
         }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
@@ -479,7 +518,8 @@
             overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)'; overlay.style.color = 'var(--danger-red)'; overlay.style.display = 'block';
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
-                let farms = getFarmsList().filter(f => f !== login); saveFarmsList(farms);
+                let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
+                saveFarmsList(farms);
                 delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); 
             } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่อ'); }
             overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.2)'; overlay.style.color = 'var(--leaf-green)';
@@ -547,6 +587,8 @@
                     };
                 }
                 updatePortfolioSummary(); updateUICard(login); updateTreeRanks();
+                // รีเรนเดอร์โครงสร้างการ์ดใหม่เพื่อให้ตารางจัดเรียงตามยอด Balance อัปเดตทันทีเมื่อข้อมูลมาครบ
+                renderForest();
             } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); updateTreeRanks(); }
         }
 
@@ -654,7 +696,11 @@
 
         function filterForestCards() {
             const query = document.getElementById('farmSearchInput').value.toLowerCase().trim();
-            Array.from(document.getElementsByClassName('tree-card')).forEach(c => c.style.display = c.getAttribute('data-login').toLowerCase().includes(query) ? 'flex' : 'none');
+            Array.from(document.getElementsByClassName('tree-card')).forEach(c => {
+                const login = c.getAttribute('data-login').toLowerCase();
+                const matchesSearch = login.includes(query);
+                c.style.display = matchesSearch ? 'flex' : 'none';
+            });
         }
 
         function updatePortfolioSummary() {
