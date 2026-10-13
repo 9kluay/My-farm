@@ -175,10 +175,30 @@
             background: var(--forest-card); backdrop-filter: blur(25px);
             border: 1px solid var(--forest-border); border-radius: 35px; padding: 25px;
             position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); z-index: 2; }
+
+        /* 🔍 คลาสสำหรับขยายการ์ดเต็มจอ */
+        .tree-card.expanded {
+            position: fixed !important;
+            top: 50% !important; left: 50% !important;
+            transform: translate(-50%, -50%) scale(1) !important;
+            width: 90% !important; max-width: 700px !important;
+            max-height: 90vh !important; overflow-y: auto !important;
+            z-index: 9999 !important;
+            background: rgba(10, 32, 22, 0.95) !important;
+            border: 2px solid var(--leaf-green) !important;
+            box-shadow: 0 0 100px rgba(0,0,0,0.8), 0 0 30px rgba(52, 211, 153, 0.4) !important;
+        }
+
+        /* ฉากหลังมืดเวลาขยายการ์ด */
+        #backdrop-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            z-index: 9990; display: none; transition: 0.3s;
+        }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .plot-number {
@@ -272,11 +292,12 @@
 </head>
 <body>
 
+    <div id="backdrop-overlay" onclick="closeAllExpandedCards()"></div>
     <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- 🌿 แถบสถานะตรงกลาง (เหลือเฉพาะฤดูกาลและสภาพอากาศ) -->
+        <!-- 🌿 แถบสถานะตรงกลาง -->
         <div class="user-bar">
             <div class="badges-group">
                 <div class="badge-item" id="season-badge">☀️ ฤดูกาล</div>
@@ -452,6 +473,30 @@
         }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
+        // 🔍 ฟังก์ชันคลิกขยาย/ยุบการ์ดฟาร์มเต็มจอ
+        function handleCardClick(event, cardElement) {
+            // ถ้ายกเลิกหรือกดปุ่มลบ (X) ไม่ต้องเปิดขยายจอ
+            if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) return;
+            
+            const overlay = document.getElementById('backdrop-overlay');
+            const isCurrentlyExpanded = cardElement.classList.contains('expanded');
+            
+            // ปิดการขยายการ์ดอื่นๆ ทั้งหมดก่อน
+            document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('expanded'));
+
+            if (!isCurrentlyExpanded) {
+                cardElement.classList.add('expanded');
+                overlay.style.display = 'block';
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function closeAllExpandedCards() {
+            document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('expanded'));
+            document.getElementById('backdrop-overlay').style.display = 'none';
+        }
+
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบพอร์ต:`);
             if (confirmCode === null || confirmCode.trim() !== String(login)) return alert('❌ รหัสยืนยันไม่ถูกต้อง!');
@@ -476,7 +521,11 @@
             }
 
             farms.forEach(login => {
-                const card = document.createElement('div'); card.className = 'tree-card'; card.setAttribute('data-login', login);
+                const card = document.createElement('div'); 
+                card.className = 'tree-card'; 
+                card.setAttribute('data-login', login);
+                card.onclick = (e) => handleCardClick(e, card); // เพิ่มฟังก์ชันคลิกขยาย/ยุบ
+
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-number">🌲 #${login}<span id="stars-${login}" style="font-size:14px; margin-left:10px; color:#fbbf24; text-shadow:0 2px 4px rgba(251,191,36,0.3); letter-spacing:2px;"></span></div>
@@ -545,7 +594,6 @@
 
             let emoji = '', txt = ''; const pct = data.percent;
             
-            // 🪨 เงื่อนไขพอร์ต Balance เป็น 0 (หินรกร้าง)
             if (data.balance <= 0) {
                 emoji = '🪨'; txt = 'พื้นที่รกร้าง';
                 weatherBadge.style.color = 'var(--text-dim)'; weatherBadge.style.borderColor = 'rgba(156, 163, 175, 0.3)';
@@ -594,7 +642,6 @@
                 if (!avatarContainer || !tierDiv) return;
                 let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
 
-                // 🪨 ถ้าพอร์ต Balance เป็น 0 หรือต่ำกว่า ให้แสดงเป็น "หินที่รกร้าง"
                 if (data.balance <= 0) {
                     avatarContainer.innerHTML = `
                         <div class="forest-cluster">
@@ -641,7 +688,6 @@
             let tb = 0, te = 0, tp = 0, tTrees = 0;
             getFarmsList().forEach(login => {
                 const d = globalPortfolioData[login]; 
-                // 1. เงื่อนไข: พอร์ต Balance เป็น 0 จะไม่ถูกนำมาคำนวณรวมในระบบ
                 if (d && !d.error && d.balance > 0) { 
                     tb += d.balance; 
                     te += d.equity; 
