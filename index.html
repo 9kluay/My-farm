@@ -18,7 +18,7 @@
             --card-hover: rgba(20, 48, 35, 0.95);
         }
 
-        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Prompt', sans-serif;
@@ -31,6 +31,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            transition: background-color 2s ease; /* เปลี่ยนสีพื้นหลังเนียนตา */
         }
 
         /* 🌊 สายน้ำไหล */
@@ -68,7 +69,7 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* 🍃 ใบไม้ปลิว */
+        /* 🍃 เอฟเฟกต์ตกจากฟ้า (ฝน/ใบไม้) */
         .falling-leaf {
             position: fixed;
             top: -50px;
@@ -76,12 +77,19 @@
             user-select: none;
             pointer-events: none;
             z-index: 1;
-            animation: fallLeaf linear infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
+        
         @keyframes fallLeaf {
             0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
             20% { opacity: 0.9; }
             100% { transform: translateY(105vh) translateX(120px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes fallRain {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(105vh) translateX(10px) scale(0.8); opacity: 0; }
         }
 
         .container {
@@ -106,6 +114,7 @@
             border-radius: 30px;
             margin-bottom: 25px;
             backdrop-filter: blur(10px);
+            transition: background-color 2s ease;
         }
 
         .nature-badge {
@@ -120,6 +129,15 @@
             font-weight: 600;
             border: 1px solid var(--forest-border);
             box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+        }
+
+        #theme-badge {
+            margin-left: 8px;
+            border-left: 1px solid rgba(52,211,153,0.3);
+            padding-left: 12px;
+            font-weight: normal;
+            color: #a7f3d0;
+            font-size: 13px;
         }
 
         h1 {
@@ -160,7 +178,6 @@
             backdrop-filter: blur(10px);
             text-align: center;
         }
-
         .search-input:focus {
             border-color: var(--leaf-green);
             box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
@@ -191,7 +208,6 @@
             text-align: center;
             box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);
         }
-
         .summary-item:hover {
             transform: translateY(-3px);
             border-color: rgba(52, 211, 153, 0.3);
@@ -206,7 +222,6 @@
             margin-bottom: 6px;
             font-weight: 600;
         }
-
         .summary-val {
             font-size: 20px;
             font-weight: 700;
@@ -223,6 +238,8 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .btn-water {
@@ -239,11 +256,28 @@
             align-items: center;
             gap: 10px;
             border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
         .btn-water:hover {
             background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Checkbox Auto Sync */
+        .auto-sync-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--forest-card);
+            padding: 15px 25px;
+            border-radius: 30px;
+            border: 1px solid var(--forest-border);
+            color: var(--text-light);
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            transition: background-color 2s ease;
         }
 
         /* 🌳 ลานป่า */
@@ -266,8 +300,8 @@
             display: flex;
             flex-direction: column;
             order: 999;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 2s ease;
         }
-        
         .tree-card:hover {
             background: var(--card-hover);
             border-color: rgba(52, 211, 153, 0.5);
@@ -304,6 +338,7 @@
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         .delete-btn:hover {
             background: var(--danger-red);
@@ -436,7 +471,6 @@
             flex-direction: column;
             justify-content: center;
         }
-
         .metric-title {
             font-size: 11px;
             color: var(--text-dim);
@@ -445,7 +479,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .metric-value {
             font-size: 16px;
             font-weight: 700;
@@ -530,7 +563,10 @@
 
     <div class="container">
         <div class="user-bar">
-            <div class="nature-badge">🌲 Living MT4 Forest Sanctuary</div>
+            <div class="nature-badge">
+                🌲 Living MT4 Forest Sanctuary 
+                <span id="theme-badge">⏳ ตรวจสอบสภาพอากาศ...</span>
+            </div>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <span style="color: var(--leaf-green); font-weight: 600;">🌿 สวนป่าส่วนตัวของคุณ</span>
             </div>
@@ -538,7 +574,7 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ระบบจัดอันดับอัตโนมัติ และแสดงสถานะป่าตาม % กำไร 🌟</p>
+            <p class="subtitle">ระบบจัดอันดับอัตโนมัติ ธีมปรับตามเวลาจริง และสภาพอากาศตามพอร์ตรวม 🌟</p>
         </header>
 
         <!-- 🔍 ช่องค้นหาฟาร์มตามเลขพอร์ต -->
@@ -576,8 +612,14 @@
         <div style="text-align: center;">
             <div class="control-box">
                 <button class="btn btn-water" onclick="syncAndRefreshAll()">
-                    <span>💧 ซิงค์และโหลดข้อมูลฟาร์มทั้งหมด (Auto Sync)</span>
+                    <span>💧 ซิงค์และโหลดข้อมูลฟาร์มทั้งหมด</span>
                 </button>
+                
+                <!-- ⏱️ ปุ่มเปิด/ปิด รดน้ำอัตโนมัติ -->
+                <div class="auto-sync-container">
+                    <input type="checkbox" id="autoSyncCheck" onchange="toggleAutoSync()" style="accent-color: var(--leaf-green); transform: scale(1.3); cursor: pointer;">
+                    <label for="autoSyncCheck" style="cursor: pointer;">รดน้ำอัตโนมัติ (ทุก 3 นาที)</label>
+                </div>
             </div>
         </div>
 
@@ -588,13 +630,92 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
+        window.forestParticles = ['🍃', '🍂', '✨', '🌿']; // Default particles
         
         window.onload = async () => {
             initRiver();
+            updateGlobalWeather(0); // เซ็ตธีมเวลาปัจจุบันเบื้องต้นก่อน
             startWindEffect();
             renderForest(); 
             await syncAndRefreshAll(); 
         };
+
+        // ⏱️ ระบบรดน้ำอัตโนมัติ
+        let autoSyncInterval;
+        window.toggleAutoSync = function() {
+            const isChecked = document.getElementById('autoSyncCheck').checked;
+            const overlay = document.getElementById('syncing-overlay');
+            if(isChecked) {
+                // รันทุกๆ 3 นาที (180,000 ms)
+                autoSyncInterval = setInterval(syncAndRefreshAll, 3 * 60 * 1000);
+                overlay.innerText = '⏱️ เปิดระบบรดน้ำอัตโนมัติแล้ว...';
+                overlay.style.display = 'block';
+                setTimeout(() => { overlay.style.display = 'none'; }, 2000);
+            } else {
+                clearInterval(autoSyncInterval);
+                overlay.innerText = '⏸️ ปิดระบบรดน้ำอัตโนมัติ...';
+                overlay.style.display = 'block';
+                setTimeout(() => { overlay.style.display = 'none'; }, 2000);
+            }
+        };
+
+        // 🌤️ ระบบปรับสภาพอากาศและธีมแบบ Dynamic
+        function updateGlobalWeather(totalPercent) {
+            const hour = new Date().getHours();
+            const root = document.documentElement;
+            const badge = document.getElementById('theme-badge');
+            
+            // 1. กำหนดโทนสีพื้นหลังตามเวลาท้องถิ่น (Time of Day)
+            let themeIcon = '🌙'; let themeName = 'ค่ำคืน';
+            let bgColor = '#071911'; let cardBg = 'rgba(14, 38, 26, 0.85)';
+            let bg1 = 'rgba(16, 185, 129, 0.18)'; let bg2 = 'rgba(5, 150, 105, 0.12)';
+            let defaultParticles = ['✨', '🌟', '💫', '🌿']; 
+
+            if (hour >= 6 && hour < 10) { 
+                themeIcon = '🌅'; themeName = 'ยามเช้า';
+                bgColor = '#0a1f16'; cardBg = 'rgba(20, 45, 30, 0.85)';
+                bg1 = 'rgba(251, 191, 36, 0.15)'; bg2 = 'rgba(52, 211, 153, 0.15)';
+                defaultParticles = ['🍃', '💧', '🦋', '🌿'];
+            } else if (hour >= 10 && hour < 16) { 
+                themeIcon = '☀️'; themeName = 'กลางวัน';
+                bgColor = '#0d261b'; cardBg = 'rgba(22, 55, 38, 0.85)';
+                bg1 = 'rgba(52, 211, 153, 0.25)'; bg2 = 'rgba(16, 185, 129, 0.2)';
+                defaultParticles = ['🍃', '🌿', '🍃', '☀️'];
+            } else if (hour >= 16 && hour < 19) { 
+                themeIcon = '🌇'; themeName = 'ยามเย็น';
+                bgColor = '#141812'; cardBg = 'rgba(35, 25, 20, 0.85)';
+                bg1 = 'rgba(245, 158, 11, 0.15)'; bg2 = 'rgba(139, 92, 246, 0.1)';
+                defaultParticles = ['🍂', '🍁', '🍃', '✨'];
+            }
+
+            // 2. กำหนดอนุภาคปลิวลมตามสภาพการเทรดรวมของพอร์ต (Portfolio Weather)
+            let weatherStatus = '';
+            if (totalPercent <= -10) {
+                weatherStatus = ' (พายุโหมกระหน่ำ ⛈️)';
+                window.forestParticles = ['💧', '🌧️', '🌪️', '⚡'];
+                // ท้องฟ้าแดงเตือนภัยอันตราย
+                bgColor = '#1a0f0f'; cardBg = 'rgba(40, 20, 20, 0.85)';
+                bg1 = 'rgba(248, 113, 113, 0.15)'; bg2 = 'rgba(0, 0, 0, 0.4)';
+            } else if (totalPercent <= -2) {
+                weatherStatus = ' (ฝนตกปรอยๆ 🌧️)';
+                window.forestParticles = ['💧', '🌧️', '🍃', '💧'];
+            } else if (totalPercent >= 5) {
+                weatherStatus = ' (รุ้งงามทอประกาย 🌈)';
+                window.forestParticles = ['✨', '🦋', '🌈', '🌟'];
+            } else {
+                weatherStatus = ' (อากาศแจ่มใส 🌿)';
+                window.forestParticles = defaultParticles;
+            }
+
+            root.style.setProperty('--forest-dark', bgColor);
+            root.style.setProperty('--forest-card', cardBg);
+            document.body.style.backgroundImage = `
+                radial-gradient(circle at 20% 10%, ${bg1} 0%, transparent 40%),
+                radial-gradient(circle at 80% 90%, ${bg2} 0%, transparent 40%)
+            `;
+            
+            if(badge) badge.innerHTML = `${themeIcon} ${themeName} ${weatherStatus}`;
+        }
 
         async function syncAndRefreshAll() {
             await syncFarmsFromCloud();
@@ -606,6 +727,7 @@
 
         async function syncFarmsFromCloud() {
             const overlay = document.getElementById('syncing-overlay');
+            overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
             overlay.style.display = 'block';
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
@@ -632,10 +754,20 @@
             setInterval(() => {
                 const leaf = document.createElement('div');
                 leaf.className = 'falling-leaf';
-                const icons = ['🍃', '🍂', '✨', '🌿'];
-                leaf.innerText = icons[Math.floor(Math.random() * icons.length)];
+                const icons = window.forestParticles;
+                const selectedIcon = icons[Math.floor(Math.random() * icons.length)];
+                leaf.innerText = selectedIcon;
                 leaf.style.left = Math.random() * window.innerWidth + 'px';
-                leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                
+                // ตกแบบฝนตกหนัก หรือตกแบบใบไม้ปลิว
+                if(selectedIcon === '💧' || selectedIcon === '🌧️' || selectedIcon === '⚡') {
+                    leaf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                    leaf.style.animationName = 'fallRain';
+                } else {
+                    leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                    leaf.style.animationName = 'fallLeaf';
+                }
+                
                 leaf.style.fontSize = (Math.random() * 10 + 14) + 'px';
                 document.body.appendChild(leaf);
                 setTimeout(() => leaf.remove(), 9000);
@@ -645,6 +777,7 @@
         function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
+        // 🔒 ระบบยืนยันรหัสผ่านเพื่อลบฟาร์ม (ต้องใส่เลขพอร์ตให้ถูกต้องโดยไม่มีการแสดงรหัสผ่านบอก)
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบพอร์ต:`);
             
@@ -672,7 +805,6 @@
             } catch(e) {
                 alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
             }
-            overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
             overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
             overlay.style.borderColor = 'var(--leaf-green)';
             overlay.style.color = 'var(--leaf-green)';
@@ -921,7 +1053,7 @@
                 let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
 
                 if (data.open_positions === 0) {
-                    // 🏕️ ปรับขนาดแคมป์ให้ใหญ่ขึ้นและเพิ่มกองไฟน่ารักๆ
+                    // 🏕️ แคมป์พักแรมใหญ่ขึ้นและเพิ่มกองไฟ 
                     avatarContainer.innerHTML = `
                         <div class="forest-cluster">
                             <div class="tree-base" style="font-size: 80px; animation: none;">🏕️</div>
@@ -1044,6 +1176,9 @@
 
             document.getElementById('sum-farms').innerText = `${farms.length} แปลง`;
             document.getElementById('sum-trees').innerText = `${totalTrees} ต้น`;
+
+            // อัปเดตสภาพอากาศและธีมแบบ Real-time หลังจากสรุปยอดเสร็จสิ้น
+            updateGlobalWeather(totalPercent);
         }
     </script>
 </body>
