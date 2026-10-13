@@ -8,14 +8,13 @@
     <style>
         :root {
             --forest-dark: #05130d;
-            --forest-card: rgba(11, 31, 21, 0.88);
+            --forest-card: rgba(11, 31, 21, 0.92); /* ตรึงสีการ์ดให้คงที่ ไม่อมน้ำตาล */
             --forest-border: rgba(52, 211, 153, 0.32);
             --leaf-green: #34d399;
             --text-light: #ecfdf5;
             --text-dim: #9ca3af;
             --danger-red: #f87171;
             --sun-gold: #fbbf24;
-            --accent-glow: rgba(52, 211, 153, 0.18);
         }
 
         * { box-sizing: border-box; }
@@ -24,8 +23,8 @@
             font-family: 'Prompt', sans-serif;
             background-color: var(--forest-dark);
             background-image: 
-                radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.08) 0%, transparent 50%);
+                radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.1) 0%, transparent 50%);
             color: var(--text-light);
             margin: 0; padding: 25px 20px 95px 20px;
             min-height: 100vh;
@@ -96,7 +95,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(8, 25, 17, 0.8);
+            background: rgba(8, 25, 17, 0.85);
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
             border-radius: 20px;
@@ -131,9 +130,9 @@
 
         p.subtitle { color: var(--text-dim); font-size: 14px; margin: 0; font-weight: 400; }
 
-        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (Smart Agro Dashboard Panel) */
+        /* 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ */
         .summary-dashboard-wrapper {
-            background: rgba(8, 25, 17, 0.75);
+            background: rgba(8, 25, 17, 0.85);
             border: 1px solid var(--forest-border);
             border-radius: 28px;
             padding: 22px;
@@ -202,7 +201,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(8, 25, 17, 0.8);
+            background: rgba(8, 25, 17, 0.85);
             border: 1px solid var(--forest-border);
             padding: 14px 25px;
             border-radius: 20px;
@@ -413,7 +412,7 @@
             <p class="subtitle">ระบบนิเวศจำลองสวนป่าและเกษตรดิจิทัล พร้อมระบบวิเคราะห์เรียลไทม์ ✨</p>
         </header>
 
-        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ (Smart Agro Dashboard Panel) -->
+        <!-- 📊 แผงสรุปภาพรวมฟาร์มมืออาชีพ -->
         <div class="summary-dashboard-wrapper">
             <div class="summary-dashboard-header">
                 <span>📊</span> แผงควบคุมภาพรวมฟาร์มเกษตรการลงทุน (Agro-Financial Summary)
@@ -495,13 +494,14 @@
             const root = document.documentElement;
             
             let themeName = 'อากาศดีเหมาะสม 🍃';
-            let bgColor = '#05130d'; let cardBg = 'rgba(11, 31, 21, 0.88)';
-            let bg1 = 'rgba(16, 185, 129, 0.15)'; let bg2 = 'rgba(5, 150, 105, 0.1)';
+            let bgColor = '#05130d'; 
+            let bg1 = 'rgba(16, 185, 129, 0.15)'; 
+            let bg2 = 'rgba(5, 150, 105, 0.1)';
 
             if (totalPercent <= -10) {
                 themeName = 'พายุเข้าฟาร์ม ⛈️';
                 window.weatherParticles = ['💧', '🌧️', '🌪️', '⚡'];
-                bgColor = '#1a0f0f'; cardBg = 'rgba(40, 20, 20, 0.88)';
+                bgColor = '#1a0f0f'; // เปลี่ยนเฉพาะสีพื้นหลังเมื่อพายุเข้า
                 bg1 = 'rgba(248, 113, 113, 0.15)'; bg2 = 'rgba(0, 0, 0, 0.4)';
             } else if (totalPercent <= -2) {
                 themeName = 'ฝนตกชุ่มฉ่ำ 🌧️';
@@ -513,25 +513,25 @@
                 if (hour >= 6 && hour < 9) {
                     themeName = 'แสงแดดเช้าอบอุ่น 🌅';
                     window.weatherParticles = ['🍃', '☀️', '✨'];
-                    bgColor = '#081c13'; cardBg = 'rgba(15, 38, 25, 0.85)';
+                    bgColor = '#081c13';
                 } else if (hour >= 9 && hour < 16) {
                     themeName = 'แดดจ้าเต็มวัน ☀️';
                     window.weatherParticles = ['☀️', '🍃', '✨'];
-                    bgColor = '#0a2117'; cardBg = 'rgba(18, 48, 32, 0.85)';
+                    bgColor = '#0a2117';
                 } else if (hour >= 16 && hour < 19) {
                     themeName = 'ลมเย็นยามเย็น ⛅';
                     window.weatherParticles = ['🍃', '🌾', '☁️'];
-                    bgColor = '#0d1a12'; cardBg = 'rgba(30, 24, 20, 0.85)';
+                    bgColor = '#0d1a12';
                 } else {
                     themeName = 'คืนเดือนดับ / ฟาร์มสงบ 🌙✨';
                     window.weatherParticles = ['✨', '🌟', '🐛', '🍃'];
-                    bgColor = '#020906'; cardBg = 'rgba(6, 20, 13, 0.9)';
+                    bgColor = '#020906';
                     bg1 = 'rgba(52, 211, 153, 0.08)'; bg2 = 'rgba(251, 191, 36, 0.05)';
                 }
             }
 
+            // อัปเดตเฉพาะสีพื้นหลังหน้าเว็บ ไม่ยุ่งกับการ์ดข้อมูล
             root.style.setProperty('--forest-dark', bgColor);
-            root.style.setProperty('--forest-card', cardBg);
             document.body.style.backgroundImage = `
                 radial-gradient(circle at 10% 10%, ${bg1} 0%, transparent 50%),
                 radial-gradient(circle at 90% 90%, ${bg2} 0%, transparent 50%),
@@ -776,7 +776,7 @@
                 } else {
                     let level = (maxEq > minEq) ? Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1 : 10;
                     const names = ['เมล็ดพันธุ์ในดิน','กล้าไม้สมบูรณ์','พืชคลุมดิน','ไม้พุ่มเขียวขจี','แปลงผักสวนครัว','กอไผ่เจริญเติบโต','สวนผลผลิตดก','ไม้ผลให้ร่มเงา','ไม้ยืนต้นพรีเมียม','พฤกษาแกร่งทนทาน','มหาพฤกษาทองคำ'];
-                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵'];
+                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🌲']; // แก้ไข Level สูงสุดให้เป็นต้นไม้พรีเมียมเขียว ไม่ใช้ตอไม้สีน้ำตาล
                     let treeEmoji = emojis[level]; let treeName = `${names[level]} (Level ${level})`;
                     
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
