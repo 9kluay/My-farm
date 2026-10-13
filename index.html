@@ -176,50 +176,15 @@
             border: 1px solid var(--forest-border); border-radius: 35px; padding: 25px;
             position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             display: flex; flex-direction: column; cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
-        .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); z-index: 2; }
+        .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); }
 
-        /* 🌟 ขยายเต็มจอ: การตั้งค่าเลเยอร์ให้สูงที่สุด และเคลียร์ค่าทึบแสงให้ถูกต้อง */
-        .tree-card.expanded {
-            position: fixed !important;
-            top: 50% !important; left: 50% !important;
-            transform: translate(-50%, -50%) scale(1) !important;
-            width: 90% !important; max-width: 700px !important;
-            max-height: 90vh !important; overflow-y: auto !important;
-            z-index: 999999 !important;
-            background: #0d3822 !important;
+        /* 🌟 เมื่อคลิกการ์ด จะเปลี่ยนเป็นไฮไลท์ขอบเรืองแสงแทนการขยายเต็มจอ ไร้ฝ้าดำบัง 100% */
+        .tree-card.highlighted {
             border: 2px solid var(--leaf-green) !important;
-            box-shadow: 0 30px 100px rgba(0,0,0,0.95), 0 0 70px rgba(52, 211, 153, 0.5) !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            backdrop-filter: none !important;
-        }
-
-        /* 🌟 ปรับกล่องภายในเมื่อขยายให้อ่านง่าย */
-        .tree-card.expanded .metric-card {
-            background: rgba(14, 61, 37, 0.95) !important;
-            border: 1px solid rgba(52, 211, 153, 0.3) !important;
-        }
-        .tree-card.expanded .history-bar {
-            background: rgba(14, 61, 37, 0.95) !important;
-            border: 1px solid rgba(52, 211, 153, 0.3) !important;
-        }
-        .tree-card.expanded .metric-title,
-        .tree-card.expanded .history-label {
-            color: #d1fae5 !important;
-        }
-        .tree-card.expanded .forest-tier-title {
-            background: rgba(14, 61, 37, 0.95) !important;
-            border: 1px solid rgba(52, 211, 153, 0.4) !important;
-        }
-
-        /* 🌑 ฉากหลังมืด (ให้อยู่ใต้การ์ดขยาย แต่เลเยอร์ถูกต้อง) */
-        #backdrop-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 10, 6, 0.85);
-            z-index: 999990; display: none; transition: 0.3s;
-            pointer-events: auto;
+            box-shadow: 0 0 35px rgba(52, 211, 153, 0.4) !important;
+            background: rgba(16, 48, 32, 0.95) !important;
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
@@ -314,7 +279,6 @@
 </head>
 <body>
 
-    <div id="backdrop-overlay" onclick="closeAllExpandedCards()"></div>
     <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
@@ -498,22 +462,12 @@
         function handleCardClick(event, cardElement) {
             if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) return;
             
-            const overlay = document.getElementById('backdrop-overlay');
-            const isCurrentlyExpanded = cardElement.classList.contains('expanded');
-            
-            document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('expanded'));
+            const isCurrentlyHighlighted = cardElement.classList.contains('highlighted');
+            document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('highlighted'));
 
-            if (!isCurrentlyExpanded) {
-                cardElement.classList.add('expanded');
-                overlay.style.display = 'block';
-            } else {
-                overlay.style.display = 'none';
+            if (!isCurrentlyHighlighted) {
+                cardElement.classList.add('highlighted');
             }
-        }
-
-        function closeAllExpandedCards() {
-            document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('expanded'));
-            document.getElementById('backdrop-overlay').style.display = 'none';
         }
 
         window.removeFarm = async function(login) {
@@ -684,7 +638,7 @@
                     let extraHealthy = Math.min(Math.floor(data.percent / 10) || (data.profit_orders > 0 ? 1 : 0), 3);
                     let extraWithered = Math.min(data.loss_orders, 2);
                     let pos = 1;
-                    for(let i=0; i<extraHealthy; i++) { clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}`; pos++; }
+                    for(let i=0; i<extraHealthy; i++) { clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}</div>`; pos++; }
                     for(let i=0; i<extraWithered; i++) { clusterHTML += `<div class="tree-extra extra-${pos} withered">🥀</div>`; pos++; }
                     clusterHTML += `<span class="sparkle sparkle-1">✨</span><span class="sparkle sparkle-2">✨</span><span class="sparkle sparkle-3">✨</span></div>`;
                     
