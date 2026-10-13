@@ -11,7 +11,6 @@
             --forest-card: rgba(14, 38, 26, 0.85);
             --forest-border: rgba(52, 211, 153, 0.25);
             --leaf-green: #34d399;
-            --leaf-glow: rgba(52, 211, 153, 0.4);
             --text-light: #ecfdf5;
             --text-dim: #9ca3af;
             --danger-red: #f87171;
@@ -178,10 +177,6 @@
             letter-spacing: 0.5px;
             margin-bottom: 6px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
         }
 
         .summary-val {
@@ -223,6 +218,7 @@
             box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
         }
 
+        /* 🌳 ลานป่า */
         #forest-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -239,8 +235,6 @@
             position: relative;
             box-shadow: 0 15px 35px rgba(0,0,0,0.25);
             overflow: hidden;
-            transform-origin: bottom center;
-            animation: breezeSway 6s ease-in-out infinite;
             display: flex;
             flex-direction: column;
             order: 999;
@@ -286,7 +280,6 @@
         .delete-btn:hover {
             background: var(--danger-red);
             color: white;
-            box-shadow: 0 0 15px rgba(248, 113, 113, 0.6);
             transform: rotate(90deg);
         }
 
@@ -298,7 +291,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex-grow: 1;
         }
 
         .avatar-container {
@@ -309,7 +301,7 @@
             width: 100%;
         }
 
-        /* 🌳 ระบบป่าไม้แยก ไม้บวก/ไม้ลบ */
+        /* 🌳 ระบบป่าไม้ซ้อนทับ (แยกไม้บวก/ไม้ลบ) */
         .forest-cluster {
             position: relative;
             display: flex;
@@ -335,7 +327,6 @@
             line-height: 1;
         }
         
-        /* สไตล์สำหรับไม้ลบ (เหี่ยวแห้ง) */
         .tree-extra.withered {
             filter: grayscale(0.8) brightness(0.6) drop-shadow(0 5px 5px rgba(0,0,0,0.6));
         }
@@ -344,6 +335,7 @@
         .extra-2 { left: 50%; margin-left: 25px; font-size: 60px; z-index: 3; animation: floatTree 5s ease-in-out infinite 1s; }
         .extra-3 { right: 50%; margin-right: 55px; font-size: 50px; z-index: 2; animation: floatTree 5.5s ease-in-out infinite 1.5s; }
         .extra-4 { left: 50%; margin-left: 55px; font-size: 45px; z-index: 1; animation: floatTree 6s ease-in-out infinite 2s; }
+        .extra-5 { right: 50%; margin-right: 75px; font-size: 40px; z-index: 0; animation: floatTree 6.5s ease-in-out infinite 2.5s; }
 
         @keyframes floatTree {
             0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
@@ -451,9 +443,7 @@
             text-align: center;
             border-right: 1px solid rgba(255,255,255,0.05);
         }
-        .history-item:last-child {
-            border-right: none;
-        }
+        .history-item:last-child { border-right: none; }
         .history-label {
             font-size: 10px;
             color: var(--text-dim);
@@ -523,7 +513,7 @@
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ระบบจัดอันดับอัตโนมัติ พร้อมแสดงสถานะไม้บวก/ไม้ลบ 🌟</p>
+            <p class="subtitle">ระบบจัดอันดับอัตโนมัติ และแสดงสถานะป่าตาม % กำไร 🌟</p>
         </header>
 
         <!-- แถบรวมยอดพอร์ตทั้งหมด -->
@@ -567,6 +557,7 @@
     </div>
 
     <script>
+        // ⚠️ สำคัญ: ใส่ URL เว็บแอป Google Apps Script ของคุณที่นี่
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -632,6 +623,8 @@
                 const overlay = document.getElementById('syncing-overlay');
                 overlay.innerText = `🔥 กำลังเผาถอนรากพอร์ต ${login} ออกจากคลาวด์...`;
                 overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)';
+                overlay.style.borderColor = 'var(--danger-red)';
+                overlay.style.color = 'var(--danger-red)';
                 overlay.style.display = 'block';
                 try {
                     await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
@@ -644,6 +637,10 @@
                 } catch(e) {
                     alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
                 }
+                overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
+                overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+                overlay.style.borderColor = 'var(--leaf-green)';
+                overlay.style.color = 'var(--leaf-green)';
                 overlay.style.display = 'none';
             }
         };
@@ -658,7 +655,7 @@
                     <div class="empty-forest">
                         <span style="font-size: 60px; display: block; margin-bottom: 20px;">🍃</span>
                         <h3 style="color:#fff; margin:0 0 10px 0; font-size: 24px;">ผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0; line-height: 1.6;">ระบบจะสร้างพอร์ตให้อัตโนมัติเมื่อตรวจพบข้อมูลใหม่</p>
+                        <p style="margin:0; line-height: 1.6;">ระบบจะดึงพอร์ตมาสร้างอัตโนมัติเมื่อ EA ของคุณส่งข้อมูลเข้า Sheet</p>
                     </div>
                 `;
                 updatePortfolioSummary();
@@ -754,7 +751,6 @@
                     const diff = equity - initialDeposit;
                     const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
                     
-                    // รับค่าตัวแปรใหม่จาก Google Sheet
                     const pOrders = parseInt(latest.profit_orders || 0);
                     const lOrders = parseInt(latest.loss_orders || 0);
                     const pToday = parseFloat(latest.profit_today || 0);
@@ -780,7 +776,6 @@
             }
         }
 
-        // ฟังก์ชันช่วยจัดรูปแบบเงินและสี
         const formatMoney = (val) => (val > 0 ? '+' : (val < 0 ? '-' : '')) + '$' + Math.abs(val).toFixed(2);
         const getColorClass = (val) => val > 0 ? 'positive' : (val < 0 ? 'negative' : '');
 
@@ -839,10 +834,8 @@
             plDiv.className = `metric-value ${getColorClass(data.profit)}`;
             plDiv.innerText = `${formatMoney(data.profit)} (${(data.profit > 0 ? '+' : '')}${percent.toFixed(2)}%)`;
 
-            // แสดงจำนวนไม้แยกเขียว/แดง
             ordDiv.innerHTML = `<span style="color:var(--leaf-green)">🟢 ${data.profit_orders}</span> | <span style="color:var(--danger-red)">🔴 ${data.loss_orders}</span>`;
             
-            // อัปเดตกำไร Today, Week, Month
             todayDiv.innerText = formatMoney(data.profit_today);
             todayDiv.className = `history-val ${getColorClass(data.profit_today)}`;
             
@@ -905,20 +898,20 @@
                         case 10: treeEmoji = '🪵'; treeName = 'มหาพฤกษาโบราณ (Level 10)'; break;
                     }
                     
-                    // 🌲 วาดต้นไม้บวก และ ไม้ลบ
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
                     
-                    // จำกัดจำนวนต้นไม้รอบๆ ไม่ให้เยอะเกินไป (สูงสุด 2 ต้นบวก และ 2 ต้นลบ เพื่อความสวยงาม)
-                    let extraHealthy = Math.min(data.profit_orders, 2);
+                    let extraHealthy = 0;
+                    if(data.percent >= 10) extraHealthy = Math.floor(data.percent / 10);
+                    if(data.profit_orders > 0 && extraHealthy === 0) extraHealthy = 1;
+                    if(extraHealthy > 3) extraHealthy = 3; 
+                    
                     let extraWithered = Math.min(data.loss_orders, 2);
 
                     let pos = 1;
-                    // ต้นไม้บวก (งอกงาม)
                     for(let i=0; i<extraHealthy; i++) {
                         clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}</div>`;
                         pos++;
                     }
-                    // ต้นไม้ลบ (เหี่ยวแห้ง 🥀)
                     for(let i=0; i<extraWithered; i++) {
                         clusterHTML += `<div class="tree-extra extra-${pos} withered">🥀</div>`;
                         pos++;
@@ -948,8 +941,10 @@
             cards.sort((a, b) => {
                 const loginA = a.getAttribute('data-login');
                 const loginB = b.getAttribute('data-login');
-                const percentA = (globalPortfolioData[loginA] && !globalPortfolioData[loginA].error) ? globalPortfolioData[loginA].percent : -999999;
-                const percentB = (globalPortfolioData[loginB] && !globalPortfolioData[loginB].error) ? globalPortfolioData[loginB].percent : -999999;
+                const percentA = (globalPortfolioData[loginA] && !globalPortfolioData[loginA].error && globalPortfolioData[loginA].percent !== undefined) 
+                                 ? globalPortfolioData[loginA].percent : -999999;
+                const percentB = (globalPortfolioData[loginB] && !globalPortfolioData[loginB].error && globalPortfolioData[loginB].percent !== undefined) 
+                                 ? globalPortfolioData[loginB].percent : -999999;
                 return percentB - percentA;
             });
             
