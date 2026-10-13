@@ -8,7 +8,7 @@
     <style>
         :root {
             --forest-dark: #071911;
-            --forest-card: rgba(14, 38, 26, 0.85);
+            --forest-card: rgba(14, 38, 26, 0.75);
             --forest-border: rgba(52, 211, 153, 0.25);
             --leaf-green: #34d399;
             --text-light: #ecfdf5;
@@ -31,17 +31,17 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            transition: background-color 2s ease; /* เปลี่ยนสีพื้นหลังเนียนตา */
+            transition: background-color 2.5s ease-in-out;
         }
 
         /* 🌊 สายน้ำไหล */
         .river-container {
             position: fixed;
             bottom: 0; left: 0; width: 100%; height: 50px;
-            background: linear-gradient(180deg, rgba(4, 47, 46, 0.4) 0%, rgba(2, 44, 34, 0.95) 100%);
-            border-top: 2px solid rgba(52, 211, 153, 0.3);
+            background: linear-gradient(180deg, rgba(4, 47, 46, 0.5) 0%, rgba(2, 44, 34, 0.95) 100%);
+            border-top: 2px solid rgba(52, 211, 153, 0.4);
             z-index: 999;
-            box-shadow: 0 -10px 30px rgba(52, 211, 153, 0.25);
+            box-shadow: 0 -15px 40px rgba(52, 211, 153, 0.2);
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -50,46 +50,38 @@
         .river-wave-track {
             display: flex;
             white-space: nowrap;
-            animation: flowRiver 15s linear infinite;
+            animation: flowRiver 20s linear infinite;
         }
 
         .river-wave-item {
             font-size: 16px;
             font-weight: 500;
-            color: #6ee7b7;
+            color: rgba(110, 231, 183, 0.8);
             padding-right: 40px;
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            text-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
         }
 
-        @keyframes flowRiver {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+        @keyframes flowRiver { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* 🍃 เอฟเฟกต์ตกจากฟ้า (ฝน/ใบไม้) */
+        /* 🍃 เอฟเฟกต์ตกจากฟ้า */
         .falling-leaf {
-            position: fixed;
-            top: -50px;
-            font-size: 20px;
-            user-select: none;
-            pointer-events: none;
-            z-index: 1;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            position: fixed; top: -50px;
+            user-select: none; pointer-events: none;
+            z-index: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         
         @keyframes fallLeaf {
             0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
             20% { opacity: 0.9; }
-            100% { transform: translateY(105vh) translateX(120px) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(105vh) translateX(150px) rotate(360deg); opacity: 0; }
         }
-
         @keyframes fallRain {
             0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
             20% { opacity: 0.8; }
-            100% { transform: translateY(105vh) translateX(10px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(105vh) translateX(20px) scale(0.8); opacity: 0; }
         }
 
         .container {
@@ -99,299 +91,142 @@
             z-index: 10;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-
+        /* 🎛️ User Bar & Audio Toggle */
         .user-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--forest-card);
+            background: rgba(10, 28, 20, 0.6);
             border: 1px solid var(--forest-border);
             padding: 12px 25px;
-            border-radius: 30px;
+            border-radius: 35px;
             margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-            transition: background-color 2s ease;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 2s ease;
         }
+
+        .badges-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
         .nature-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(52, 211, 153, 0.12);
-            color: var(--leaf-green);
-            padding: 8px 22px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            border: 1px solid var(--forest-border);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(52, 211, 153, 0.15); color: var(--leaf-green);
+            padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 600;
+            border: 1px solid rgba(52, 211, 153, 0.3);
         }
 
-        #theme-badge {
-            margin-left: 8px;
-            border-left: 1px solid rgba(52,211,153,0.3);
-            padding-left: 12px;
-            font-weight: normal;
-            color: #a7f3d0;
-            font-size: 13px;
+        .badge-item {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 15px; border-radius: 30px; font-size: 13px; font-weight: 500;
+            background: rgba(255,255,255,0.05); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.1);
         }
+
+        .sound-btn {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; padding: 8px 20px; border-radius: 30px; font-family: inherit;
+            cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .sound-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
+        .sound-btn.active { background: rgba(52, 211, 153, 0.2); border-color: var(--leaf-green); color: var(--leaf-green); }
+
+        header { text-align: center; margin-bottom: 35px; }
 
         h1 {
-            font-size: 40px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
+            font-size: 42px; font-weight: 700; margin: 0 0 8px 0;
             background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px; filter: drop-shadow(0 4px 10px rgba(52,211,153,0.2));
         }
 
-        p.subtitle {
-            color: var(--text-dim);
-            font-size: 15px;
-            margin: 0;
-        }
+        p.subtitle { color: var(--text-dim); font-size: 16px; margin: 0; }
 
-        /* 🔍 ช่องค้นหาฟาร์ม */
-        .search-box-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-
+        /* 🔍 ช่องค้นหา & สรุปผล */
+        .search-box-container { display: flex; justify-content: center; margin-bottom: 25px; }
         .search-input {
-            background: rgba(6, 23, 15, 0.85);
-            border: 1px solid var(--forest-border);
-            color: var(--text-light);
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-family: inherit;
-            width: 100%;
-            max-width: 450px;
-            outline: none;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            text-align: center;
+            background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light);
+            padding: 14px 25px; border-radius: 35px; font-size: 16px; font-family: inherit; width: 100%; max-width: 500px;
+            outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); backdrop-filter: blur(10px); text-align: center;
         }
-        .search-input:focus {
-            border-color: var(--leaf-green);
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
-        }
+        .search-input:focus { border-color: var(--leaf-green); box-shadow: 0 0 20px rgba(52, 211, 153, 0.2); }
 
-        /* 📊 แถบรวมยอดพอร์ตทั้งหมด */
         .summary-dashboard {
-            background: rgba(14, 38, 26, 0.6);
-            border: 1px solid var(--forest-border);
-            border-radius: 28px;
-            padding: 22px 25px;
-            margin-bottom: 35px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
+            background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 35px; padding: 25px; margin-bottom: 35px; backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px;
         }
 
         @media (max-width: 1100px) { .summary-dashboard { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 600px) { .summary-dashboard { grid-template-columns: repeat(2, 1fr); } }
 
         .summary-item {
-            background: rgba(6, 23, 15, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px 10px;
-            border-radius: 18px;
-            text-align: center;
-            box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 18px 10px; border-radius: 20px; text-align: center;
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.01); transition: 0.3s;
         }
-        .summary-item:hover {
-            transform: translateY(-3px);
-            border-color: rgba(52, 211, 153, 0.3);
-            background: rgba(6, 23, 15, 0.95);
-        }
+        .summary-item:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); border-color: rgba(52, 211, 153, 0.3); }
+        .summary-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
+        .summary-val { font-size: 22px; font-weight: 700; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .summary-val.positive { color: var(--leaf-green); } .summary-val.negative { color: var(--danger-red); }
 
-        .summary-label {
-            font-size: 11px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-        .summary-val {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .summary-val.positive { color: var(--leaf-green); }
-        .summary-val.negative { color: var(--danger-red); }
-
-        .control-box {
-            background: transparent;
-            margin-bottom: 45px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+        /* 🎛️ ปุ่มควบคุม */
+        .control-box { display: flex; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; gap: 20px; margin-bottom: 45px; }
 
         .btn-water {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #fff;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-            padding: 16px 45px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 18px;
-            font-family: inherit;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4); padding: 15px 40px; border-radius: 35px;
+            font-weight: 600; font-size: 16px; font-family: inherit; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-water:hover {
-            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
-        }
+        .btn-water:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6); }
 
-        /* Checkbox Auto Sync */
         .auto-sync-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--forest-card);
-            padding: 15px 25px;
-            border-radius: 30px;
-            border: 1px solid var(--forest-border);
-            color: var(--text-light);
-            font-weight: 500;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
-            transition: background-color 2s ease;
+            display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3);
+            padding: 14px 25px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-light); font-weight: 500; font-size: 15px; cursor: pointer;
         }
 
-        /* 🌳 ลานป่า */
-        #forest-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 30px;
-            position: relative;
-        }
+        /* 🌳 การ์ดต้นไม้ */
+        #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; }
 
         .tree-card {
-            background: var(--forest-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--forest-border);
-            border-radius: 30px;
-            padding: 25px;
-            position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            order: 999;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 2s ease;
+            background: var(--forest-card); backdrop-filter: blur(25px);
+            border: 1px solid var(--forest-border); border-radius: 35px; padding: 25px;
+            position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; order: 999;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .tree-card:hover {
-            background: var(--card-hover);
-            border-color: rgba(52, 211, 153, 0.5);
-            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.2);
-            transform: translateY(-5px);
-            z-index: 2;
-        }
+        .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); z-index: 2; }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .plot-number {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center;
+            background: rgba(0,0,0,0.4); padding: 8px 18px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05);
         }
 
         .delete-btn {
-            background: rgba(248, 113, 113, 0.05);
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            color: var(--danger-red);
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2);
+            color: var(--danger-red); width: 36px; height: 36px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
         }
-        .delete-btn:hover {
-            background: var(--danger-red);
-            color: white;
-            transform: rotate(90deg);
-        }
+        .delete-btn:hover { background: var(--danger-red); color: white; transform: rotate(90deg) scale(1.1); }
 
         .nature-pod {
             background: radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
-            padding: 20px 10px 15px;
-            text-align: center;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 20px 10px 15px; text-align: center; margin-bottom: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .avatar-container {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-            min-height: 100px;
-            width: 100%;
-        }
-
-        .forest-cluster {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            height: 100px;
-            width: 100%;
-        }
+        .avatar-container { position: relative; display: inline-block; margin-bottom: 20px; min-height: 100px; width: 100%; }
+        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 100px; width: 100%; }
         
         .tree-base {
-            font-size: 85px;
-            position: relative;
-            z-index: 5;
-            animation: floatTree 4s ease-in-out infinite;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
-            line-height: 1;
+            font-size: 85px; position: relative; z-index: 5;
+            animation: floatTree 4s ease-in-out infinite; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); line-height: 1;
         }
-
-        .tree-extra {
-            position: absolute;
-            bottom: -5px;
-            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.5)) brightness(0.85);
-            line-height: 1;
-        }
-        
-        .tree-extra.withered {
-            filter: grayscale(0.8) brightness(0.6) drop-shadow(0 5px 5px rgba(0,0,0,0.6));
-        }
+        .tree-extra { position: absolute; bottom: -5px; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.6)) brightness(0.85); line-height: 1; }
+        .tree-extra.withered { filter: grayscale(0.8) brightness(0.6) drop-shadow(0 5px 5px rgba(0,0,0,0.6)); }
 
         .extra-1 { right: 50%; margin-right: 25px; font-size: 65px; z-index: 4; animation: floatTree 4.5s ease-in-out infinite 0.5s; }
         .extra-2 { left: 50%; margin-left: 25px; font-size: 60px; z-index: 3; animation: floatTree 5s ease-in-out infinite 1s; }
@@ -399,182 +234,86 @@
         .extra-4 { left: 50%; margin-left: 55px; font-size: 45px; z-index: 1; animation: floatTree 6s ease-in-out infinite 2s; }
         .extra-5 { right: 50%; margin-right: 75px; font-size: 40px; z-index: 0; animation: floatTree 6.5s ease-in-out infinite 2.5s; }
 
-        @keyframes floatTree {
-            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-            50% { transform: translateY(-5px) rotate(-2deg) scale(1.02); }
-        }
+        @keyframes floatTree { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.02); } }
 
-        .sparkle {
-            position: absolute;
-            font-size: 24px;
-            color: #fbbf24;
-            animation: blinkStar 1.5s ease-in-out infinite alternate;
-            z-index: 10;
-            pointer-events: none;
-            filter: drop-shadow(0 0 8px rgba(251,191,36,0.6));
-        }
-        .sparkle-1 { top: -10px; right: 20%; animation-delay: 0s; }
-        .sparkle-2 { top: 35px; left: 15%; animation-delay: 0.5s; font-size: 18px; }
-        .sparkle-3 { bottom: 15px; right: 10%; animation-delay: 1s; font-size: 20px; }
-
-        @keyframes blinkStar {
-            0% { opacity: 0; transform: scale(0.5) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1.2) rotate(15deg); }
-            100% { opacity: 0; transform: scale(0.5) rotate(30deg); }
-        }
+        .sparkle { position: absolute; font-size: 24px; color: #fbbf24; animation: blinkStar 1.5s ease-in-out infinite alternate; z-index: 10; pointer-events: none; filter: drop-shadow(0 0 8px rgba(251,191,36,0.6)); }
+        .sparkle-1 { top: -10px; right: 20%; animation-delay: 0s; } .sparkle-2 { top: 35px; left: 15%; animation-delay: 0.5s; font-size: 18px; } .sparkle-3 { bottom: 15px; right: 10%; animation-delay: 1s; font-size: 20px; }
+        @keyframes blinkStar { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0; transform: scale(0.5); } }
 
         .weather-badge {
-            position: absolute;
-            bottom: -5px;
-            right: 0;
-            font-size: 12px;
-            color: var(--leaf-green);
-            background: rgba(6, 43, 31, 0.95);
-            padding: 5px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(52, 211, 153, 0.5);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            z-index: 15;
-            backdrop-filter: blur(5px);
-            transform: translateX(20%);
+            position: absolute; bottom: -5px; right: 0; font-size: 12px; color: var(--leaf-green);
+            background: rgba(0, 0, 0, 0.7); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(52, 211, 153, 0.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: nowrap; display: flex; align-items: center; gap: 6px; font-weight: 600;
+            z-index: 15; backdrop-filter: blur(10px); transform: translateX(15%);
         }
 
         .forest-tier-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            margin: 0;
-            padding: 8px 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 18px; font-weight: 700; color: #fff; margin: 0; padding: 8px 18px;
+            background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .metrics-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
+        .metrics-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .metric-card {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 12px 15px;
-            border-radius: 18px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 14px 15px; border-radius: 22px; display: flex; flex-direction: column; justify-content: center;
         }
-        .metric-title {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .metric-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-        }
-        .metric-value.positive { color: var(--leaf-green); }
-        .metric-value.negative { color: var(--danger-red); }
+        .metric-title { font-size: 11px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-value { font-size: 17px; font-weight: 700; color: #fff; }
+        .metric-value.positive { color: var(--leaf-green); } .metric-value.negative { color: var(--danger-red); }
         
         .history-bar {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
-            padding: 10px;
-            margin-bottom: 20px;
-            gap: 5px;
+            display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 20px; padding: 12px 10px; margin-bottom: 20px; gap: 5px;
         }
-        .history-item {
-            text-align: center;
-            border-right: 1px solid rgba(255,255,255,0.05);
-        }
+        .history-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
         .history-item:last-child { border-right: none; }
-        .history-label {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-bottom: 3px;
-        }
-        .history-val {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-        }
-        .history-val.positive { color: var(--leaf-green); }
-        .history-val.negative { color: var(--danger-red); }
+        .history-label { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
+        .history-val { font-size: 13px; font-weight: 600; color: #fff; }
+        .history-val.positive { color: var(--leaf-green); } .history-val.negative { color: var(--danger-red); }
 
         .card-footer {
-            font-size: 12px;
-            color: var(--text-dim);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px dashed rgba(255, 255, 255, 0.1);
-            padding-top: 15px;
-            margin-top: auto;
+            font-size: 12px; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1); padding-top: 15px; margin-top: auto;
         }
-        
-        .status-dot {
-            display: inline-block;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            margin-right: 5px;
-            background-color: currentColor;
-            box-shadow: 0 0 8px currentColor;
-        }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; background-color: currentColor; box-shadow: 0 0 8px currentColor; }
 
         .empty-forest {
-            grid-column: 1 / -1;
-            background: rgba(14, 38, 26, 0.5);
-            border: 2px dashed rgba(52, 211, 153, 0.2);
-            padding: 80px 20px;
-            border-radius: 40px;
-            text-align: center;
-            color: var(--text-dim);
-            backdrop-filter: blur(10px);
+            grid-column: 1 / -1; background: rgba(0,0,0,0.3); border: 2px dashed rgba(52, 211, 153, 0.2);
+            padding: 80px 20px; border-radius: 40px; text-align: center; color: var(--text-dim); backdrop-filter: blur(10px);
         }
         
         #syncing-overlay {
-            position: fixed; top: 20px; right: 20px;
-            background: rgba(16, 185, 129, 0.15); border: 1px solid var(--leaf-green);
-            color: var(--leaf-green); padding: 10px 20px; border-radius: 30px;
-            font-size: 14px; z-index: 1000; font-weight: 600; backdrop-filter: blur(15px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            display: none; transition: 0.3s;
+            position: fixed; top: 20px; right: 20px; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--leaf-green);
+            color: var(--leaf-green); padding: 12px 25px; border-radius: 35px; font-size: 15px; z-index: 1000; font-weight: 600;
+            backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; transition: 0.3s;
         }
     </style>
 </head>
 <body>
 
+    <!-- 🎵 ระบบเสียง ASMR (ซ่อนไว้เล่นเบื้องหลัง) -->
+    <audio id="bgMusic" loop></audio>
+    
     <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
         <div class="user-bar">
-            <div class="nature-badge">
-                🌲 Living MT4 Forest Sanctuary 
-                <span id="theme-badge">⏳ ตรวจสอบสภาพอากาศ...</span>
+            <div class="badges-group">
+                <div class="nature-badge">🌲 Living MT4 Forest Sanctuary</div>
+                <div class="badge-item" id="season-badge">🌸 ฤดูกาล</div>
+                <div class="badge-item" id="theme-badge">⏳ ตรวจสอบสภาพอากาศ...</div>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="color: var(--leaf-green); font-weight: 600;">🌿 สวนป่าส่วนตัวของคุณ</span>
-            </div>
+            
+            <!-- 🎧 ปุ่มควบคุมเสียง ASMR -->
+            <button id="soundToggleBtn" class="sound-btn" onclick="toggleSound()">
+                🔇 เปิดเสียงธรรมชาติ
+            </button>
         </div>
 
         <header>
             <h1>ป่าไม้แห่งการลงทุน</h1>
-            <p class="subtitle">ระบบจัดอันดับอัตโนมัติ ธีมปรับตามเวลาจริง และสภาพอากาศตามพอร์ตรวม 🌟</p>
+            <p class="subtitle">ระบบนิเวศระดับตำนาน: 4 ฤดูกาล และเสียงธรรมชาติบำบัด 🌟</p>
         </header>
 
         <!-- 🔍 ช่องค้นหาฟาร์มตามเลขพอร์ต -->
@@ -609,17 +348,15 @@
             </div>
         </div>
 
-        <div style="text-align: center;">
-            <div class="control-box">
-                <button class="btn btn-water" onclick="syncAndRefreshAll()">
-                    <span>💧 ซิงค์และโหลดข้อมูลฟาร์มทั้งหมด</span>
-                </button>
-                
-                <!-- ⏱️ ปุ่มเปิด/ปิด รดน้ำอัตโนมัติ -->
-                <div class="auto-sync-container">
-                    <input type="checkbox" id="autoSyncCheck" onchange="toggleAutoSync()" style="accent-color: var(--leaf-green); transform: scale(1.3); cursor: pointer;">
-                    <label for="autoSyncCheck" style="cursor: pointer;">รดน้ำอัตโนมัติ (ทุก 3 นาที)</label>
-                </div>
+        <div class="control-box">
+            <button class="btn-water" onclick="syncAndRefreshAll()">
+                <span>💧 ซิงค์และโหลดข้อมูลฟาร์มทั้งหมด</span>
+            </button>
+            
+            <!-- ⏱️ ปุ่มเปิด/ปิด รดน้ำอัตโนมัติ -->
+            <div class="auto-sync-container">
+                <input type="checkbox" id="autoSyncCheck" onchange="toggleAutoSync()" style="accent-color: var(--leaf-green); transform: scale(1.3);">
+                <label for="autoSyncCheck">รดน้ำอัตโนมัติ (ทุก 3 นาที)</label>
             </div>
         </div>
 
@@ -630,11 +367,48 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
-        window.forestParticles = ['🍃', '🍂', '✨', '🌿']; // Default particles
+        let currentSeason = {};
+        window.forestParticles = ['🍃', '✨']; 
         
+        // --- 🎵 ระบบเสียง ASMR ---
+        let isSoundOn = false;
+        let currentAudioSrc = '';
+        
+        const audioLibrary = {
+            nature: 'https://cdn.pixabay.com/download/audio/2021/08/09/audio_8ee487fdf0.mp3', // เสียงป่าและนก
+            rain: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3',   // เสียงฝนฟ้าคะนอง
+            camp: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_731a5eb23b.mp3'    // เสียงกลางคืน/แคมป์ไฟ
+        };
+
+        function toggleSound() {
+            const audio = document.getElementById('bgMusic');
+            const btn = document.getElementById('soundToggleBtn');
+            if (isSoundOn) {
+                audio.pause();
+                btn.innerHTML = '🔇 เปิดเสียงธรรมชาติ';
+                btn.classList.remove('active');
+            } else {
+                audio.play().catch(e => console.log('Audio Autoplay Blocked:', e));
+                btn.innerHTML = '🔊 ปิดเสียงธรรมชาติ';
+                btn.classList.add('active');
+            }
+            isSoundOn = !isSoundOn;
+        }
+
+        // --- 🌸 ระบบฤดูกาล 4 ฤดู ---
+        function getSeasonInfo() {
+            const m = new Date().getMonth(); // 0=Jan, 9=Oct (ปัจจุบัน)
+            if (m >= 2 && m <= 4) return { name: 'ฤดูใบไม้ผลิ', icon: '🌸', particles: ['🌸', '🍃', '🌷', '✨'], tint: 'rgba(236, 72, 153, 0.08)' };
+            if (m >= 5 && m <= 7) return { name: 'ฤดูร้อน', icon: '🌻', particles: ['☀️', '🍃', '🌻', '✨'], tint: 'rgba(251, 191, 36, 0.08)' };
+            if (m >= 8 && m <= 10) return { name: 'ฤดูใบไม้ร่วง', icon: '🍁', particles: ['🍂', '🍁', '🌾', '✨'], tint: 'rgba(249, 115, 22, 0.08)' };
+            return { name: 'ฤดูหนาว', icon: '❄️', particles: ['❄️', '⛄', '🌨️', '✨'], tint: 'rgba(56, 189, 248, 0.08)' };
+        }
+
         window.onload = async () => {
             initRiver();
-            updateGlobalWeather(0); // เซ็ตธีมเวลาปัจจุบันเบื้องต้นก่อน
+            currentSeason = getSeasonInfo();
+            document.getElementById('season-badge').innerHTML = `${currentSeason.icon} ${currentSeason.name}`;
+            updateGlobalWeather(0); 
             startWindEffect();
             renderForest(); 
             await syncAndRefreshAll(); 
@@ -646,109 +420,96 @@
             const isChecked = document.getElementById('autoSyncCheck').checked;
             const overlay = document.getElementById('syncing-overlay');
             if(isChecked) {
-                // รันทุกๆ 3 นาที (180,000 ms)
                 autoSyncInterval = setInterval(syncAndRefreshAll, 3 * 60 * 1000);
-                overlay.innerText = '⏱️ เปิดระบบรดน้ำอัตโนมัติแล้ว...';
-                overlay.style.display = 'block';
-                setTimeout(() => { overlay.style.display = 'none'; }, 2000);
+                overlay.innerText = '⏱️ เปิดระบบรดน้ำอัตโนมัติแล้ว...'; overlay.style.display = 'block'; setTimeout(() => { overlay.style.display = 'none'; }, 2000);
             } else {
                 clearInterval(autoSyncInterval);
-                overlay.innerText = '⏸️ ปิดระบบรดน้ำอัตโนมัติ...';
-                overlay.style.display = 'block';
-                setTimeout(() => { overlay.style.display = 'none'; }, 2000);
+                overlay.innerText = '⏸️ ปิดระบบรดน้ำอัตโนมัติ...'; overlay.style.display = 'block'; setTimeout(() => { overlay.style.display = 'none'; }, 2000);
             }
         };
 
-        // 🌤️ ระบบปรับสภาพอากาศและธีมแบบ Dynamic
+        // 🌤️ ระบบปรับสภาพอากาศ, ธีม และ ASMR
         function updateGlobalWeather(totalPercent) {
             const hour = new Date().getHours();
             const root = document.documentElement;
-            const badge = document.getElementById('theme-badge');
             
-            // 1. กำหนดโทนสีพื้นหลังตามเวลาท้องถิ่น (Time of Day)
+            // โทนสีพื้นหลังตามเวลาท้องถิ่น
             let themeIcon = '🌙'; let themeName = 'ค่ำคืน';
-            let bgColor = '#071911'; let cardBg = 'rgba(14, 38, 26, 0.85)';
+            let bgColor = '#071911'; let cardBg = 'rgba(14, 38, 26, 0.75)';
             let bg1 = 'rgba(16, 185, 129, 0.18)'; let bg2 = 'rgba(5, 150, 105, 0.12)';
-            let defaultParticles = ['✨', '🌟', '💫', '🌿']; 
 
             if (hour >= 6 && hour < 10) { 
-                themeIcon = '🌅'; themeName = 'ยามเช้า';
-                bgColor = '#0a1f16'; cardBg = 'rgba(20, 45, 30, 0.85)';
-                bg1 = 'rgba(251, 191, 36, 0.15)'; bg2 = 'rgba(52, 211, 153, 0.15)';
-                defaultParticles = ['🍃', '💧', '🦋', '🌿'];
+                themeIcon = '🌅'; themeName = 'ยามเช้า'; bgColor = '#0a1f16'; cardBg = 'rgba(20, 45, 30, 0.75)'; bg1 = 'rgba(251, 191, 36, 0.15)'; bg2 = 'rgba(52, 211, 153, 0.15)';
             } else if (hour >= 10 && hour < 16) { 
-                themeIcon = '☀️'; themeName = 'กลางวัน';
-                bgColor = '#0d261b'; cardBg = 'rgba(22, 55, 38, 0.85)';
-                bg1 = 'rgba(52, 211, 153, 0.25)'; bg2 = 'rgba(16, 185, 129, 0.2)';
-                defaultParticles = ['🍃', '🌿', '🍃', '☀️'];
+                themeIcon = '☀️'; themeName = 'กลางวัน'; bgColor = '#0d261b'; cardBg = 'rgba(22, 55, 38, 0.75)'; bg1 = 'rgba(52, 211, 153, 0.25)'; bg2 = 'rgba(16, 185, 129, 0.2)';
             } else if (hour >= 16 && hour < 19) { 
-                themeIcon = '🌇'; themeName = 'ยามเย็น';
-                bgColor = '#141812'; cardBg = 'rgba(35, 25, 20, 0.85)';
-                bg1 = 'rgba(245, 158, 11, 0.15)'; bg2 = 'rgba(139, 92, 246, 0.1)';
-                defaultParticles = ['🍂', '🍁', '🍃', '✨'];
+                themeIcon = '🌇'; themeName = 'ยามเย็น'; bgColor = '#141812'; cardBg = 'rgba(35, 25, 20, 0.75)'; bg1 = 'rgba(245, 158, 11, 0.15)'; bg2 = 'rgba(139, 92, 246, 0.1)';
             }
 
-            // 2. กำหนดอนุภาคปลิวลมตามสภาพการเทรดรวมของพอร์ต (Portfolio Weather)
+            // สภาพอากาศและเสียงตามสถานะพอร์ต
             let weatherStatus = '';
+            let targetAudio = audioLibrary.nature; 
+
             if (totalPercent <= -10) {
-                weatherStatus = ' (พายุโหมกระหน่ำ ⛈️)';
-                window.forestParticles = ['💧', '🌧️', '🌪️', '⚡'];
-                // ท้องฟ้าแดงเตือนภัยอันตราย
-                bgColor = '#1a0f0f'; cardBg = 'rgba(40, 20, 20, 0.85)';
-                bg1 = 'rgba(248, 113, 113, 0.15)'; bg2 = 'rgba(0, 0, 0, 0.4)';
+                weatherStatus = 'พายุโหมกระหน่ำ ⛈️'; window.forestParticles = ['💧', '🌧️', '🌪️', '⚡'];
+                bgColor = '#1a0f0f'; cardBg = 'rgba(40, 20, 20, 0.85)'; bg1 = 'rgba(248, 113, 113, 0.15)'; bg2 = 'rgba(0, 0, 0, 0.4)'; targetAudio = audioLibrary.rain;
             } else if (totalPercent <= -2) {
-                weatherStatus = ' (ฝนตกปรอยๆ 🌧️)';
-                window.forestParticles = ['💧', '🌧️', '🍃', '💧'];
+                weatherStatus = 'ฝนตกปรอยๆ 🌧️'; window.forestParticles = ['💧', '🌧️', '🍃']; targetAudio = audioLibrary.rain;
             } else if (totalPercent >= 5) {
-                weatherStatus = ' (รุ้งงามทอประกาย 🌈)';
-                window.forestParticles = ['✨', '🦋', '🌈', '🌟'];
+                weatherStatus = 'รุ้งงามทอประกาย 🌈'; window.forestParticles = ['✨', '🦋', '🌈', currentSeason.icon]; targetAudio = audioLibrary.nature;
             } else {
-                weatherStatus = ' (อากาศแจ่มใส 🌿)';
-                window.forestParticles = defaultParticles;
+                weatherStatus = 'อากาศแจ่มใส 🌿'; window.forestParticles = currentSeason.particles; targetAudio = audioLibrary.nature;
+            }
+
+            // เช็คว่าถ้าฟาร์มส่วนใหญ่ว่างเปล่า (ตั้งแคมป์) ให้ใช้เสียงแคมป์ปิ้ง
+            const activeFarms = Object.values(globalPortfolioData).filter(d => !d.error && d.open_positions > 0).length;
+            const totalFarmsData = Object.keys(globalPortfolioData).length;
+            if (totalFarmsData > 0 && activeFarms === 0) {
+                targetAudio = audioLibrary.camp; // เสียงจิ้งหรีดแคมป์ไฟ
+            }
+
+            // เปลี่ยนเพลงเบื้องหลังถ้าสถานการณ์เปลี่ยน
+            if(currentAudioSrc !== targetAudio) {
+                currentAudioSrc = targetAudio;
+                const audioEl = document.getElementById('bgMusic');
+                audioEl.src = targetAudio;
+                if(isSoundOn) audioEl.play().catch(e => console.log('Audio Blocked'));
             }
 
             root.style.setProperty('--forest-dark', bgColor);
             root.style.setProperty('--forest-card', cardBg);
+            
+            // ผสมสีกราเดียนต์ตามเวลาและฤดูกาล
             document.body.style.backgroundImage = `
-                radial-gradient(circle at 20% 10%, ${bg1} 0%, transparent 40%),
-                radial-gradient(circle at 80% 90%, ${bg2} 0%, transparent 40%)
+                radial-gradient(circle at 20% 10%, ${bg1} 0%, transparent 50%),
+                radial-gradient(circle at 80% 90%, ${bg2} 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, ${currentSeason.tint} 0%, transparent 100%)
             `;
             
-            if(badge) badge.innerHTML = `${themeIcon} ${themeName} ${weatherStatus}`;
+            document.getElementById('theme-badge').innerHTML = `${themeIcon} ${themeName} (${weatherStatus})`;
         }
 
         async function syncAndRefreshAll() {
             await syncFarmsFromCloud();
             const farms = getFarmsList();
-            if(farms.length > 0) {
-                farms.forEach(login => fetchNodeData(login));
-            }
+            if(farms.length > 0) farms.forEach(login => fetchNodeData(login));
         }
 
         async function syncFarmsFromCloud() {
             const overlay = document.getElementById('syncing-overlay');
-            overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...';
-            overlay.style.display = 'block';
+            overlay.innerText = '☁️ กำลังซิงค์ผืนป่าจากคลาวด์...'; overlay.style.display = 'block';
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
                 const cloudFarms = await response.json();
                 if(Array.isArray(cloudFarms)) {
-                    let localFarms = getFarmsList();
-                    let mergedFarms = [...new Set([...localFarms, ...cloudFarms])];
-                    saveFarmsList(mergedFarms);
-                    renderForest();
+                    let mergedFarms = [...new Set([...getFarmsList(), ...cloudFarms])];
+                    saveFarmsList(mergedFarms); renderForest();
                 }
-            } catch(e) {
-                console.error("Cloud Sync Failed", e);
-            }
+            } catch(e) {}
             overlay.style.display = 'none';
         }
 
-        function initRiver() {
-            const track = document.getElementById('riverTrack');
-            const content = '<div class="river-wave-item">🌊 💧 🌿 สายน้ำแห่งสภาพคล่องหล่อเลี้ยงผืนป่า 🌿 💧 🌊</div>';
-            track.innerHTML = content.repeat(6);
-        }
+        function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">🌊 💧 🌿 สายน้ำแห่งสภาพคล่องหล่อเลี้ยงผืนป่า 🌿 💧 🌊</div>'.repeat(6); }
 
         function startWindEffect() {
             setInterval(() => {
@@ -759,358 +520,177 @@
                 leaf.innerText = selectedIcon;
                 leaf.style.left = Math.random() * window.innerWidth + 'px';
                 
-                // ตกแบบฝนตกหนัก หรือตกแบบใบไม้ปลิว
-                if(selectedIcon === '💧' || selectedIcon === '🌧️' || selectedIcon === '⚡') {
-                    leaf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                    leaf.style.animationName = 'fallRain';
+                if(['💧', '🌧️', '⚡', '❄️', '🌨️'].includes(selectedIcon)) {
+                    leaf.style.animationDuration = (Math.random() * 2 + 1.5) + 's'; leaf.style.animationName = 'fallRain';
                 } else {
-                    leaf.style.animationDuration = (Math.random() * 5 + 4) + 's';
-                    leaf.style.animationName = 'fallLeaf';
+                    leaf.style.animationDuration = (Math.random() * 5 + 4) + 's'; leaf.style.animationName = 'fallLeaf';
                 }
                 
-                leaf.style.fontSize = (Math.random() * 10 + 14) + 'px';
+                leaf.style.fontSize = (Math.random() * 12 + 14) + 'px';
                 document.body.appendChild(leaf);
                 setTimeout(() => leaf.remove(), 9000);
-            }, 1200);
+            }, 900);
         }
 
         function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🔒 ระบบยืนยันรหัสผ่านเพื่อลบฟาร์ม
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบพอร์ต:`);
+            if (confirmCode === null || confirmCode.trim() !== String(login)) return alert('❌ รหัสยืนยันไม่ถูกต้อง!');
             
-            if (confirmCode === null) return;
-
-            if (confirmCode.trim() !== String(login)) {
-                alert('❌ รหัสยืนยันไม่ถูกต้อง! ยกเลิกการลบพอร์ต');
-                return;
-            }
-
             const overlay = document.getElementById('syncing-overlay');
-            overlay.innerText = `🔥 กำลังเผาถอนรากพอร์ต ${login} ออกจากคลาวด์...`;
-            overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)';
-            overlay.style.borderColor = 'var(--danger-red)';
-            overlay.style.color = 'var(--danger-red)';
-            overlay.style.display = 'block';
+            overlay.innerText = `🔥 กำลังเผาถอนรากพอร์ต ${login}...`;
+            overlay.style.backgroundColor = 'rgba(248, 113, 113, 0.2)'; overlay.style.color = 'var(--danger-red)'; overlay.style.display = 'block';
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
-                let farms = getFarmsList();
-                farms = farms.filter(f => f !== login);
-                saveFarmsList(farms);
-                delete globalPortfolioData[login];
-                updatePortfolioSummary();
-                renderForest(); 
-            } catch(e) {
-                alert('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อลบข้อมูล กรุณาลองใหม่');
-            }
-            overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
-            overlay.style.borderColor = 'var(--leaf-green)';
-            overlay.style.color = 'var(--leaf-green)';
-            overlay.style.display = 'none';
+                let farms = getFarmsList().filter(f => f !== login); saveFarmsList(farms);
+                delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); 
+            } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่อ'); }
+            overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.2)'; overlay.style.color = 'var(--leaf-green)';
         };
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
-            grid.innerHTML = '';
-            const farms = getFarmsList();
-
+            grid.innerHTML = ''; const farms = getFarmsList();
             if (farms.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-forest">
-                        <span style="font-size: 60px; display: block; margin-bottom: 20px;">🍃</span>
-                        <h3 style="color:#fff; margin:0 0 10px 0; font-size: 24px;">ผืนป่ายังว่างเปล่า</h3>
-                        <p style="margin:0; line-height: 1.6;">ระบบจะดึงพอร์ตมาสร้างอัตโนมัติเมื่อ EA ของคุณส่งข้อมูลเข้า Sheet</p>
-                    </div>
-                `;
-                updatePortfolioSummary();
+                grid.innerHTML = `<div class="empty-forest"><span style="font-size:60px; display:block; margin-bottom:20px;">🍃</span><h3 style="color:#fff; margin:0 0 10px; font-size: 24px;">ผืนป่ายังว่างเปล่า</h3><p style="margin:0; line-height: 1.6;">ระบบจะดึงพอร์ตมาสร้างอัตโนมัติเมื่อ EA ของคุณส่งข้อมูลเข้า Sheet</p></div>`;
                 return;
             }
 
             farms.forEach(login => {
-                const card = document.createElement('div');
-                card.className = 'tree-card';
-                card.setAttribute('data-login', login);
+                const card = document.createElement('div'); card.className = 'tree-card'; card.setAttribute('data-login', login);
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="plot-number">
-                            🌲 #${login}
-                            <span id="stars-${login}" style="font-size: 14px; margin-left: 10px; color: #fbbf24; text-shadow: 0 2px 4px rgba(251,191,36,0.3); letter-spacing: 2px;"></span>
-                        </div>
-                        <button class="delete-btn" onclick="window.removeFarm('${login}')" title="ลบถาวร">✕</button>
+                        <div class="plot-number">🌲 #${login}<span id="stars-${login}" style="font-size:14px; margin-left:10px; color:#fbbf24; text-shadow:0 2px 4px rgba(251,191,36,0.3); letter-spacing:2px;"></span></div>
+                        <button class="delete-btn" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
-
                     <div class="nature-pod">
                         <div class="avatar-container" id="avatar-container-${login}">
-                            <div class="tree-avatar">🌱</div>
-                            <div class="weather-badge" id="weather-badge-${login}"><span>⏳</span> รอรับข้อมูล</div>
+                            <div class="tree-avatar">🌱</div><div class="weather-badge" id="weather-badge-${login}"><span>⏳</span> รอรับข้อมูล</div>
                         </div>
                         <div class="forest-tier-title" id="tier-${login}">กำลังหยั่งราก...</div>
                     </div>
-
                     <div class="metrics-container">
-                        <div class="metric-card">
-                            <div class="metric-title">Balance</div>
-                            <div class="metric-value" id="bal-${login}">$0.00</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-title">Current Equity</div>
-                            <div class="metric-value" id="eq-${login}">$0.00</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-title">Floating P/L</div>
-                            <div class="metric-value" id="pl-${login}">$0.00</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-title">Orders (แยกไม้)</div>
-                            <div class="metric-value" id="ord-${login}">0 ไม้</div>
-                        </div>
+                        <div class="metric-card"><div class="metric-title">Balance</div><div class="metric-value" id="bal-${login}">$0.00</div></div>
+                        <div class="metric-card"><div class="metric-title">Equity</div><div class="metric-value" id="eq-${login}">$0.00</div></div>
+                        <div class="metric-card"><div class="metric-title">Floating P/L</div><div class="metric-value" id="pl-${login}">$0.00</div></div>
+                        <div class="metric-card"><div class="metric-title">Orders (แยกไม้)</div><div class="metric-value" id="ord-${login}">0 ไม้</div></div>
                     </div>
-
                     <div class="history-bar">
-                        <div class="history-item">
-                            <div class="history-label">วันนี้</div>
-                            <div class="history-val" id="today-${login}">$0.00</div>
-                        </div>
-                        <div class="history-item">
-                            <div class="history-label">สัปดาห์นี้</div>
-                            <div class="history-val" id="week-${login}">$0.00</div>
-                        </div>
-                        <div class="history-item">
-                            <div class="history-label">เดือนนี้</div>
-                            <div class="history-val" id="month-${login}">$0.00</div>
-                        </div>
+                        <div class="history-item"><div class="history-label">วันนี้</div><div class="history-val" id="today-${login}">$0.00</div></div>
+                        <div class="history-item"><div class="history-label">สัปดาห์นี้</div><div class="history-val" id="week-${login}">$0.00</div></div>
+                        <div class="history-item"><div class="history-label">เดือนนี้</div><div class="history-val" id="month-${login}">$0.00</div></div>
                     </div>
-
                     <div class="card-footer">
-                        <span id="status-${login}" style="color: var(--leaf-green); display: flex; align-items: center;">
-                            <span class="status-dot"></span> กำลังเชื่อมต่อผืนป่า
-                        </span>
+                        <span id="status-${login}" style="color:var(--leaf-green); display:flex; align-items:center;"><span class="status-dot"></span> กำลังเชื่อมต่อผืนป่า</span>
                         <span id="time-${login}">--:--:--</span>
-                    </div>
-                `;
+                    </div>`;
                 grid.appendChild(card);
             });
-
-            farms.forEach(login => {
-                if (globalPortfolioData[login]) updateUICard(login);
-            });
-            updateTreeRanks();
-            filterForestCards();
+            farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
+            updateTreeRanks(); filterForestCards();
         }
 
         async function fetchNodeData(login) {
             try {
-                const response = await fetch(`${SCRIPT_URL}?login=${login}`);
-                const data = await response.json();
-
-                if (data.error || data.length === 0) {
-                    globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, percent: 0, open_positions: 0, profit_orders: 0, loss_orders: 0, profit_today: 0, profit_week: 0, profit_month: 0, error: true };
-                } else {
+                const response = await fetch(`${SCRIPT_URL}?login=${login}`); const data = await response.json();
+                if (data.error || data.length === 0) { globalPortfolioData[login] = { error: true }; } 
+                else {
                     const latest = data.at(-1); 
-                    const balance = parseFloat(latest.balance);
-                    const equity = parseFloat(latest.equity);
-                    const profitLoss = parseFloat(latest.floating_pl);
-                    const openPositions = parseInt(latest.open_positions || 0);
-                    
-                    const percent = (balance > 0) ? (profitLoss / balance) * 100 : 0;
-                    
-                    const pOrders = parseInt(latest.profit_orders || 0);
-                    const lOrders = parseInt(latest.loss_orders || 0);
-                    const pToday = parseFloat(latest.profit_today || 0);
-                    const pWeek = parseFloat(latest.profit_week || 0);
-                    const pMonth = parseFloat(latest.profit_month || 0);
-                    
+                    const balance = parseFloat(latest.balance); const profitLoss = parseFloat(latest.floating_pl);
                     globalPortfolioData[login] = { 
-                        balance: balance, equity: equity, profit: profitLoss,
-                        percent: percent, open_positions: openPositions, 
-                        profit_orders: pOrders, loss_orders: lOrders,
-                        profit_today: pToday, profit_week: pWeek, profit_month: pMonth,
+                        balance: balance, equity: parseFloat(latest.equity), profit: profitLoss,
+                        percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, open_positions: parseInt(latest.open_positions || 0), 
+                        profit_orders: parseInt(latest.profit_orders || 0), loss_orders: parseInt(latest.loss_orders || 0),
+                        profit_today: parseFloat(latest.profit_today || 0), profit_week: parseFloat(latest.profit_week || 0), profit_month: parseFloat(latest.profit_month || 0),
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
-
-                updatePortfolioSummary();
-                updateUICard(login);
-                updateTreeRanks();
-            } catch (err) {
-                globalPortfolioData[login] = { error: true };
-                updateUICard(login);
-                updateTreeRanks();
-            }
+                updatePortfolioSummary(); updateUICard(login); updateTreeRanks();
+            } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); updateTreeRanks(); }
         }
 
-        const formatMoney = (val) => {
-            const absVal = Math.abs(val).toFixed(2);
-            if (val > 0) return `+$${absVal}`;
-            if (val < 0) return `-$${absVal}`;
-            return `$${absVal}`;
-        };
-
-        const formatPercent = (val) => {
-            const absVal = Math.abs(val).toFixed(2);
-            if (val > 0) return `(+${absVal}%)`;
-            if (val < 0) return `(-${absVal}%)`;
-            return `(0.00%)`;
-        };
-
+        const formatMoney = (val) => { const absVal = Math.abs(val).toFixed(2); return val > 0 ? `+$${absVal}` : (val < 0 ? `-$${absVal}` : `$${absVal}`); };
+        const formatPercent = (val) => { const absVal = Math.abs(val).toFixed(2); return val > 0 ? `(+${absVal}%)` : (val < 0 ? `(-${absVal}%)` : `(0.00%)`); };
         const getColorClass = (val) => val > 0 ? 'positive' : (val < 0 ? 'negative' : '');
 
         function updateUICard(login) {
-            const data = globalPortfolioData[login];
-            if (!data) return;
-
-            const statusDiv = document.getElementById(`status-${login}`);
-            const weatherBadge = document.getElementById(`weather-badge-${login}`);
-            const balDiv = document.getElementById(`bal-${login}`);
-            const eqDiv = document.getElementById(`eq-${login}`);
-            const plDiv = document.getElementById(`pl-${login}`);
-            const ordDiv = document.getElementById(`ord-${login}`);
-            const timeDiv = document.getElementById(`time-${login}`);
-            
-            const todayDiv = document.getElementById(`today-${login}`);
-            const weekDiv = document.getElementById(`week-${login}`);
-            const monthDiv = document.getElementById(`month-${login}`);
-            
+            const data = globalPortfolioData[login]; if (!data) return;
+            const statusDiv = document.getElementById(`status-${login}`); const weatherBadge = document.getElementById(`weather-badge-${login}`);
             if (!statusDiv) return;
-
             if (data.error) {
-                statusDiv.innerHTML = '<span class="status-dot"></span> ขาดการติดต่อ';
-                statusDiv.style.color = 'var(--danger-red)';
-                weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย';
-                weatherBadge.style.color = 'var(--danger-red)';
-                weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
-                return;
+                statusDiv.innerHTML = '<span class="status-dot"></span> ขาดการติดต่อ'; statusDiv.style.color = 'var(--danger-red)';
+                weatherBadge.innerHTML = '<span>⚠️</span> ข้อมูลขาดหาย'; weatherBadge.style.color = 'var(--danger-red)'; weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)'; return;
             }
+            statusDiv.innerHTML = '<span class="status-dot"></span> ป่าไม้อุดมสมบูรณ์'; statusDiv.style.color = 'var(--leaf-green)';
+            weatherBadge.style.color = 'var(--leaf-green)'; weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
 
-            statusDiv.innerHTML = '<span class="status-dot"></span> ป่าไม้อุดมสมบูรณ์';
-            statusDiv.style.color = 'var(--leaf-green)';
-            weatherBadge.style.color = 'var(--leaf-green)';
-            weatherBadge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+            let emoji = '', txt = ''; const pct = data.percent;
+            if (data.open_positions === 0) { emoji = '🏕️'; txt = 'ตั้งแคมป์รอจังหวะ'; weatherBadge.style.color = '#fbbf24'; weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)'; } 
+            else if (pct > 15) { emoji = '🌈'; txt = 'รุ้งงามทอประกาย'; } else if (pct > 10) { emoji = '☀️'; txt = 'แดดออกอบอุ่น'; } 
+            else if (pct > 5) { emoji = '🌤️'; txt = 'เมฆประดับบางส่วน'; } else if (pct > 0) { emoji = '⛅'; txt = 'ร่มรื่น แดดอ่อนๆ'; } 
+            else if (pct === 0) { emoji = '🌫️'; txt = 'สงบเงียบ'; } else if (pct >= -5) { emoji = '🌧️'; txt = 'ฝนตกปรอยๆ'; } 
+            else if (pct >= -10) { emoji = '☔'; txt = 'ฝนตกชุก'; weatherBadge.style.color = '#fbbf24'; weatherBadge.style.borderColor = 'rgba(251,191,36,0.4)'; } 
+            else { emoji = '⛈️'; txt = 'พายุเตือนภัย!'; weatherBadge.style.color = 'var(--danger-red)'; weatherBadge.style.borderColor = 'rgba(248,113,113,0.4)'; }
 
-            let weatherEmoji = ''; let weatherText = '';
-            const percent = data.percent;
+            weatherBadge.innerHTML = `<span>${emoji}</span> ${txt}`;
+            document.getElementById(`bal-${login}`).innerText = `$${data.balance.toFixed(2)}`; document.getElementById(`eq-${login}`).innerText = `$${data.equity.toFixed(2)}`;
+            const plDiv = document.getElementById(`pl-${login}`); plDiv.className = `metric-value ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(pct)}`;
+            document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--leaf-green)">🟢 ${data.profit_orders}</span> | <span style="color:var(--danger-red)">🔴 ${data.loss_orders}</span>`;
             
-            if (data.open_positions === 0) {
-                weatherEmoji = '🏕️'; weatherText = 'ตั้งแคมป์รอจังหวะ';
-                weatherBadge.style.color = '#fbbf24'; weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
-            } else if (percent > 15) { weatherEmoji = '🌈'; weatherText = 'รุ้งงามทอประกาย';
-            } else if (percent > 10) { weatherEmoji = '☀️'; weatherText = 'แดดออกอบอุ่น';
-            } else if (percent > 5) { weatherEmoji = '🌤️'; weatherText = 'เมฆประดับบางส่วน';
-            } else if (percent > 0) { weatherEmoji = '⛅'; weatherText = 'ร่มรื่น แดดอ่อนๆ';
-            } else if (percent === 0) { weatherEmoji = '🌫️'; weatherText = 'สงบเงียบ';
-            } else if (percent >= -5) { weatherEmoji = '🌧️'; weatherText = 'ฝนตกปรอยๆ';
-            } else if (percent >= -10) { weatherEmoji = '☔'; weatherText = 'ฝนตกชุก'; weatherBadge.style.color = '#fbbf24'; weatherBadge.style.borderColor = 'rgba(251, 191, 36, 0.4)';
-            } else if (percent >= -15) { weatherEmoji = '⛈️'; weatherText = 'พายุฝนรุนแรง!'; weatherBadge.style.color = 'var(--danger-red)'; weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
-            } else { weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโด!'; weatherBadge.style.color = 'var(--danger-red)'; weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)'; }
-
-            weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
-            balDiv.innerText = `$${data.balance.toFixed(2)}`;
-            eqDiv.innerText = `$${data.equity.toFixed(2)}`;
-
-            plDiv.className = `metric-value ${getColorClass(data.profit)}`;
-            plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(percent)}`;
-
-            ordDiv.innerHTML = `<span style="color:var(--leaf-green)">🟢 ${data.profit_orders}</span> | <span style="color:var(--danger-red)">🔴 ${data.loss_orders}</span>`;
-            
-            todayDiv.innerText = formatMoney(data.profit_today);
-            todayDiv.className = `history-val ${getColorClass(data.profit_today)}`;
-            
-            weekDiv.innerText = formatMoney(data.profit_week);
-            weekDiv.className = `history-val ${getColorClass(data.profit_week)}`;
-            
-            monthDiv.innerText = formatMoney(data.profit_month);
-            monthDiv.className = `history-val ${getColorClass(data.profit_month)}`;
-
-            timeDiv.innerText = new Date(data.lastUpdated).toLocaleTimeString('th-TH');
+            ['today', 'week', 'month'].forEach(t => {
+                const val = data[`profit_${t}`]; const div = document.getElementById(`${t}-${login}`);
+                div.innerText = formatMoney(val); div.className = `history-val ${getColorClass(val)}`;
+            });
+            document.getElementById(`time-${login}`).innerText = new Date(data.lastUpdated).toLocaleTimeString('th-TH');
         }
 
         function updateTreeRanks() {
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
-
-            let minEq = Infinity; let maxEq = -Infinity; let maxPercent = 0;
+            let minEq = Infinity, maxEq = -Infinity, maxPercent = 0;
             farms.forEach(f => {
-                const data = globalPortfolioData[f];
-                if (data.open_positions >= 1) {
-                    if (data.equity < minEq) minEq = data.equity;
-                    if (data.equity > maxEq) maxEq = data.equity;
-                }
-                if (data.percent > maxPercent) maxPercent = data.percent;
+                const d = globalPortfolioData[f];
+                if (d.open_positions >= 1) { if (d.equity < minEq) minEq = d.equity; if (d.equity > maxEq) maxEq = d.equity; }
+                if (d.percent > maxPercent) maxPercent = d.percent;
             });
-
             if(minEq === Infinity) { minEq = 0; maxEq = 0; }
 
             farms.forEach(f => {
-                const data = globalPortfolioData[f];
-                const avatarContainer = document.getElementById(`avatar-container-${f}`);
-                const tierDiv = document.getElementById(`tier-${f}`);
-                const starsSpan = document.getElementById(`stars-${f}`);
-                const weatherBadge = document.getElementById(`weather-badge-${f}`);
-                
+                const data = globalPortfolioData[f]; const avatarContainer = document.getElementById(`avatar-container-${f}`); const tierDiv = document.getElementById(`tier-${f}`);
+                const starsSpan = document.getElementById(`stars-${f}`); const weatherBadge = document.getElementById(`weather-badge-${f}`);
                 if (!avatarContainer || !tierDiv) return;
                 let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
 
                 if (data.open_positions === 0) {
-                    // 🏕️ จัดตำแหน่งกองไฟใหม่ ให้อยู่ข้างเต็นท์พอดีและไม่ทับป้าย พร้อมเพิ่มแสงเรืองรอง
+                    // 🔥 จัดเลย์เอาต์กองไฟให้อยู่ซ้ายมือของเต็นท์
                     avatarContainer.innerHTML = `
                         <div class="forest-cluster">
-                            <div class="tree-base" style="font-size: 80px; animation: none; position: relative; z-index: 5;">🏕️</div>
-                            <div class="tree-extra" style="font-size: 38px; left: 50%; margin-left: 30px; bottom: -2px; z-index: 6; filter: drop-shadow(0 0 12px rgba(251, 146, 60, 0.8));">🔥</div>
+                            <div class="tree-extra" style="font-size: 38px; position: absolute; left: 50%; transform: translateX(-120%); bottom: 0px; z-index: 6; filter: drop-shadow(0 0 15px rgba(251, 146, 60, 0.9));">🔥</div>
+                            <div class="tree-base" style="font-size: 80px; animation: none; position: relative; z-index: 5; margin-left: 25px;">🏕️</div>
                         </div>` + badgeHTML;
                     tierDiv.innerText = 'แคมป์พักแรมรอออเดอร์';
                 } else {
-                    let level = 1;
-                    if (maxEq > minEq) { level = Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1; } 
-                    else { level = 10; }
+                    let level = (maxEq > minEq) ? Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1 : 10;
                     if (data.balance <= 0) level = 0;
-
-                    let treeEmoji = ''; let treeName = '';
-                    switch(level) {
-                        case 0: treeEmoji = '🌰'; treeName = 'เมล็ดพันธุ์ในดิน (Seed)'; break;
-                        case 1: treeEmoji = '🌱'; treeName = 'ต้นกล้าแรกแย้ม (Level 1)'; break;
-                        case 2: treeEmoji = '🪴'; treeName = 'ไม้ประดับกระถาง (Level 2)'; break;
-                        case 3: treeEmoji = '🌿'; treeName = 'พุ่มไม้ใบอ่อน (Level 3)'; break;
-                        case 4: treeEmoji = '☘️'; treeName = 'พุ่มไม้เขียวขจี (Level 4)'; break;
-                        case 5: treeEmoji = '🎋'; treeName = 'กอไผ่ตั้งตรง (Level 5)'; break;
-                        case 6: treeEmoji = '🌴'; treeName = 'ต้นปาล์มพลิ้วไหว (Level 6)'; break;
-                        case 7: treeEmoji = '🌳'; treeName = 'ไม้ผลัดใบให้ร่มเงา (Level 7)'; break;
-                        case 8: treeEmoji = '🌲'; treeName = 'ต้นสนสูงตระหง่าน (Level 8)'; break;
-                        case 9: treeEmoji = '🌵'; treeName = 'พฤกษาแกร่งทนทาน (Level 9)'; break;
-                        case 10: treeEmoji = '🪵'; treeName = 'มหาพฤกษาโบราณ (Level 10)'; break;
-                    }
+                    const names = ['เมล็ดพันธุ์ในดิน','ต้นกล้าแรกแย้ม','ไม้ประดับกระถาง','พุ่มไม้ใบอ่อน','พุ่มไม้เขียวขจี','กอไผ่ตั้งตรง','ต้นปาล์มพลิ้วไหว','ไม้ผลัดใบให้ร่มเงา','ต้นสนสูงตระหง่าน','พฤกษาแกร่งทนทาน','มหาพฤกษาโบราณ'];
+                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵'];
+                    let treeEmoji = emojis[level]; let treeName = `${names[level]} (Level ${level})`;
                     
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
-                    
-                    let extraHealthy = 0;
-                    if(data.percent >= 10) extraHealthy = Math.floor(data.percent / 10);
-                    if(data.profit_orders > 0 && extraHealthy === 0) extraHealthy = 1;
-                    if(extraHealthy > 3) extraHealthy = 3; 
-                    
+                    let extraHealthy = Math.min(Math.floor(data.percent / 10) || (data.profit_orders > 0 ? 1 : 0), 3);
                     let extraWithered = Math.min(data.loss_orders, 2);
-
                     let pos = 1;
-                    for(let i=0; i<extraHealthy; i++) {
-                        clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}</div>`;
-                        pos++;
-                    }
-                    for(let i=0; i<extraWithered; i++) {
-                        clusterHTML += `<div class="tree-extra extra-${pos} withered">🥀</div>`;
-                        pos++;
-                    }
-
+                    for(let i=0; i<extraHealthy; i++) { clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}</div>`; pos++; }
+                    for(let i=0; i<extraWithered; i++) { clusterHTML += `<div class="tree-extra extra-${pos} withered">🥀</div>`; pos++; }
                     clusterHTML += `<span class="sparkle sparkle-1">✨</span><span class="sparkle sparkle-2">✨</span><span class="sparkle sparkle-3">✨</span></div>`;
-                    avatarContainer.innerHTML = clusterHTML + badgeHTML;
-                    tierDiv.innerText = treeName;
+                    
+                    avatarContainer.innerHTML = clusterHTML + badgeHTML; tierDiv.innerText = treeName;
                 }
 
                 if (starsSpan) {
-                    let starsCount = 0;
-                    if (data.percent > 0 && maxPercent > 0 && data.open_positions > 0) {
-                        starsCount = Math.ceil((data.percent / maxPercent) * 5);
-                        if(starsCount < 1) starsCount = 1; if(starsCount > 5) starsCount = 5;
-                    }
+                    let starsCount = (data.percent > 0 && maxPercent > 0 && data.open_positions > 0) ? Math.max(1, Math.min(5, Math.ceil((data.percent / maxPercent) * 5))) : 0;
                     starsSpan.innerText = '⭐'.repeat(starsCount);
                 }
             });
@@ -1118,66 +698,29 @@
         }
 
         function autoSortForestCards() {
-            const grid = document.getElementById('forest-grid');
-            const cards = Array.from(grid.getElementsByClassName('tree-card'));
-            
+            const grid = document.getElementById('forest-grid'); const cards = Array.from(grid.getElementsByClassName('tree-card'));
             cards.sort((a, b) => {
-                const loginA = a.getAttribute('data-login');
-                const loginB = b.getAttribute('data-login');
-                const percentA = (globalPortfolioData[loginA] && !globalPortfolioData[loginA].error && globalPortfolioData[loginA].percent !== undefined) 
-                                 ? globalPortfolioData[loginA].percent : -999999;
-                const percentB = (globalPortfolioData[loginB] && !globalPortfolioData[loginB].error && globalPortfolioData[loginB].percent !== undefined) 
-                                 ? globalPortfolioData[loginB].percent : -999999;
-                return percentB - percentA;
+                const dA = globalPortfolioData[a.getAttribute('data-login')], dB = globalPortfolioData[b.getAttribute('data-login')];
+                return (dB && !dB.error ? dB.percent : -999999) - (dA && !dA.error ? dA.percent : -999999);
             });
-            
-            cards.forEach((card, index) => {
-                card.style.order = index; 
-                grid.appendChild(card);
-            });
+            cards.forEach((card, i) => { card.style.order = i; grid.appendChild(card); });
         }
 
         function filterForestCards() {
             const query = document.getElementById('farmSearchInput').value.toLowerCase().trim();
-            const cards = document.getElementsByClassName('tree-card');
-            
-            Array.from(cards).forEach(card => {
-                const login = card.getAttribute('data-login').toLowerCase();
-                if (login.includes(query)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+            Array.from(document.getElementsByClassName('tree-card')).forEach(c => c.style.display = c.getAttribute('data-login').toLowerCase().includes(query) ? 'flex' : 'none');
         }
 
         function updatePortfolioSummary() {
-            let totalBalance = 0; let totalEquity = 0; let totalProfit = 0; let totalInitial = 0; let totalTrees = 0;
-            const farms = getFarmsList();
-            farms.forEach(login => {
-                const data = globalPortfolioData[login];
-                if (data && !data.error) {
-                    totalBalance += data.balance || 0; totalEquity += data.equity || 0;
-                    totalProfit += data.profit || 0; totalInitial += data.balance || 0;
-                    totalTrees += data.open_positions || 0;
-                }
+            let tb = 0, te = 0, tp = 0, tTrees = 0;
+            getFarmsList().forEach(login => {
+                const d = globalPortfolioData[login]; if (d && !d.error) { tb += d.balance; te += d.equity; tp += d.profit; tTrees += d.open_positions; }
             });
-            document.getElementById('sum-balance').innerText = `$${totalBalance.toFixed(2)}`;
-            document.getElementById('sum-equity').innerText = `$${totalEquity.toFixed(2)}`;
-            
-            const plElem = document.getElementById('sum-pl');
-            plElem.className = 'summary-val ' + getColorClass(totalProfit);
-            plElem.innerText = formatMoney(totalProfit);
-
-            const totalPercent = (totalBalance > 0) ? (totalProfit / totalBalance) * 100 : 0;
-            const percentElem = document.getElementById('sum-percent');
-            percentElem.className = 'summary-val ' + getColorClass(totalPercent);
-            percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
-
-            document.getElementById('sum-farms').innerText = `${farms.length} แปลง`;
-            document.getElementById('sum-trees').innerText = `${totalTrees} ต้น`;
-
-            // อัปเดตสภาพอากาศและธีมแบบ Real-time หลังจากสรุปยอดเสร็จสิ้น
+            document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
+            const plElem = document.getElementById('sum-pl'); plElem.className = 'summary-val ' + getColorClass(tp); plElem.innerText = formatMoney(tp);
+            const totalPercent = (tb > 0) ? (tp / tb) * 100 : 0;
+            const percentElem = document.getElementById('sum-percent'); percentElem.className = 'summary-val ' + getColorClass(totalPercent); percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
+            document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
             updateGlobalWeather(totalPercent);
         }
     </script>
