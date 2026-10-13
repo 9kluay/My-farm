@@ -153,27 +153,20 @@
         .summary-val { font-size: 22px; font-weight: 700; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .summary-val.positive { color: var(--leaf-green); } .summary-val.negative { color: var(--danger-red); }
 
-        /* 🛠️ แถบควบคุมรวมอยู่ในบรรทัดเดียวกันอย่างลงตัว */
-        .control-box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 45px;
+        .control-box { 
+            display: flex; justify-content: center; align-items: center; width: 100%; 
+            flex-wrap: wrap; gap: 15px; margin-bottom: 45px; 
         }
 
         .btn-water {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3); padding: 12px 28px; border-radius: 30px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4); padding: 12px 30px; border-radius: 30px;
             font-weight: 600; font-size: 15px; font-family: inherit; cursor: pointer;
             display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.3s;
         }
-        .btn-water:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5); }
+        .btn-water:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6); }
 
-        /* 🔽 ช่องตัวเลือกจัดเรียงขนาดกะทัดรัด (ไม่เด่นเกินไป) */
+        /* 🔽 ช่องตัวเลือกจัดเรียงแบบกะทัดรัด อยู่แถวเดียวกัน สีกลมกลืน */
         .sort-select-container {
             display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25);
             padding: 8px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08);
@@ -190,7 +183,7 @@
         .auto-sync-container {
             display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25);
             padding: 10px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08);
-            color: var(--text-light); font-weight: 400; font-size: 14px; cursor: pointer; backdrop-filter: blur(10px);
+            color: var(--text-light); font-weight: 400; font-size: 14px; cursor: pointer;
         }
 
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; }
@@ -332,12 +325,12 @@
             <div class="summary-item"><div class="summary-label">🌱 รวมจำนวนต้น</div><div class="summary-val" id="sum-trees" style="color: var(--sun-gold);">0 ต้น</div></div>
         </div>
 
-        <!-- 🛠️ แถวควบคุมจัดเรียงอยู่บรรทัดเดียวกันอย่างลงตัว -->
         <div class="control-box">
             <button class="btn-water" onclick="syncAndRefreshAll()"><span>💧 ซิงค์ข้อมูลทั้งหมด</span></button>
             
+            <!-- 🔽 ช่องตัวเลือกจัดเรียงแบบกะทัดรัด อยู่แถวเดียวกัน -->
             <div class="sort-select-container">
-                <label for="sortSelect">เรียง:</label>
+                <label for="sortSelect">🗂️ เรียง:</label>
                 <select id="sortSelect" class="sort-select" onchange="renderForest()">
                     <option value="login-asc">พอร์ต (น้อย ➔ มาก)</option>
                     <option value="login-desc">พอร์ต (มาก ➔ น้อย)</option>
@@ -348,7 +341,7 @@
 
             <div class="auto-sync-container">
                 <input type="checkbox" id="autoSyncCheck" onchange="toggleAutoSync()" style="accent-color: var(--leaf-green); transform: scale(1.2);">
-                <label for="autoSyncCheck" style="cursor: pointer;">รดน้ำอัตโนมัติ (ทุก 3 นาที)</label>
+                <label for="autoSyncCheck">รดน้ำอัตโนมัติ (3 นาที)</label>
             </div>
         </div>
 
