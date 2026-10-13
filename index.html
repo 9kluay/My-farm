@@ -735,14 +735,18 @@
                 if (data.error || data.length === 0) {
                     globalPortfolioData[login] = { balance: 0, equity: 0, profit: 0, initial: 0, percent: 0, open_positions: 0, profit_orders: 0, loss_orders: 0, profit_today: 0, profit_week: 0, profit_month: 0, error: true };
                 } else {
-                    const latest = data[0];
+                    const latest = data.at(-1); 
                     const balance = parseFloat(latest.balance);
                     const equity = parseFloat(latest.equity);
                     const profitLoss = parseFloat(latest.floating_pl);
                     const openPositions = parseInt(latest.open_positions || 0);
-                    const initialDeposit = parseFloat(latest.initial_deposit || balance);
                     
-                    // 📐 สูตรคำนวณ % ที่ถูกต้อง: (Floating P/L / Initial Balance) * 100
+                    let initialDeposit = parseFloat(latest.initial_deposit);
+                    if (!initialDeposit || initialDeposit <= 0) {
+                        initialDeposit = balance;
+                    }
+                    
+                    // 📐 สูตรคำนวณ % ที่ถูกต้อง: (Floating P/L / Initial Deposit) * 100
                     const percent = (initialDeposit > 0) ? (profitLoss / initialDeposit) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
@@ -835,7 +839,7 @@
             } else { weatherEmoji = '🌪️'; weatherText = 'พายุทอร์นาโด!'; weatherBadge.style.color = 'var(--danger-red)'; weatherBadge.style.borderColor = 'rgba(248, 113, 113, 0.4)'; }
 
             weatherBadge.innerHTML = `<span>${weatherEmoji}</span> ${weatherText}`;
-            balDiv.innerText = `$${data.balance.toFixed(2)}`;
+            balDiv.innerText = `$${data.initial.toFixed(2)}`;
             eqDiv.innerText = `$${data.equity.toFixed(2)}`;
 
             plDiv.className = `metric-value ${getColorClass(data.profit)}`;
