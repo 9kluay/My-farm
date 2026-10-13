@@ -645,7 +645,6 @@
         function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🔒 ระบบยืนยันรหัสผ่านเพื่อลบฟาร์ม (ต้องใส่เลขพอร์ตให้ถูกต้องโดยไม่มีการแสดงรหัสผ่านบอก)
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัสยืนยันเพื่อลบพอร์ต:`);
             
@@ -783,7 +782,6 @@
                     const profitLoss = parseFloat(latest.floating_pl);
                     const openPositions = parseInt(latest.open_positions || 0);
                     
-                    // 📐 คำนวณ % จาก Balance ณ ปัจจุบัน
                     const percent = (balance > 0) ? (profitLoss / balance) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
@@ -923,7 +921,12 @@
                 let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
 
                 if (data.open_positions === 0) {
-                    avatarContainer.innerHTML = `<div class="tree-avatar">🏕️</div>` + badgeHTML;
+                    // 🏕️ ปรับขนาดแคมป์ให้ใหญ่ขึ้นและเพิ่มกองไฟน่ารักๆ
+                    avatarContainer.innerHTML = `
+                        <div class="forest-cluster">
+                            <div class="tree-base" style="font-size: 80px; animation: none;">🏕️</div>
+                            <div class="tree-extra" style="font-size: 40px; right: 20px; bottom: 0;">🔥</div>
+                        </div>` + badgeHTML;
                     tierDiv.innerText = 'แคมป์พักแรมรอออเดอร์';
                 } else {
                     let level = 1;
@@ -1002,7 +1005,6 @@
             });
         }
 
-        // 🔍 ฟังก์ชันค้นหาและกรองการ์ดฟาร์มตามเลขพอร์ต
         function filterForestCards() {
             const query = document.getElementById('farmSearchInput').value.toLowerCase().trim();
             const cards = document.getElementsByClassName('tree-card');
