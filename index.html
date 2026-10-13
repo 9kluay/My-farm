@@ -91,9 +91,10 @@
             z-index: 10;
         }
 
+        /* 🌿 แถบสถานะสภาพอากาศตรงกลาง */
         .user-bar {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             background: rgba(10, 28, 20, 0.6);
             border: 1px solid var(--forest-border);
@@ -105,19 +106,13 @@
             transition: all 2s ease;
         }
 
-        .badges-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-
-        .nature-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(52, 211, 153, 0.15); color: var(--leaf-green);
-            padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 600;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-        }
+        .badges-group { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
 
         .badge-item {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 15px; border-radius: 30px; font-size: 13px; font-weight: 500;
-            background: rgba(255,255,255,0.05); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.1);
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 600;
+            background: rgba(52, 211, 153, 0.12); color: var(--leaf-green); border: 1px solid rgba(52, 211, 153, 0.3);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
         }
 
         header { text-align: center; margin-bottom: 35px; }
@@ -180,7 +175,7 @@
             background: var(--forest-card); backdrop-filter: blur(25px);
             border: 1px solid var(--forest-border); border-radius: 35px; padding: 25px;
             position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; order: 999;
+            display: flex; flex-direction: column;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); z-index: 2; }
@@ -281,9 +276,9 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
+        <!-- 🌿 แถบสถานะตรงกลาง (เอาป้ายโลโก้ออกแล้ว เหลือเฉพาะฤดูกาลและสภาพอากาศ) -->
         <div class="user-bar">
             <div class="badges-group">
-                <div class="nature-badge">🌲 Living MT4 Forest Sanctuary</div>
                 <div class="badge-item" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge-item" id="theme-badge">⏳ ตรวจสอบสภาพอากาศ...</div>
             </div>
@@ -325,18 +320,14 @@
         let currentSeason = {};
         window.weatherParticles = ['🍃']; 
         
-        // --- ☀️ ระบบ 3 ฤดูกาล (ฝน, หนาว, ร้อน) ---
         function getSeasonInfo() {
             const m = new Date().getMonth(); // 0=Jan ถึง 11=Dec
-            // ฤดูหนาว: พ.ย. - ก.พ. (10, 11, 0, 1)
             if (m === 10 || m === 11 || m === 0 || m === 1) {
                 return { name: 'ฤดูหนาว', icon: '❄️', defaultParticles: ['❄️', '⛄', '🌨️'], tint: 'rgba(56, 189, 248, 0.08)' };
             }
-            // ฤดูร้อน: มี.ค. - พ.ค. (2, 3, 4)
             if (m >= 2 && m <= 4) {
                 return { name: 'ฤดูร้อน', icon: '☀️', defaultParticles: ['☀️', '🍃', '✨'], tint: 'rgba(251, 191, 36, 0.08)' };
             }
-            // ฤดูฝน: มิ.ย. - ต.ค. (5, 6, 7, 8, 9)
             return { name: 'ฤดูฝน', icon: '🌧️', defaultParticles: ['💧', '🌧️', '🍃'], tint: 'rgba(16, 185, 129, 0.1)' };
         }
 
@@ -363,7 +354,6 @@
             }
         };
 
-        // --- 🌤️ ระบบสภาพอากาศ Real-time ---
         function updateGlobalWeather(totalPercent) {
             const hour = new Date().getHours();
             const root = document.documentElement;
@@ -373,7 +363,6 @@
             let bg1 = 'rgba(16, 185, 129, 0.18)'; let bg2 = 'rgba(5, 150, 105, 0.12)';
             let particles = currentSeason.defaultParticles;
 
-            // 1. เช็คตามผลกำไรพอร์ต (Real-time Portfolio Weather)
             if (totalPercent <= -10) {
                 themeName = 'พายุ/ลมแรง ⛈️';
                 window.weatherParticles = ['💧', '🌧️', '🌪️', '⚡'];
@@ -386,7 +375,6 @@
                 themeName = 'รุ้งงาม 🌈';
                 window.weatherParticles = ['✨', '🌈', '🦋', currentSeason.icon];
             } else {
-                // 2. ถ้าพอร์ตปกติ เช็คสภาพอากาศตามช่วงเวลาของวัน
                 if (hour >= 6 && hour < 9) {
                     themeName = 'แดดอ่อนๆ/โปร่ง 🌅';
                     window.weatherParticles = ['🍃', '☀️', '✨'];
@@ -459,7 +447,11 @@
             }, 800);
         }
 
-        function getFarmsList() { return JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); }
+        function getFarmsList() { 
+            let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
+            // เรียงลำดับพอร์ตจากน้อยไปมาก (เลขพอร์ตเท่านั้น)
+            return farms.sort((a, b) => parseInt(a) - parseInt(b));
+        }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
         window.removeFarm = async function(login) {
@@ -591,7 +583,6 @@
                 let badgeHTML = weatherBadge ? weatherBadge.outerHTML : '';
 
                 if (data.open_positions === 0) {
-                    // 🔥 กองไฟอยู่ซ้ายมือของเต็นท์
                     avatarContainer.innerHTML = `
                         <div class="forest-cluster">
                             <div class="tree-extra" style="font-size: 38px; position: absolute; left: 50%; transform: translateX(-120%); bottom: 0px; z-index: 6; filter: drop-shadow(0 0 15px rgba(251, 146, 60, 0.9));">🔥</div>
@@ -621,16 +612,6 @@
                     starsSpan.innerText = '⭐'.repeat(starsCount);
                 }
             });
-            autoSortForestCards();
-        }
-
-        function autoSortForestCards() {
-            const grid = document.getElementById('forest-grid'); const cards = Array.from(grid.getElementsByClassName('tree-card'));
-            cards.sort((a, b) => {
-                const dA = globalPortfolioData[a.getAttribute('data-login')], dB = globalPortfolioData[b.getAttribute('data-login')];
-                return (dB && !dB.error ? dB.percent : -999999) - (dA && !dA.error ? dA.percent : -999999);
-            });
-            cards.forEach((card, i) => { card.style.order = i; grid.appendChild(card); });
         }
 
         function filterForestCards() {
