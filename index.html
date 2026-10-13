@@ -301,7 +301,6 @@
             width: 100%;
         }
 
-        /* 🌳 ระบบป่าไม้ซ้อนทับ (แยกไม้บวก/ไม้ลบ) */
         .forest-cluster {
             position: relative;
             display: flex;
@@ -393,7 +392,6 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* ------------------ ข้อมูล Metrics ------------------ */
         .metrics-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -428,7 +426,6 @@
         .metric-value.positive { color: var(--leaf-green); }
         .metric-value.negative { color: var(--danger-red); }
         
-        /* 🗓️ แถบประวัติกำไร (Today/Week/Month) */
         .history-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -516,7 +513,6 @@
             <p class="subtitle">ระบบจัดอันดับอัตโนมัติ และแสดงสถานะป่าตาม % กำไร 🌟</p>
         </header>
 
-        <!-- แถบรวมยอดพอร์ตทั้งหมด -->
         <div class="summary-dashboard">
             <div class="summary-item">
                 <div class="summary-label">💰 Total Balance</div>
@@ -552,12 +548,10 @@
             </div>
         </div>
 
-        <!-- กล่องตารางฟาร์ม -->
         <div id="forest-grid"></div>
     </div>
 
     <script>
-        // ⚠️ สำคัญ: ใส่ URL เว็บแอป Google Apps Script ของคุณที่นี่
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -702,7 +696,6 @@
                         </div>
                     </div>
 
-                    <!-- 🗓️ แถบประวัติกำไร วัน/สัปดาห์/เดือน -->
                     <div class="history-bar">
                         <div class="history-item">
                             <div class="history-label">วันนี้</div>
@@ -748,8 +741,8 @@
                     const profitLoss = parseFloat(latest.floating_pl);
                     const openPositions = parseInt(latest.open_positions || 0);
                     const initialDeposit = parseFloat(latest.initial_deposit || balance);
-                    const diff = equity - initialDeposit;
-                    const percent = (initialDeposit > 0) ? (diff / initialDeposit) * 100 : 0;
+                    
+                    const percent = (initialDeposit > 0) ? (profitLoss / initialDeposit) * 100 : 0;
                     
                     const pOrders = parseInt(latest.profit_orders || 0);
                     const lOrders = parseInt(latest.loss_orders || 0);
@@ -776,7 +769,21 @@
             }
         }
 
-        const formatMoney = (val) => (val > 0 ? '+' : (val < 0 ? '-' : '')) + '$' + Math.abs(val).toFixed(2);
+        // ปรับปรุงฟังก์ชันจัดการเครื่องหมายให้สะอาด ไม่ชนกัน (+--)
+        const formatMoney = (val) => {
+            const absVal = Math.abs(val).toFixed(2);
+            if (val > 0) return `+$${absVal}`;
+            if (val < 0) return `-$${absVal}`;
+            return `$${absVal}`;
+        };
+
+        const formatPercent = (val) => {
+            const absVal = Math.abs(val).toFixed(2);
+            if (val > 0) return `(+${absVal}%)`;
+            if (val < 0) return `(-${absVal}%)`;
+            return `(0.00%)`;
+        };
+
         const getColorClass = (val) => val > 0 ? 'positive' : (val < 0 ? 'negative' : '');
 
         function updateUICard(login) {
@@ -832,7 +839,7 @@
             eqDiv.innerText = `$${data.equity.toFixed(2)}`;
 
             plDiv.className = `metric-value ${getColorClass(data.profit)}`;
-            plDiv.innerText = `${formatMoney(data.profit)} (${(data.profit > 0 ? '+' : '')}${percent.toFixed(2)}%)`;
+            plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(percent)}`;
 
             ordDiv.innerHTML = `<span style="color:var(--leaf-green)">🟢 ${data.profit_orders}</span> | <span style="color:var(--danger-red)">🔴 ${data.loss_orders}</span>`;
             
