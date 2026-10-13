@@ -15,7 +15,6 @@
             --text-dim: #9ca3af;
             --danger-red: #f87171;
             --sun-gold: #fbbf24;
-            --card-hover: rgba(20, 48, 35, 0.95);
         }
 
         * { box-sizing: border-box; }
@@ -166,7 +165,6 @@
         }
         .btn-water:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6); }
 
-        /* 🔽 ช่องตัวเลือกจัดเรียงแบบกะทัดรัด อยู่แถวเดียวกัน สีกลมกลืน */
         .sort-select-container {
             display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25);
             padding: 8px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08);
@@ -197,11 +195,35 @@
         }
         .tree-card:hover { transform: translateY(-8px); border-color: rgba(52, 211, 153, 0.6); box-shadow: 0 25px 50px rgba(16, 185, 129, 0.25); }
 
-        .tree-card.highlighted {
-            border: 2px solid var(--leaf-green) !important;
-            box-shadow: 0 0 35px rgba(52, 211, 153, 0.4) !important;
-            background: rgba(16, 48, 32, 0.95) !important;
+        /* 🌟 ระบบ Popup เต็มจอแบบเคลียร์ใสและปลอดภัย */
+        #popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 12, 7, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 99999; display: none;
+            justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
         }
+        #popup-overlay.show { display: flex; opacity: 1; }
+
+        .popup-content {
+            background: linear-gradient(145deg, #0d3822 0%, #082215 100%);
+            border: 2px solid var(--leaf-green);
+            border-radius: 40px; padding: 35px; width: 90%; max-width: 650px;
+            max-height: 90vh; overflow-y: auto; position: relative;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 50px rgba(52, 211, 153, 0.3);
+            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #popup-overlay.show .popup-content { transform: scale(1); }
+
+        .popup-close-btn {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3);
+            color: var(--danger-red); width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: bold; transition: 0.3s;
+        }
+        .popup-close-btn:hover { background: var(--danger-red); color: white; transform: rotate(90deg) scale(1.1); }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .plot-number {
@@ -296,6 +318,15 @@
 <body>
 
     <div id="syncing-overlay">☁️ กำลังซิงค์ผืนป่าจากคลาวด์...</div>
+    
+    <!-- 🌟 โครงสร้าง Popup Modal กลางจอ -->
+    <div id="popup-overlay" onclick="closePopup(event)">
+        <div class="popup-content" id="popup-inner-content" onclick="event.stopPropagation()">
+            <button class="popup-close-btn" onclick="closePopup()">✕</button>
+            <div id="popup-body-html"></div>
+        </div>
+    </div>
+
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
@@ -328,7 +359,6 @@
         <div class="control-box">
             <button class="btn-water" onclick="syncAndRefreshAll()"><span>💧 ซิงค์ข้อมูลทั้งหมด</span></button>
             
-            <!-- 🔽 ช่องตัวเลือกจัดเรียงแบบกะทัดรัด อยู่แถวเดียวกัน -->
             <div class="sort-select-container">
                 <label for="sortSelect">🗂️ เรียง:</label>
                 <select id="sortSelect" class="sort-select" onchange="renderForest()">
@@ -504,15 +534,27 @@
         }
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        function handleCardClick(event, cardElement) {
+        // 🌟 ฟังก์ชันเปิด Popup แสดงรายละเอียดพอร์ตเมื่อคลิกการ์ด
+        function handleCardClick(event, login) {
             if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) return;
             
-            const isCurrentlyHighlighted = cardElement.classList.contains('highlighted');
-            document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('highlighted'));
+            const cardElement = document.querySelector(`.tree-card[data-login="${login}"]`);
+            if (!cardElement) return;
 
-            if (!isCurrentlyHighlighted) {
-                cardElement.classList.add('highlighted');
-            }
+            const popupBody = document.getElementById('popup-body-html');
+            popupBody.innerHTML = cardElement.innerHTML;
+            
+            // ลบปุ่มกากบาทซ้ำซ้อนด้านใน (ถ้ามี) แล้วเปิด Popup
+            const innerDelete = popupBody.querySelector('.delete-btn');
+            if (innerDelete) innerDelete.remove();
+
+            const overlay = document.getElementById('popup-overlay');
+            overlay.classList.add('show');
+        }
+
+        function closePopup() {
+            const overlay = document.getElementById('popup-overlay');
+            overlay.classList.remove('show');
         }
 
         window.removeFarm = async function(login) {
@@ -527,6 +569,7 @@
                 let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
                 saveFarmsList(farms);
                 delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); 
+                closePopup();
             } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่อ'); }
             overlay.style.display = 'none'; overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.2)'; overlay.style.color = 'var(--leaf-green)';
         };
@@ -543,7 +586,7 @@
                 const card = document.createElement('div'); 
                 card.className = 'tree-card'; 
                 card.setAttribute('data-login', login);
-                card.onclick = (e) => handleCardClick(e, card);
+                card.onclick = (e) => handleCardClick(e, login);
 
                 card.innerHTML = `
                     <div class="card-header">
