@@ -150,7 +150,9 @@
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
         .empty-state span { font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        #syncing-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; z-index: 10000; transition: opacity 0.3s; }
+        /* ปรับปรุงแอนิเมชันตอนโหลดซิงค์ให้ดูเนียนตา */
+        #syncing-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10000; }
+        #syncing-overlay.show { opacity: 1; }
     </style>
 </head>
 <body>
@@ -233,15 +235,18 @@
             initRiver();
             currentSeason = getSeasonInfo();
             document.getElementById('season-badge').innerHTML = `${currentSeason.icon} ${currentSeason.name}`;
-            updateGlobalWeather(0); startWeatherEffect();
+            updateGlobalWeather(0); 
+            startWeatherEffect();
             
+            // 🚀 ปรับปรุงความเร็ว 1: วาดหน้าจอทันทีจากข้อมูลในเครื่อง (ไม่รอโหลด)
             renderForest(); 
-            await syncAndRefreshAll(); 
+            
+            // 🚀 ปรับปรุงความเร็ว 2: เริ่มโหลดข้อมูลเบื้องหลังทีละแปลง
+            syncAndRefreshAll(); 
 
-            // 🚀 ปรับปรุง: เพิ่มระยะเวลาดึงข้อมูลเป็นทุกๆ 60 วินาที เพื่อไม่ให้โหลดหนักเกินไป
             setInterval(() => {
                 syncAndRefreshAll();
-            }, 60000); 
+            }, 15000); // อัปเดตทุก 15 วินาที
         };
 
         function updateGlobalWeather(totalPercent) {
@@ -289,25 +294,28 @@
             document.getElementById('theme-badge').innerHTML = `สภาพอากาศ: ${themeName}`;
         }
 
-        // 🚀 ปรับปรุง: ระบบโหลดข้อมูลรวดเดียวจบ (Batch Processing) ช่วยให้หน้าจอไม่กระตุก
+        // 🚀 ปรับปรุงความเร็ว 3: โหลดข้อมูลแบบไม่ให้หน้าเว็บค้าง
         async function syncAndRefreshAll() {
             const syncOverlay = document.getElementById('syncing-overlay');
-            if (syncOverlay) syncOverlay.style.display = 'block';
+            if (syncOverlay) syncOverlay.classList.add('show');
 
             await syncFarmsFromCloud();
             const farms = getFarmsList();
             
-            if(farms.length > 0) {
-                // ยิงดึงข้อมูลจาก GAS พร้อมกัน แต่รอจนครบทั้งหมดก่อนค่อยวาดหน้าจอใหม่
-                const fetchPromises = farms.map(login => fetchNodeDataSilent(login));
-                await Promise.all(fetchPromises);
-                
-                // หลังจากข้อมูลมาครบหมดแล้ว ค่อยสั่งอัปเดตหน้าจอ 1 ครั้งถ้วน
-                updatePortfolioSummary();
-                renderForest();
+            if (farms.length > 0) {
+                let completed = 0;
+                // ปล่อยให้มันโหลดของมันไป ใครเสร็จก่อนอัปเดตก่อน ไม่ต้องรอกันจนครบแล้วค่อยวาด
+                farms.forEach(login => {
+                    fetchNodeData(login).finally(() => {
+                        completed++;
+                        if (completed === farms.length && syncOverlay) {
+                            syncOverlay.classList.remove('show');
+                        }
+                    });
+                });
+            } else {
+                if (syncOverlay) syncOverlay.classList.remove('show');
             }
-
-            if (syncOverlay) syncOverlay.style.display = 'none';
         }
 
         async function syncFarmsFromCloud() {
@@ -315,8 +323,14 @@
                 const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
                 const cloudFarms = await response.json();
                 if(Array.isArray(cloudFarms)) {
-                    let mergedFarms = [...new Set([...getFarmsList(), ...cloudFarms])];
-                    saveFarmsList(mergedFarms); 
+                    let oldFarms = getFarmsList();
+                    let mergedFarms = [...new Set([...oldFarms, ...cloudFarms])];
+                    
+                    // ถ้าเจอแปลงใหม่ที่เพิ่งงอกมา ค่อยวาดกระดานใหม่
+                    if (oldFarms.length !== mergedFarms.length) {
+                        saveFarmsList(mergedFarms); 
+                        renderForest();
+                    }
                 }
             } catch(e) {}
         }
@@ -457,6 +471,7 @@
             }
         };
 
+        // 🚀 ปรับปรุงความเร็ว 4: วาดโครงสร้างครั้งเดียวตอนโหลด ป้องกันจอพริบและค้าง
         function renderForest() {
             const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
             const farms = getFarmsList(); 
@@ -497,18 +512,16 @@
                 grid.appendChild(card);
             });
             
-            // 🚀 ปรับปรุง: การทำงานเหล่านี้จะถูกรันแค่ 1 ครั้งต่อการโหลดเสร็จครบจบ
+            // เติมข้อมูลเก่าที่อยู่ในความจำใส่โครงที่เพิ่งวาดทันที
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
-            updateTreeRanks(); 
-            filterForestCards();
+            scheduleTreeRanksUpdate();
         }
 
-        // 🚀 ปรับปรุง: ฟังก์ชันย่อยสำหรับดึงข้อมูลเงียบๆ ไม่กระตุก UI
-        async function fetchNodeDataSilent(login) {
+        // 🚀 ฟังก์ชันดึงข้อมูลที่แยกทำงานเป็นอิสระต่อกัน (เมื่อข้อมูลมาถึง จะอัปเดตแค่การ์ดตัวเอง ไม่รบกวนคนอื่น)
+        async function fetchNodeData(login) {
             try {
                 const response = await fetch(`${SCRIPT_URL}?login=${login}`); 
                 const data = await response.json();
-                
                 if (data.error || data.length === 0) { 
                     globalPortfolioData[login] = { error: true }; 
                 } else {
@@ -527,8 +540,13 @@
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
+                // พอโหลดของฟาร์มตัวเองเสร็จ ก็อัปเดตหน้าจอเฉพาะส่วนที่จำเป็นทันที
+                updatePortfolioSummary(); 
+                updateUICard(login); 
+                scheduleTreeRanksUpdate();
             } catch (err) { 
                 globalPortfolioData[login] = { error: true }; 
+                updateUICard(login); 
             }
         }
 
@@ -579,6 +597,13 @@
                 if (!isNaN(date)) { timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`; }
             }
             document.getElementById(`time-${login}`).innerText = timeStr;
+        }
+
+        // หน่วงเวลาการคำนวณกราฟิกต้นไม้เพื่อลดภาระเครื่อง (Debounce)
+        let treeRanksTimeout = null;
+        function scheduleTreeRanksUpdate() {
+            if (treeRanksTimeout) clearTimeout(treeRanksTimeout);
+            treeRanksTimeout = setTimeout(() => { updateTreeRanks(); }, 200);
         }
 
         function updateTreeRanks() {
