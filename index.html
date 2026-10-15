@@ -116,8 +116,9 @@
         .showcase { position: relative; height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px; background: radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, rgba(0,0,0,0.25) 70%); border-radius: 20px; border: 1px solid rgba(255,255,255,0.04); overflow: hidden; padding: 15px; box-shadow: inset 0 4px 20px rgba(0,0,0,0.4); }
         .weather-pill { position: absolute; top: 14px; right: 14px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.5); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; backdrop-filter: blur(8px); }
         
-        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: center; height: 90px; width: 100%; margin-top: 15px; flex-wrap: wrap; gap: 6px; padding: 0 10px; }
-        .tree-extra { position: relative; font-size: 26px; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); z-index: 4; line-height: 1; animation: floatTree 4s ease-in-out infinite; }
+        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 95px; width: 100%; margin-top: 15px; flex-wrap: wrap; gap: 4px; padding: 0 10px; }
+        .tree-extra { position: relative; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); z-index: 4; line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
+        .tree-extra:hover { transform: scale(1.2) translateY(-4px); z-index: 10; }
         .tree-extra.withered { filter: grayscale(1) brightness(0.55) drop-shadow(0 4px 6px rgba(0,0,0,0.5)); animation: none !important; }
         @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
@@ -496,10 +497,10 @@
                 
                 if (data.balance <= 0) {
                     activeEmoji = '🪨';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 28px;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 28px;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
                 } else {
                     let level = 1;
                     if (maxBal > minBal) {
@@ -510,20 +511,19 @@
                         level = 10;
                     }
                     
-                    // 🌟 ชุดอิโมจิสวนป่าสมบูรณ์ 10 ระดับ (ผสมผสานพืชพรรณธรรมชาติหลากหลาย)
                     const names = [
-                        'พุ่มใบไม้เขียวขจี', 
-                        'ต้นอ่อนเพิ่งงอก', 
-                        'พืชประดับสวนป่า', 
-                        'พุ่มโคลเวอร์หนาแน่น', 
                         'พุ่มไม้ใบดก', 
+                        'ต้นอ่อนเพิ่งงอก', 
+                        'แตกกิ่งก้านและใบพุ่มเล็ก', 
+                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 
+                        'ต้นกล้าลงกระถาง', 
                         'ต้นปาล์มสูงสง่า', 
-                        'ไม้ยืนต้นร่มเงากว้าง', 
-                        'ต้นสนป่าหนาแน่น', 
-                        'ไม้ยืนต้นทนทานแกร่ง', 
+                        'ไม้ยืนต้นแผ่กิ่งก้านร่มเงา', 
+                        'ไม้ใหญ่ทรงสูงแข็งแกร่ง', 
+                        'ไม้ยืนต้นทนทานอวบน้ำ', 
                         'มหาพฤกษาใหญ่โตเต็มวัย'
                     ];
-                    const emojis = ['🌿', '🌱', '🪴', '☘️', '🍃', '🌴', '🌳', '🌲', '🌵', '🌳'];
+                    const emojis = ['🍃', '🌱', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '🌵', '🌳'];
                     
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji;
@@ -544,17 +544,29 @@
                         witheredCount = totalTreesCount - healthyCount;
                     }
 
-                    // สร้างความหลากหลายให้สวนป่าดูสมบูรณ์ (สุ่มเลือกอิโมจิธรรมชาติเสริมรอบๆ ตามเลเวล)
-                    const forestVariety = ['🌿', '🌱', '☘️', '🍃', '🪴'];
-                    
+                    // 🌿 สร้างเลเยอร์อิโมจิสวนป่าที่มีความหลากหลาย ขนาด (Font-size) และความสูงต่ำ (TranslateY) ไม่เท่ากัน
+                    const forestVariety = ['🌿', '🌱', '☘️', '🍃', '🪴', '🌳'];
+                    const sizePool = [22, 26, 32, 24, 30, 20]; // ขนาดสลับเล็กใหญ่
+                    const offsetYPool = [0, -6, 2, -4, 4, -2]; // ความสูงต่ำสลับกัน
+
                     let clusterHTML = `<div class="forest-cluster">`;
+                    
                     for(let i = 0; i < healthyCount; i++) {
                         let currentEmoji = (i === 0) ? treeEmoji : forestVariety[i % forestVariety.length];
-                        clusterHTML += `<div class="tree-extra" style="animation-delay: ${i * 0.12}s;">${currentEmoji}</div>`;
+                        let fSize = sizePool[i % sizePool.length];
+                        let yOffset = offsetYPool[i % offsetYPool.length];
+                        let animDelay = i * 0.15;
+                        
+                        clusterHTML += `<div class="tree-extra" style="font-size: ${fSize}px; transform: translateY(${yOffset}px); animation-delay: ${animDelay}s;">${currentEmoji}</div>`;
                     }
+                    
                     for(let i = 0; i < witheredCount; i++) {
-                        clusterHTML += `<div class="tree-extra withered">${treeEmoji}</div>`;
+                        let fSize = sizePool[(healthyCount + i) % sizePool.length];
+                        let yOffset = offsetYPool[(healthyCount + i) % offsetYPool.length];
+                        
+                        clusterHTML += `<div class="tree-extra withered" style="font-size: ${fSize}px; transform: translateY(${yOffset}px);">🍂</div>`;
                     }
+                    
                     clusterHTML += `</div>`; 
                     
                     let elements = `${wpillHTML}${clusterHTML}`;
