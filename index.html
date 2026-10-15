@@ -427,7 +427,7 @@
             wpill.style.color = 'var(--accent-emerald)'; wpill.style.borderColor = 'rgba(16,185,129,0.3)';
 
             let emoji = '', txt = ''; const pct = data.percent;
-            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1);'; }
+            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
             else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'รอรอบใหม่'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
             else if (pct > 10) { emoji = '☀️✨'; txt = 'เติบโตดีเยี่ยม'; }
             else if (pct > 0) { emoji = '⛅✨'; txt = 'อากาศดี'; }
@@ -458,7 +458,6 @@
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
             
-            // 🌟 หา Balance น้อยที่สุด (แต่ > 0) และ Balance มากที่สุดในพอร์ตทั้งหมด
             let minBal = Infinity, maxBal = -Infinity;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
@@ -494,30 +493,29 @@
                     activeEmoji = '🏕️';
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-base" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
                 } else {
-                    // 🌟 คำนวณเลเวล 1-10 จาก Balance (น้อยสุด > 0 = Level 1, มากสุด = Level 10)
                     let level = 1;
                     if (maxBal > minBal) {
                         level = Math.floor(((data.balance - minBal) / (maxBal - minBal)) * 9) + 1;
                         if (level > 10) level = 10;
                         if (level < 1) level = 1;
                     } else {
-                        level = 10; // ถ้ามีพอร์ตเดียว หรือบาลานเท่ากันหมด ให้เป็น Level สูงสุด
+                        level = 10;
                     }
                     
-                    // 🌟 ชุดเลเวลพืชพรรณธรรมชาติ 10 ระดับ (ไม่มีไผ่, ผลไม้ หรือดอกไม้)
+                    // 🌟 ชุดอิโมจิและชื่อเลเวล 10 ระดับ ตรงตามภาพที่คุณอธิวัฒน์กำกับไว้
                     const names = [
-                        'เมล็ดพันธุ์เริ่มต้น', 
-                        'กล้าไม้อ่อน', 
-                        'พืชกระถางมินิมอล', 
-                        'พุ่มใบไม้เขียว', 
-                        'ทุ่งโคลเวอร์นำโชค', 
-                        'พืชประดับหนาแน่น', 
-                        'ต้นปาล์มเขียวชะอุ่ม', 
-                        'ไม้ยืนต้นร่มรื่น', 
-                        'ต้นสนป่าพรีเมียม', 
-                        'มหาพฤกษาทองคำ'
+                        'พุ่มไม้ใบดก', 
+                        'ต้นอ่อนเพิ่งงอก', 
+                        'แตกกิ่งก้านและใบพุ่มเล็ก', 
+                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 
+                        'ต้นกล้าลงกระถาง', 
+                        'ต้นปาล์มสูงสง่า', 
+                        'ไม้ยืนต้นแผ่กิ่งก้านร่มเงา', 
+                        'ไม้ใหญ่ทรงสูงแข็งแกร่ง', 
+                        'ไม้ยืนต้นทนทานอวบน้ำ', 
+                        'มหาพฤกษาใหญ่โตเต็มวัย'
                     ];
-                    const emojis = ['🌰', '🌱', '🪴', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '👑'];
+                    const emojis = ['🍃', '🌱', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '🌵', '🌳'];
                     
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji;
