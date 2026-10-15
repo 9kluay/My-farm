@@ -115,7 +115,19 @@
         .showcase { position: relative; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 15px; }
         .weather-pill { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
-        /* 🌳 ป่าไม้หนาแน่น ต้นใหญ่ เด่นชัด และซ้อนทับกันอย่างลงตัว */
+        /* 🍃 ใบไม้ปลิวรอบๆ สวนป่า (Forest Working Leaf Animation) */
+        .floating-leaf {
+            position: absolute; font-size: 12px; pointer-events: none; z-index: 25; opacity: 0.7;
+            animation: floatLeafAround 6s linear infinite;
+        }
+        @keyframes floatLeafAround {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translate(75px, -65px) rotate(360deg); opacity: 0; }
+        }
+
+        /* 🌳 ป่าไม้หนาแน่น ต้นใหญ่ เด่นชัด และเรียงจากเล็กไปใหญ่ */
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 85px; width: 100%; margin-top: 15px; padding: 0 10px; }
         .tree-extra { position: absolute; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)); line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
         .tree-extra:hover { transform: scale(1.2) translateY(-6px); z-index: 30 !important; }
@@ -426,7 +438,7 @@
             wpill.style.color = 'var(--accent-emerald)'; wpill.style.borderColor = 'rgba(16,185,129,0.3)';
 
             let emoji = '', txt = ''; const pct = data.percent;
-            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1);'; }
+            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
             else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'รอรอบใหม่'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
             else if (pct > 10) { emoji = '☀️✨'; txt = 'เติบโตดีเยี่ยม'; }
             else if (pct > 0) { emoji = '⛅✨'; txt = 'อากาศดี'; }
@@ -524,7 +536,7 @@
                     const emojis = ['🍃', '🌱', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '🌵', '🌳'];
                     
                     activeEmoji = emojis[level - 1];
-                    let treeEmoji = activeEmoji; // ต้นไม้ชนิดเดียวกันตามเลเวล
+                    let treeEmoji = activeEmoji; 
                     
                     let farmOrders = data.open_positions || 0;
                     let farmSharePercent = totalPortfolioOrders > 0 ? (farmOrders / totalPortfolioOrders) : 0;
@@ -542,30 +554,39 @@
                         witheredCount = totalTreesCount - healthyCount;
                     }
 
-                    // 🌳 พิกัดจัดวางต้นไม้ขนาดใหญ่ ซ้อนทับกันแน่นเป็นกลุ่มป่าธรรมชาติ
+                    // 🌿 จัดลำดับพิกัดจากต้นเล็ก (ด้านหลัง/ริม) ไปหาต้นใหญ่เด่น (ด้านหน้า/ตรงกลาง)
                     const forestCoords = [
-                        {x: 45, y: -2, size: 42, z: 6},  // เด่นตรงกลาง (ใหญ่สุด)
-                        {x: 30, y: -6, size: 36, z: 5},  // ซ้ายหน้า
-                        {x: 61, y: -4, size: 38, z: 5},  // ขวาหน้า
-                        {x: 18, y: -10, size: 32, z: 4}, // ซ้ายริม
-                        {x: 73, y: -8, size: 33, z: 4},  // ขวาริม
-                        {x: 38, y: -14, size: 28, z: 3}, // หลังซ้าย
-                        {x: 54, y: -12, size: 29, z: 3}, // หลังขวา
-                        {x: 24, y: -18, size: 25, z: 2}, // ลึกซ้าย
-                        {x: 67, y: -16, size: 26, z: 2}, // ลึกขวา
-                        {x: 47, y: -20, size: 22, z: 1}  // ลึกสุดตรงกลาง
+                        {x: 47, y: -16, size: 20, z: 1}, // เล็กสุด (ลึกสุด)
+                        {x: 25, y: -14, size: 23, z: 2}, 
+                        {x: 67, y: -14, size: 23, z: 2}, 
+                        {x: 38, y: -10, size: 27, z: 3}, 
+                        {x: 55, y: -10, size: 27, z: 3}, 
+                        {x: 18, y: -7,  size: 31, z: 4}, 
+                        {x: 74, y: -7,  size: 31, z: 4}, 
+                        {x: 30, y: -4,  size: 36, z: 5}, 
+                        {x: 61, y: -4,  size: 36, z: 5}, 
+                        {x: 45, y: -1,  size: 42, z: 6}  // ใหญ่ที่สุด (เด่นสุดตรงกลาง)
                     ];
 
                     let clusterHTML = `<div class="forest-cluster">`;
                     
-                    // ต้นไม้เติบโตสมบูรณ์ (ใช้ต้นไม้ชนิดเดียวกัน ขนาดใหญ่ ชิดสวยงาม)
+                    // 🍃 เพิ่มใบไม้ปลิวรอบๆ ป่า (เหมือนป่ากำลังทำงาน)
+                    for(let l = 0; l < 4; l++) {
+                        let startX = 20 + Math.random() * 60;
+                        let startY = 10 + Math.random() * 40;
+                        let animDur = 4 + Math.random() * 3;
+                        let animDelay = Math.random() * 3;
+                        clusterHTML += `<div class="floating-leaf" style="left: ${startX}%; bottom: ${startY}px; animation-duration: ${animDur}s; animation-delay: ${animDelay}s;">🍃</div>`;
+                    }
+
+                    // วาดต้นไม้สมบูรณ์ (เรียงจากเล็กไปใหญ่)
                     for(let i = 0; i < healthyCount; i++) {
                         let pos = forestCoords[i % forestCoords.length];
-                        let animDelay = i * 0.12;
+                        let animDelay = i * 0.1;
                         clusterHTML += `<div class="tree-extra" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${animDelay}s;">${treeEmoji}</div>`;
                     }
                     
-                    // ต้นไม้ในโซนขาดทุน (ใช้ต้นไม้ชนิดเดียวกัน แต่เป็นโทนสีหม่น withered ซ้อนทับป่า)
+                    // วาดต้นไม้ในโซนขาดทุน (ใช้ต้นไม้ชนิดเดียวกัน โทนหม่น withered)
                     for(let i = 0; i < witheredCount; i++) {
                         let index = (healthyCount + i) % forestCoords.length;
                         let pos = forestCoords[index];
