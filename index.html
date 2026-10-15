@@ -88,9 +88,7 @@
         .history-value { font-size: 18px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
-        /* 🛠️ Modern Toolbar */
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
-        
         .toolbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         
         .btn-sync { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 12px 24px; border-radius: var(--btn-radius); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px); }
@@ -200,13 +198,10 @@
         </div>
 
         <div class="toolbar">
-            <!-- ย้ายช่อง Search มาซ้าย -->
             <div class="search-box">
                 <span style="color: var(--text-muted); font-size: 14px;">🔍</span>
                 <input type="text" id="farmSearchInput" class="search-input" placeholder="ค้นหาเลขพอร์ตแปลง..." oninput="filterForestCards()">
             </div>
-            
-            <!-- ย้ายปุ่ม ซิงค์/ถังขยะ มาขวา -->
             <div class="toolbar-right">
                 <button class="btn-sync" onclick="syncAndRefreshAll()"><span>💧 ซิงค์ข้อมูลฟาร์ม (Auto Sync)</span></button>
                 <button class="btn-delete-all" onclick="deleteAllFarms()" title="ล้างแปลงทั้งหมด">🗑️</button>
@@ -217,7 +212,6 @@
     </div>
 
     <script>
-        // ⚠️ นำ URL Google Web App ล่าสุดมาวางตรงนี้
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
@@ -239,6 +233,11 @@
             
             renderForest(); 
             await syncAndRefreshAll(); 
+
+            // 🟢 เพิ่มระบบอัปเดตอัตโนมัติทุกๆ 10 วินาที เพื่อดึงข้อมูล Real-time เมื่อชีสเปลี่ยน
+            setInterval(() => {
+                syncAndRefreshAll();
+            }, 10000);
         };
 
         function updateGlobalWeather(totalPercent) {
@@ -275,7 +274,6 @@
         }
 
         async function syncFarmsFromCloud() {
-            const overlay = document.getElementById('syncing-overlay'); overlay.style.display = 'block';
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
                 const cloudFarms = await response.json();
@@ -284,7 +282,6 @@
                     saveFarmsList(mergedFarms); renderForest();
                 }
             } catch(e) {}
-            overlay.style.display = 'none';
         }
 
         function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">🌾 💧 ระบบชลประทานอัจฉริยะหล่อเลี้ยงฟาร์มการลงทุน 💧 🌾</div>'.repeat(8); }
@@ -329,22 +326,16 @@
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
             
-            const overlay = document.getElementById('syncing-overlay'); overlay.innerText = `🔥 กำลังลบแปลง ${login}...`;
-            overlay.style.background = 'rgba(244, 63, 94, 0.2)'; overlay.style.color = 'var(--accent-rose)'; overlay.style.display = 'block';
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
                 let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
                 saveFarmsList(farms); delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); closePopup();
             } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่อ'); }
-            overlay.style.display = 'none'; overlay.style.background = 'rgba(16, 185, 129, 0.15)'; overlay.style.color = 'var(--accent-emerald)'; overlay.innerText = '✨ กำลังซิงค์ข้อมูลฟาร์ม...';
         };
 
         window.deleteAllFarms = async function() {
             const confirmCode = prompt(`⚠️ คำเตือน: กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์ม "ทั้งหมด" ออกจากระบบ:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
-            
-            const overlay = document.getElementById('syncing-overlay'); overlay.innerText = `🔥 กำลังล้างระบบฟาร์มทั้งหมด...`;
-            overlay.style.background = 'rgba(244, 63, 94, 0.2)'; overlay.style.color = 'var(--accent-rose)'; overlay.style.border = '1px solid var(--accent-rose)'; overlay.style.display = 'block';
             
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
@@ -356,7 +347,6 @@
             } catch(e) { 
                 alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); 
             }
-            overlay.style.display = 'none'; overlay.style.background = 'rgba(16, 185, 129, 0.15)'; overlay.style.color = 'var(--accent-emerald)'; overlay.style.border = '1px solid var(--accent-emerald)'; overlay.innerText = '✨ กำลังซิงค์ข้อมูลฟาร์ม...';
         };
 
         function renderForest() {
@@ -373,7 +363,8 @@
 
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="plot-title">🌳 แปลง #${login} <span class="stars" id="stars-${login}"></span></div>
+                        <!-- 🟢 อัปเดตใช้อิโมจิตามต้นไม้หลักที่หัวข้อแปลง -->
+                        <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="stars" id="stars-${login}"></span></div>
                         <button class="btn-delete" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
                     <div class="showcase" id="showcase-${login}">
@@ -418,9 +409,7 @@
                     };
                 }
                 updatePortfolioSummary(); updateUICard(login); updateTreeRanks(); 
-                
                 renderForest(); 
-                
             } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); updateTreeRanks(); }
         }
 
@@ -493,19 +482,24 @@
             farms.forEach(f => {
                 const data = globalPortfolioData[f]; const showcase = document.getElementById(`showcase-${f}`);
                 const starsSpan = document.getElementById(`stars-${f}`);
+                const plotIconSpan = document.getElementById(`plot-icon-${f}`);
                 if (!showcase) return;
                 
                 const wpillHTML = document.getElementById(`wpill-${f}`).outerHTML;
+                let activeEmoji = '🌱';
                 
                 if (data.balance <= 0) {
+                    activeEmoji = '🪨';
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-base" style="filter: grayscale(1) opacity(0.5); animation: none;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
                 } else if (data.open_positions === 0) {
+                    activeEmoji = '🏕️';
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-base" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
                 } else {
                     let level = (maxEq > minEq) ? Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1 : 10;
                     const names = ['เมล็ดพันธุ์','กล้าไม้สมบูรณ์','พืชคลุมดิน','ไม้พุ่มเขียว','แปลงผักสวนครัว','กอไผ่เจริญเติบโต','สวนผลผลิตดก','ไม้ผลให้ร่มเงา','ไม้ยืนต้นพรีเมียม','พฤกษาแกร่ง','มหาพฤกษาขอนไม้'];
                     const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵'];
-                    let treeEmoji = emojis[level];
+                    activeEmoji = emojis[level];
+                    let treeEmoji = activeEmoji;
                     
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
                     
@@ -541,6 +535,8 @@
                     
                     showcase.innerHTML = elements;
                 }
+
+                if (plotIconSpan) plotIconSpan.innerText = activeEmoji;
 
                 if (starsSpan) {
                     let starsCount = starMap[f] || 0;
