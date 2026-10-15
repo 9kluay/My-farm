@@ -113,7 +113,6 @@
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
-        /* 🔴 วงสีแดง: ขยายพื้นที่ความสูงของโซนแสดงผลต้นไม้ให้ใหญ่ขึ้น */
         .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; }
         .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
@@ -123,7 +122,6 @@
         .tree-extra.withered { filter: grayscale(1) brightness(0.45) contrast(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.6)); animation: none !important; }
         @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-        /* 🟣 วงสีม่วง: ลดขนาดป้าย Level ให้กะทัดรัดและสวยงามลง */
         .level-badge { margin-top: 8px; font-size: 11px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); padding: 3px 10px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.18); z-index: 30; letter-spacing: 0.2px; }
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
@@ -530,7 +528,20 @@
             
             let starMap = {}; rankableFarms.forEach((f, index) => { starMap[f] = (index < 5) ? (5 - index) : 0; });
 
-            farms.forEach(f => {
+            // 🌿 12 เลเวลต้นไม้สำหรับระบบกระจาย (ไม่ซ้ำกันถ้าไม่เกิน 12 ฟาร์ม และเฉลี่ยค่าใกล้เคียงถ้าเกิน)
+            const names = [
+                'ต้นอ่อนเพิ่งงอก / มีใบแรกเกิด', 'ต้นอ่อนเพิ่งงอกซ้อนกัน 2 ต้น', 
+                'แตกกิ่งก้านและใบพุ่มเล็ก', 'แตกกิ่งก้านและใบพุ่มคู่', 
+                'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 'พุ่มใบหนาแน่นแตกกอคู่', 
+                'ต้นปาล์ม / ต้นไม้ลำต้นเดี่ยวสูงสง่า', 'ต้นปาล์มคู่สูงสง่า', 
+                'ไม้ใหญ่ทรงสูง / ลำต้นหนาแน่นแข็งแกร่ง', 'ไม้ใหญ่ทรงสูงคู่หนาแน่น', 
+                'มหาพฤกษาใหญ่โตเต็มวัย / ระบบรากและพุ่มใบสมบูรณ์สูงสุด', 'มหาพฤกษาคู่บารมีสมบูรณ์สูงสุด'
+            ];
+            const emojis = ['🌱', '🌱🌱', '🌿', '🌿🌿', '☘️', '☘️☘️', '🌴', '🌴🌴', '🌲', '🌲🌲', '🌳', '🌳🌳'];
+            
+            const totalFarmsCount = rankableFarms.length;
+
+            rankableFarms.forEach((f, index) => {
                 const data = globalPortfolioData[f]; const showcase = document.getElementById(`showcase-${f}`);
                 const starsSpan = document.getElementById(`stars-${f}`);
                 const plotIconSpan = document.getElementById(`plot-icon-${f}`);
@@ -546,24 +557,16 @@
                     activeEmoji = '🏕️';
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แคมป์ปิ้งพักแปลง</div>`;
                 } else {
+                    // คำนวณเลเวลแบบเกลี่ยค่าใกล้เคียงตามสัดส่วน (Interpolation)
                     let level = 1;
-                    if (maxBal > minBal) {
-                        level = Math.floor(((data.balance - minBal) / (maxBal - minBal)) * 11) + 1;
-                        if (level > 12) level = 12;
-                        if (level < 1) level = 1;
+                    if (totalFarmsCount <= 12) {
+                        level = (index % 12) + 1; // กระจายไม่ให้ซ้ำกันกรณีฟาร์มน้อยกว่าหรือเท่ากับ 12
                     } else {
-                        level = 12;
+                        let ratio = index / (totalFarmsCount - 1);
+                        level = Math.floor(ratio * 11) + 1; // เฉลี่ยค่าใกล้เคียงกรณีเกินกำหนด
                     }
-                    
-                    const names = [
-                        'ต้นอ่อนเพิ่งงอก / มีใบแรกเกิด', 'ต้นอ่อนเพิ่งงอกซ้อนกัน 2 ต้น', 
-                        'แตกกิ่งก้านและใบพุ่มเล็ก', 'แตกกิ่งก้านและใบพุ่มคู่', 
-                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 'พุ่มใบหนาแน่นแตกกอคู่', 
-                        'ต้นปาล์ม / ต้นไม้ลำต้นเดี่ยวสูงสง่า', 'ต้นปาล์มคู่สูงสง่า', 
-                        'ไม้ใหญ่ทรงสูง / ลำต้นหนาแน่นแข็งแกร่ง', 'ไม้ใหญ่ทรงสูงคู่หนาแน่น', 
-                        'มหาพฤกษาใหญ่โตเต็มวัย / ระบบรากและพุ่มใบสมบูรณ์สูงสุด', 'มหาพฤกษาคู่บารมีสมบูรณ์สูงสุด'
-                    ];
-                    const emojis = ['🌱', '🌱🌱', '🌿', '🌿🌿', '☘️', '☘️☘️', '🌴', '🌴🌴', '🌲', '🌲🌲', '🌳', '🌳🌳'];
+                    if (level > 12) level = 12;
+                    if (level < 1) level = 1;
                     
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji; 
@@ -584,7 +587,6 @@
                         witheredCount = totalTreesCount - healthyCount;
                     }
 
-                    // 🔴 ขยายขนาดพิกัดต้นไม้ให้ใหญ่และโดดเด่นขึ้น
                     const forestCoords = [
                         {x: 44, y: -2, size: 48, z: 6},  {x: 28, y: -6, size: 42, z: 5},  
                         {x: 62, y: -4, size: 44, z: 5},  {x: 15, y: -10, size: 36, z: 4}, 
