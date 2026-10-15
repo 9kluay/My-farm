@@ -150,14 +150,13 @@
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
         .empty-state span { font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        /* ปรับปรุงแอนิเมชันตอนโหลดซิงค์ให้ดูเนียนตา */
         #syncing-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10000; }
         #syncing-overlay.show { opacity: 1; }
     </style>
 </head>
 <body>
 
-    <div id="syncing-overlay">กำลังซิงค์ข้อมูลฟาร์ม...</div>
+    <div id="syncing-overlay">ซิงค์ข้อมูล Real-time...</div>
     
     <div id="popup-overlay" onclick="closePopup(event)">
         <div class="popup-content" id="popup-inner-content" onclick="event.stopPropagation()">
@@ -178,7 +177,7 @@
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
             </div>
-            <div class="status-badge"><div class="status-dot-pulse"></div> ระบบออนไลน์ Real Time</div>
+            <div class="status-badge"><div class="status-dot-pulse"></div> ระบบ Real-time Active</div>
         </div>
 
         <header>
@@ -209,7 +208,7 @@
                 <input type="text" id="farmSearchInput" class="search-input" placeholder="ค้นหาเลขพอร์ตแปลง..." oninput="filterForestCards()">
             </div>
             <div class="toolbar-right">
-                <button class="btn-sync" onclick="syncAndRefreshAll()"><span>💧 ซิงค์ข้อมูลฟาร์ม (Auto Sync)</span></button>
+                <button class="btn-sync" onclick="syncAndRefreshAll()"><span>⚡ ซิงค์ด่วน (Sync Now)</span></button>
                 <button class="btn-delete-all" onclick="deleteAllFarms()" title="ล้างแปลงทั้งหมด">🗑️</button>
             </div>
         </div>
@@ -238,15 +237,13 @@
             updateGlobalWeather(0); 
             startWeatherEffect();
             
-            // 🚀 ปรับปรุงความเร็ว 1: วาดหน้าจอทันทีจากข้อมูลในเครื่อง (ไม่รอโหลด)
             renderForest(); 
-            
-            // 🚀 ปรับปรุงความเร็ว 2: เริ่มโหลดข้อมูลเบื้องหลังทีละแปลง
-            syncAndRefreshAll(); 
+            await syncAndRefreshAll(); 
 
+            // 🚀 ตั้งเวลา Real-time ดึงข้อมูลอัตโนมัติทุกๆ 3 วินาที เพื่อให้ทันทีที่ EA ส่งข้อมูลเข้าชีท หน้าเว็บจะอัปเดตทันที
             setInterval(() => {
                 syncAndRefreshAll();
-            }, 15000); // อัปเดตทุก 15 วินาที
+            }, 3000);
         };
 
         function updateGlobalWeather(totalPercent) {
@@ -294,27 +291,14 @@
             document.getElementById('theme-badge').innerHTML = `สภาพอากาศ: ${themeName}`;
         }
 
-        // 🚀 ปรับปรุงความเร็ว 3: โหลดข้อมูลแบบไม่ให้หน้าเว็บค้าง
         async function syncAndRefreshAll() {
-            const syncOverlay = document.getElementById('syncing-overlay');
-            if (syncOverlay) syncOverlay.classList.add('show');
-
             await syncFarmsFromCloud();
             const farms = getFarmsList();
             
             if (farms.length > 0) {
-                let completed = 0;
-                // ปล่อยให้มันโหลดของมันไป ใครเสร็จก่อนอัปเดตก่อน ไม่ต้องรอกันจนครบแล้วค่อยวาด
                 farms.forEach(login => {
-                    fetchNodeData(login).finally(() => {
-                        completed++;
-                        if (completed === farms.length && syncOverlay) {
-                            syncOverlay.classList.remove('show');
-                        }
-                    });
+                    fetchNodeData(login);
                 });
-            } else {
-                if (syncOverlay) syncOverlay.classList.remove('show');
             }
         }
 
@@ -326,7 +310,6 @@
                     let oldFarms = getFarmsList();
                     let mergedFarms = [...new Set([...oldFarms, ...cloudFarms])];
                     
-                    // ถ้าเจอแปลงใหม่ที่เพิ่งงอกมา ค่อยวาดกระดานใหม่
                     if (oldFarms.length !== mergedFarms.length) {
                         saveFarmsList(mergedFarms); 
                         renderForest();
@@ -471,7 +454,6 @@
             }
         };
 
-        // 🚀 ปรับปรุงความเร็ว 4: วาดโครงสร้างครั้งเดียวตอนโหลด ป้องกันจอพริบและค้าง
         function renderForest() {
             const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
             const farms = getFarmsList(); 
@@ -512,12 +494,10 @@
                 grid.appendChild(card);
             });
             
-            // เติมข้อมูลเก่าที่อยู่ในความจำใส่โครงที่เพิ่งวาดทันที
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
             scheduleTreeRanksUpdate();
         }
 
-        // 🚀 ฟังก์ชันดึงข้อมูลที่แยกทำงานเป็นอิสระต่อกัน (เมื่อข้อมูลมาถึง จะอัปเดตแค่การ์ดตัวเอง ไม่รบกวนคนอื่น)
         async function fetchNodeData(login) {
             try {
                 const response = await fetch(`${SCRIPT_URL}?login=${login}`); 
@@ -540,7 +520,6 @@
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
-                // พอโหลดของฟาร์มตัวเองเสร็จ ก็อัปเดตหน้าจอเฉพาะส่วนที่จำเป็นทันที
                 updatePortfolioSummary(); 
                 updateUICard(login); 
                 scheduleTreeRanksUpdate();
@@ -599,7 +578,6 @@
             document.getElementById(`time-${login}`).innerText = timeStr;
         }
 
-        // หน่วงเวลาการคำนวณกราฟิกต้นไม้เพื่อลดภาระเครื่อง (Debounce)
         let treeRanksTimeout = null;
         function scheduleTreeRanksUpdate() {
             if (treeRanksTimeout) clearTimeout(treeRanksTimeout);
