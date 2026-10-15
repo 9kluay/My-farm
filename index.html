@@ -37,7 +37,6 @@
             transition: background-color 1.5s ease-in-out; 
         }
 
-        /* 🌊 River Animation */
         .river-container {
             position: fixed; bottom: 0; left: 0; width: 100%; height: 38px;
             background: rgba(4, 15, 10, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -51,7 +50,6 @@
         }
         @keyframes flowRiver { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* ✨ Weather Particles */
         .weather-particle {
             position: fixed; top: -50px; user-select: none; pointer-events: none;
             z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); opacity: 0.6;
@@ -61,7 +59,7 @@
 
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; }
 
-        /* 🌟 Professional Header Bar (Clean Layout) */
+        /* 🌟 Header สะอาดตา (Clean Layout) */
         .professional-header-bar {
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -80,7 +78,7 @@
         .status-dot-pulse { width: 8px; height: 8px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 8px var(--accent-emerald); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.5; } 100% { transform: scale(0.95); opacity: 1; } }
 
-        /* 📊 Clean Stats Panel */
+        /* 📊 สถิติหลัก มินิมอล */
         .glass-panel { background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 35px; margin-bottom: 35px; box-shadow: var(--glass-shadow); transition: border-color 1.5s ease; }
         .main-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px; }
         @media (max-width: 1024px) { .main-stats-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -98,7 +96,7 @@
         .history-value { font-size: 18px; font-weight: 500; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
-        /* 🛠 Toolbar */
+        /* 🛠 เครื่องมือ (Toolbar) */
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
         .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         
@@ -113,7 +111,7 @@
         .search-input { background: transparent; border: none; color: var(--text-main); font-size: 13px; font-family: inherit; width: 100%; outline: none; font-weight: 300; }
         .search-input::placeholder { color: rgba(255,255,255,0.3); }
 
-        /* 🌲 Clean Forest Grid */
+        /* 🌲 การ์ดฟาร์มแบบคลีน (Clean Forest Grid) */
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
         .tree-card { background: rgba(12, 20, 16, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.04); border-radius: var(--card-radius); padding: 28px; display: flex; flex-direction: column; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: relative; }
         .tree-card:hover { transform: translateY(-6px); border-color: rgba(16,185,129,0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(16,185,129,0.05); background: rgba(12, 20, 16, 0.6); }
@@ -135,13 +133,12 @@
 
         .level-badge { margin-top: 10px; font-size: 11px; font-weight: 400; color: var(--accent-gold); background: rgba(251, 191, 36, 0.05); padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.15); z-index: 30; letter-spacing: 0.3px; }
 
-        /* 💡 Clean Metrics Design (No heavy boxes) */
+        /* 💡 สถิติย่อยในการ์ด มินิมอล */
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
         .metric-item { display: flex; flex-direction: column; gap: 4px; }
         .metric-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 300; }
         .metric-val { font-size: 15px; font-weight: 500; color: var(--text-main); }
         
-        /* 💡 Clean History Design (Subtle lines instead of boxes) */
         .card-history { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); padding: 14px 0; margin-bottom: 18px; }
         .c-hist-item { text-align: left; flex: 1; }
         .c-hist-item:nth-child(2) { text-align: center; }
@@ -151,7 +148,7 @@
 
         .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); margin-top: auto; font-weight: 300; }
 
-        /* 🪟 Modals */
+        /* 🪟 Modals ป๊อปอัพ */
         #popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 10, 7, 0.9); backdrop-filter: blur(15px); z-index: 99999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; padding: 20px; }
         #popup-overlay.show { display: flex; opacity: 1; }
         .popup-content { background: rgba(12, 20, 16, 0.95); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 35px; width: 100%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.1); transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -186,7 +183,7 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- 🌟 ส่วนหัวใหม่ (Professional Header Bar) -->
+        <!-- 🌟 Header Layout สะอาดตา -->
         <div class="professional-header-bar">
             <div class="brand-logo-area">
                 <div class="brand-icon">🌲</div>
@@ -260,7 +257,7 @@
             }, 10000);
         };
 
-        // 🔴 ปรับปรุงคำในแถบสภาพอากาศ: เอาคำว่า "ขาดทุน" ออก และใช้ภาษาที่ดูเป็นมืออาชีพ
+        // 🔴 ปรับปรุงฟังก์ชันสภาพอากาศ: นำคำว่าขาดทุนออกเพื่อความเป็นมืออาชีพ
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
             let bgDark = '#070c0a'; let glowTop = 'rgba(16, 185, 129, 0.08)'; let glowBottom = 'rgba(251, 191, 36, 0.05)'; let themeBorder = 'rgba(255, 255, 255, 0.06)';
