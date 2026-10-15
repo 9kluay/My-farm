@@ -64,9 +64,6 @@
         .nav-badges { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .badge { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-muted); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px; }
         
-        .sound-btn { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent-emerald); padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s; }
-        .sound-btn:hover { background: rgba(16, 185, 129, 0.25); transform: translateY(-2px); }
-
         .status-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--accent-emerald); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px); }
         .status-dot-pulse { width: 8px; height: 8px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 8px var(--accent-emerald); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.5; } 100% { transform: scale(0.95); opacity: 1; } }
@@ -74,12 +71,6 @@
         header { text-align: center; margin-bottom: 30px; }
         h1 { font-size: 42px; font-weight: 600; margin: 0 0 10px 0; letter-spacing: -0.5px; background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: var(--text-muted); font-size: 15px; margin: 0; font-weight: 300; letter-spacing: 0.5px; }
-
-        /* Leaderboard Panel */
-        .leaderboard-bar { background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 20px; padding: 16px 24px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap; backdrop-filter: blur(15px); }
-        .lb-title { font-size: 13px; font-weight: 600; color: var(--accent-gold); display: flex; align-items: center; gap: 8px; }
-        .lb-content { font-size: 13px; color: var(--text-main); display: flex; gap: 20px; flex-wrap: wrap; }
-        .lb-item { display: flex; align-items: center; gap: 6px; }
 
         .glass-panel { background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 30px; margin-bottom: 30px; box-shadow: var(--glass-shadow); transition: border-color 1.5s ease; }
         .main-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; margin-bottom: 25px; }
@@ -115,10 +106,6 @@
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
         .tree-card { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 24px; display: flex; flex-direction: column; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 1.5s ease; box-shadow: 0 4px 24px rgba(0,0,0,0.2); position: relative; }
         .tree-card:hover { transform: translateY(-5px); border-color: var(--accent-emerald); box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 20px rgba(16,185,129,0.1); }
-        
-        .card-crown { position: absolute; top: -14px; left: 20px; background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; box-shadow: 0 4px 10px rgba(251,191,36,0.4); display: none; align-items: center; gap: 4px; z-index: 20; }
-        .tree-card.king .card-crown { display: flex; }
-        .tree-card.king { border-color: rgba(251,191,36,0.5); box-shadow: 0 8px 30px rgba(251,191,36,0.15); }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .plot-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
@@ -188,21 +175,14 @@
             <div class="nav-badges">
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
-                <button class="sound-btn" id="soundToggleBtn" onclick="toggleAmbientSound()">🎵 เปิดเสียงธรรมชาติ</button>
             </div>
             <div class="status-badge"><div class="status-dot-pulse"></div> ระบบออนไลน์ Real Time</div>
         </div>
 
         <header>
             <h1>Smart Agro-Farm</h1>
-            <p class="subtitle">ระบบวิเคราะห์พอร์ตการลงทุนและนิเวศสวนป่าดิจิทัลระดับพรีเมียม (Ultimate Edition)</p>
+            <p class="subtitle">ระบบวิเคราะห์พอร์ตการลงทุนและนิเวศสวนป่าดิจิทัลระดับพรีเมียม</p>
         </header>
-
-        <!-- Leaderboard Bar -->
-        <div class="leaderboard-bar" id="leaderboardBar" style="display:none;">
-            <div class="lb-title">👑 ราชันย์สวนป่าประจำวัน</div>
-            <div class="lb-content" id="lbContentList">กำลังจัดอันดับ...</div>
-        </div>
 
         <div class="glass-panel">
             <div class="main-stats-grid">
@@ -241,57 +221,6 @@
         let globalPortfolioData = {};
         let currentSeason = {};
         window.weatherParticles = ['✨', '🍃', '🌟']; 
-        let isAudioPlaying = false;
-        let ambientAudio = null;
-
-        // ระบบเสียงธรรมชาติจำลองด้วย Web Audio API (ไม่ต้องใช้ไฟล์นอก)
-        function toggleAmbientSound() {
-            const btn = document.getElementById('soundToggleBtn');
-            if (!isAudioPlaying) {
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    window.audioCtx = new AudioContext();
-                    
-                    // สร้างเสียงคลื่นลำธาร/เสียงฝนเบาๆ (Pink/White noise filtered)
-                    window.audioBufferSource = window.audioCtx.createBufferSource();
-                    const bufferSize = window.audioCtx.sampleRate * 2;
-                    const buffer = window.audioCtx.createBuffer(1, bufferSize, window.audioCtx.sampleRate);
-                    const output = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        output[i] = Math.random() * 2 - 1;
-                    }
-                    window.audioBufferSource.buffer = buffer;
-                    window.audioBufferSource.loop = true;
-
-                    const filter = window.audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.value = 400; // เสียงทุ้มผ่อนคลายเหมือนน้ำไหล
-
-                    const gainNode = window.audioCtx.createGain();
-                    gainNode.gain.value = 0.08; // เสียงเบานุ่มนวล
-
-                    window.audioBufferSource.connect(filter);
-                    filter.connect(gainNode);
-                    gainNode.connect(window.audioCtx.destination);
-                    window.audioBufferSource.start();
-
-                    isAudioPlaying = true;
-                    btn.innerHTML = '🔊 ปิดเสียงธรรมชาติ';
-                    btn.style.borderColor = 'var(--accent-gold)';
-                    btn.style.color = 'var(--accent-gold)';
-                } catch(e) {
-                    alert('เบราว์เซอร์ไม่อนุญาตให้เล่นเสียงอัตโนมัติ');
-                }
-            } else {
-                if (window.audioCtx) {
-                    window.audioCtx.close();
-                }
-                isAudioPlaying = false;
-                btn.innerHTML = '🎵 เปิดเสียงธรรมชาติ';
-                btn.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                btn.style.color = 'var(--accent-emerald)';
-            }
-        }
         
         function getSeasonInfo() {
             const m = new Date().getMonth();
@@ -314,25 +243,44 @@
             }, 10000);
         };
 
+        // 🌦️ ระบบสภาพอากาศใหม่ 10 ระดับ (กำไร 1-5 และ ขาดทุน 1-5)
         function updateGlobalWeather(totalPercent) {
-            const hour = new Date().getHours();
-            let themeName = 'อากาศดีเหมาะสม 🍃';
+            let themeName = 'หมอกบางเบา 🌫️';
             let bgDark = '#070c0a'; let glowTop = 'rgba(16, 185, 129, 0.08)'; let glowBottom = 'rgba(251, 191, 36, 0.05)'; let themeBorder = 'rgba(255, 255, 255, 0.08)';
 
-            if (totalPercent <= -10) {
-                themeName = 'พายุเข้าฟาร์ม ⛈️ (ตลาดผันผวน)'; window.weatherParticles = ['💧', '🌧️', '⚡', '✨'];
-                bgDark = '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.15)'; glowBottom = 'rgba(159, 18, 57, 0.1)'; themeBorder = 'rgba(244, 63, 94, 0.25)';
-            } else if (totalPercent <= -2) {
-                themeName = 'ฝนตกชุ่มฉ่ำ 🌧️ (ตลาดพักตัว)'; window.weatherParticles = ['💧', '🌧️', '✨'];
-                bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.1)'; glowBottom = 'rgba(14, 116, 144, 0.1)'; themeBorder = 'rgba(56, 189, 248, 0.2)';
-            } else if (totalPercent >= 5) {
-                themeName = 'ผลผลิตงอกงามประกายวิ้งค์ 🌈✨'; window.weatherParticles = ['✨', '🌟', '🌈', currentSeason.icon];
-                bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.25)'; glowBottom = 'rgba(251, 191, 36, 0.2)'; themeBorder = 'rgba(16, 185, 129, 0.3)';
+            if (totalPercent >= 15) {
+                themeName = 'ผลผลิตงอกงามรุ้งงามวิ้งค์ 🌈💎 (กำไรระดับ 5)'; window.weatherParticles = ['✨', '🌟', '🌈', '💎'];
+                bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.3)'; glowBottom = 'rgba(251, 191, 36, 0.25)'; themeBorder = 'rgba(16, 185, 129, 0.4)';
+            } else if (totalPercent >= 10) {
+                themeName = 'แดดจ้าประกายทอง 🌟✨ (กำไรระดับ 4)'; window.weatherParticles = ['☀️', '✨', '🌟'];
+                bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.22)'; glowBottom = 'rgba(251, 191, 36, 0.18)'; themeBorder = 'rgba(16, 185, 129, 0.3)';
+            } else if (totalPercent >= 6) {
+                themeName = 'แสงเช้าอบอุ่น ☀️🌿 (กำไรระดับ 3)'; window.weatherParticles = ['☀️', '🍃', '✨'];
+                bgDark = '#071209'; glowTop = 'rgba(16, 185, 129, 0.16)'; glowBottom = 'rgba(251, 191, 36, 0.12)'; themeBorder = 'rgba(16, 185, 129, 0.22)';
+            } else if (totalPercent >= 3) {
+                themeName = 'อากาศดีสดใส ⛅✨ (กำไรระดับ 2)'; window.weatherParticles = ['🍃', '☀️'];
+                bgDark = '#070f0a'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(251, 191, 36, 0.08)'; themeBorder = 'rgba(255, 255, 255, 0.12)';
+            } else if (totalPercent > 0) {
+                themeName = 'ลมโชยอ่อนๆ 🍃 (กำไรระดับ 1)'; window.weatherParticles = ['🍃', '✨'];
+                bgDark = '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.09)'; glowBottom = 'rgba(251, 191, 36, 0.06)'; themeBorder = 'rgba(255, 255, 255, 0.09)';
+            } else if (totalPercent === 0) {
+                themeName = 'หมอกบางเบา 🌫️ (ทรงตัว)'; window.weatherParticles = ['✨'];
+                bgDark = '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.08)';
+            } else if (totalPercent >= -1) {
+                themeName = 'หมอกบางเบา 🌫️ (ขาดทุนระดับ 1)'; window.weatherParticles = ['✨'];
+                bgDark = '#080c10'; glowTop = 'rgba(56, 189, 248, 0.08)'; glowBottom = 'rgba(14, 116, 144, 0.05)'; themeBorder = 'rgba(56, 189, 248, 0.15)';
+            } else if (totalPercent >= -3) {
+                themeName = 'ฝนตกปรอยๆ 💧 (ขาดทุนระดับ 2)'; window.weatherParticles = ['💧', '🌧️'];
+                bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.12)'; glowBottom = 'rgba(14, 116, 144, 0.08)'; themeBorder = 'rgba(56, 189, 248, 0.2)';
+            } else if (totalPercent >= -6) {
+                themeName = 'ฝนตกชุ่มฉ่ำหนาแน่น 🌧️ (ขาดทุนระดับ 3)'; window.weatherParticles = ['💧', '🌧️', '✨'];
+                bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.18)'; glowBottom = 'rgba(14, 116, 144, 0.12)'; themeBorder = 'rgba(56, 189, 248, 0.25)';
+            } else if (totalPercent >= -10) {
+                themeName = 'พายุฝนฟ้าคะนอง ⛈️ (ขาดทุนระดับ 4)'; window.weatherParticles = ['💧', '🌧️', '⚡'];
+                bgDark = '#14080a'; glowTop = 'rgba(244, 63, 94, 0.12)'; glowBottom = 'rgba(159, 18, 57, 0.08)'; themeBorder = 'rgba(244, 63, 94, 0.2)';
             } else {
-                if (hour >= 6 && hour < 9) { themeName = 'แสงเช้าอบอุ่นวิ้งค์ 🌅'; window.weatherParticles = ['🍃', '☀️', '✨']; bgDark = '#0a0d08'; glowTop = 'rgba(251, 191, 36, 0.12)'; glowBottom = 'rgba(16, 185, 129, 0.08)'; }
-                else if (hour >= 9 && hour < 16) { themeName = 'แดดจ้าสดใส ☀️'; window.weatherParticles = ['☀️', '🍃', '✨']; bgDark = '#051208'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(52, 211, 153, 0.08)'; }
-                else if (hour >= 16 && hour < 19) { themeName = 'ลมเย็นยามเย็น ⛅'; window.weatherParticles = ['🍃', '☁️', '✨']; bgDark = '#0a0812'; glowTop = 'rgba(249, 115, 22, 0.1)'; glowBottom = 'rgba(16, 185, 129, 0.05)'; }
-                else { themeName = 'ฟาร์มสงบยามค่ำคืน 🌙✨'; window.weatherParticles = ['✨', '🌟', '🌙']; bgDark = '#03060a'; glowTop = 'rgba(56, 189, 248, 0.05)'; glowBottom = 'rgba(16, 185, 129, 0.05)'; }
+                themeName = 'มรสุมและพายุทอร์นาโด ⚡🌪️ (ขาดทุนระดับ 5 - วิกฤต)'; window.weatherParticles = ['💧', '🌧️', '⚡', '🌪️'];
+                bgDark = '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.25)'; glowBottom = 'rgba(159, 18, 57, 0.15)'; themeBorder = 'rgba(244, 63, 94, 0.35)';
             }
 
             const root = document.documentElement;
@@ -365,7 +313,7 @@
                 const particle = document.createElement('div'); particle.className = 'weather-particle';
                 const icon = window.weatherParticles[Math.floor(Math.random() * window.weatherParticles.length)];
                 particle.innerText = icon; particle.style.left = Math.random() * window.innerWidth + 'px';
-                if(['💧', '🌧️'].includes(icon)) { particle.style.animationDuration = (Math.random() * 2 + 1.5) + 's'; particle.style.animationName = 'fallRain'; } 
+                if(['💧', '🌧️', '🌪️'].includes(icon)) { particle.style.animationDuration = (Math.random() * 2 + 1.5) + 's'; particle.style.animationName = 'fallRain'; } 
                 else { particle.style.animationDuration = (Math.random() * 5 + 4) + 's'; particle.style.animationName = 'fallParticle'; }
                 particle.style.fontSize = (Math.random() * 10 + 12) + 'px'; document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 10000);
@@ -392,7 +340,6 @@
             const innerDelete = popupBody.querySelector('.btn-delete');
             if (innerDelete) innerDelete.remove();
 
-            // เติมข้อมูลวิเคราะห์เชิงลึกใน popup
             const d = globalPortfolioData[login];
             const analyticsDetails = document.getElementById('popup-analytics-details');
             if (d && !d.error) {
@@ -452,7 +399,6 @@
                 card.setAttribute('data-login', login); card.onclick = (e) => handleCardClick(e, login);
 
                 card.innerHTML = `
-                    <div class="card-crown">👑 ราชันย์สวนป่า</div>
                     <div class="card-header">
                         <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="stars" id="stars-${login}"></span></div>
                         <button class="btn-delete" onclick="window.removeFarm('${login}')">✕</button>
@@ -521,11 +467,17 @@
             let emoji = '', txt = ''; const pct = data.percent;
             if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
             else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'แคมป์ปิ้ง'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
-            else if (pct > 10) { emoji = '☀️✨'; txt = 'เติบโตดีเยี่ยม'; }
-            else if (pct > 0) { emoji = '⛅✨'; txt = 'อากาศดี'; }
-            else if (pct === 0) { emoji = '🌫️'; txt = 'ทรงตัว'; }
-            else if (pct >= -5) { emoji = '🌧️'; txt = 'ฝนตกปรอยๆ'; }
-            else { emoji = '⛈️'; txt = 'พายุเข้า!'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
+            else if (pct >= 15) { emoji = '🌈💎'; txt = 'ผลผลิตงอกงามรุ้งงามวิ้งค์'; }
+            else if (pct >= 10) { emoji = '🌟✨'; txt = 'แดดจ้าประกายทอง'; }
+            else if (pct >= 6) { emoji = '☀️🌿'; txt = 'แสงเช้าอบอุ่น'; }
+            else if (pct >= 3) { emoji = '⛅✨'; txt = 'อากาศดีสดใส'; }
+            else if (pct > 0) { emoji = '🍃'; txt = 'ลมโชยอ่อนๆ'; }
+            else if (pct === 0) { emoji = '🌫️'; txt = 'หมอกบางเบา'; }
+            else if (pct >= -1) { emoji = '🌫️'; txt = 'หมอกบางเบา'; }
+            else if (pct >= -3) { emoji = '💧'; txt = 'ฝนตกปรอยๆ'; }
+            else if (pct >= -6) { emoji = '🌧️'; txt = 'ฝนตกชุ่มฉ่ำหนาแน่น'; }
+            else if (pct >= -10) { emoji = '⛈️'; txt = 'พายุฝนฟ้าคะนอง'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
+            else { emoji = '⚡🌪️'; txt = 'มรสุมและพายุทอร์นาโด'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
 
             wpill.innerHTML = `${emoji} ${txt}`;
             document.getElementById(`bal-${login}`).innerText = `$${data.balance.toFixed(2)}`; document.getElementById(`eq-${login}`).innerText = `$${data.equity.toFixed(2)}`;
@@ -577,32 +529,12 @@
             
             let starMap = {}; rankableFarms.forEach((f, index) => { starMap[f] = (index < 5) ? (5 - index) : 0; });
 
-            // อัปเดต Leaderboard Bar ด้านบน
-            if (rankableFarms.length > 0) {
-                const kingLogin = rankableFarms[0];
-                document.getElementById('leaderboardBar').style.display = 'flex';
-                document.getElementById('lbContentList').innerHTML = `
-                    <div class="lb-item">🏆 แปลงอันดับ 1: <b>#${kingLogin}</b></div>
-                    <div class="lb-item">💎 กำไรสะสม: <b class="positive">${formatMoney(globalPortfolioData[kingLogin].profit)}</b></div>
-                `;
-            }
-
             farms.forEach(f => {
                 const data = globalPortfolioData[f]; const showcase = document.getElementById(`showcase-${f}`);
                 const starsSpan = document.getElementById(`stars-${f}`);
                 const plotIconSpan = document.getElementById(`plot-icon-${f}`);
-                const cardElem = document.querySelector(`.tree-card[data-login="${f}"]`);
                 if (!showcase) return;
                 
-                // ตรวจสอบสถานะราชันย์ (อันดับ 1)
-                if (cardElem) {
-                    if (rankableFarms.length > 0 && rankableFarms[0] === f && data.balance > 0) {
-                        cardElem.classList.add('king');
-                    } else {
-                        cardElem.classList.remove('king');
-                    }
-                }
-
                 const wpillHTML = document.getElementById(`wpill-${f}`).outerHTML;
                 let activeEmoji = '🌱';
                 
