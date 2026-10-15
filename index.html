@@ -107,22 +107,24 @@
         .tree-card { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 24px; display: flex; flex-direction: column; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 1.5s ease; box-shadow: 0 4px 24px rgba(0,0,0,0.2); position: relative; }
         .tree-card:hover { transform: translateY(-5px); border-color: var(--accent-emerald); box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 20px rgba(16,185,129,0.1); }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .plot-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
         .stars { color: var(--accent-gold); font-size: 14px; letter-spacing: 1px; }
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
-        .showcase { position: relative; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 15px; }
-        .weather-pill { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
+        /* 🔴 วงสีแดง: ขยายพื้นที่ความสูงของโซนแสดงผลต้นไม้ให้ใหญ่ขึ้น */
+        .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; }
+        .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
-        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 85px; width: 100%; margin-top: 15px; padding: 0 10px; }
+        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 110px; width: 100%; margin-top: 10px; padding: 0 5px; }
         .tree-extra { position: absolute; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)); line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
         .tree-extra:hover { transform: scale(1.2) translateY(-6px); z-index: 30 !important; }
         .tree-extra.withered { filter: grayscale(1) brightness(0.45) contrast(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.6)); animation: none !important; }
         @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-        .level-badge { margin-top: 15px; font-size: 13px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.2); z-index: 30; }
+        /* 🟣 วงสีม่วง: ลดขนาดป้าย Level ให้กะทัดรัดและสวยงามลง */
+        .level-badge { margin-top: 8px; font-size: 11px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); padding: 3px 10px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.18); z-index: 30; letter-spacing: 0.2px; }
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); }
@@ -243,7 +245,6 @@
             }, 10000);
         };
 
-        // 🌦️ ระบบสภาพอากาศใหม่ 10 ระดับ (กำไร 1-5 และ ขาดทุน 1-5)
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
             let bgDark = '#070c0a'; let glowTop = 'rgba(16, 185, 129, 0.08)'; let glowBottom = 'rgba(251, 191, 36, 0.05)'; let themeBorder = 'rgba(255, 255, 255, 0.08)';
@@ -540,10 +541,10 @@
                 
                 if (data.balance <= 0) {
                     activeEmoji = '🪨';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 32px; left: 50%; transform: translateX(-50%);">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 32px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แคมป์ปิ้งพักแปลง</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แคมป์ปิ้งพักแปลง</div>`;
                 } else {
                     let level = 1;
                     if (maxBal > minBal) {
@@ -583,12 +584,13 @@
                         witheredCount = totalTreesCount - healthyCount;
                     }
 
+                    // 🔴 ขยายขนาดพิกัดต้นไม้ให้ใหญ่และโดดเด่นขึ้น
                     const forestCoords = [
-                        {x: 45, y: -2, size: 42, z: 6},  {x: 30, y: -6, size: 36, z: 5},  
-                        {x: 61, y: -4, size: 38, z: 5},  {x: 18, y: -10, size: 32, z: 4}, 
-                        {x: 73, y: -8, size: 33, z: 4},  {x: 38, y: -14, size: 28, z: 3}, 
-                        {x: 54, y: -12, size: 29, z: 3}, {x: 24, y: -18, size: 25, z: 2}, 
-                        {x: 67, y: -16, size: 26, z: 2}, {x: 47, y: -20, size: 22, z: 1}  
+                        {x: 44, y: -2, size: 48, z: 6},  {x: 28, y: -6, size: 42, z: 5},  
+                        {x: 62, y: -4, size: 44, z: 5},  {x: 15, y: -10, size: 36, z: 4}, 
+                        {x: 75, y: -8, size: 38, z: 4},  {x: 36, y: -14, size: 32, z: 3}, 
+                        {x: 54, y: -12, size: 34, z: 3}, {x: 22, y: -18, size: 28, z: 2}, 
+                        {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
                     ];
 
                     let clusterHTML = `<div class="forest-cluster">`;
