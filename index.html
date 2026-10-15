@@ -112,7 +112,7 @@
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
-        /* 🌲 ดีไซน์ Showcase ตามเลย์เอาต์ต้นไม้เด่นตรงกลางและมีต้นไม้ข้างๆ ประกอบ */
+        /* 🌲 ดีไซน์เลย์เอาต์ตามรูปตัวอย่าง: ต้นไม้เด่นตรงกลาง มีต้นไม้ข้างๆ และป้ายเลเวลด้านล่าง */
         .showcase { position: relative; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 12px; }
         .weather-pill { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
@@ -503,19 +503,20 @@
                         level = 10;
                     }
                     
+                    /* 🌿 เรียงลำดับอิโมจิใหม่จากเล็กไปใหญ่ (Level 1 ถึง 10) โดยเอาใบไม้ปลิวออก */
                     const names = [
                         'กล้าไม้สมบูรณ์', 
                         'ต้นอ่อนเพิ่งงอก', 
-                        'แตกกิ่งก้านและใบพุ่มเล็ก', 
-                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 
-                        'ต้นกล้าลงกระถาง', 
+                        'พืชประดับในกระถาง', 
+                        'พุ่มโคลเวอร์เขียวหนาแน่น', 
+                        'พุ่มใบไม้เขียวขจี', 
                         'ต้นปาล์มสูงสง่า', 
-                        'ไม้ยืนต้นแผ่กิ่งก้านร่มเงา', 
-                        'ไม้ใหญ่ทรงสูงแข็งแกร่ง', 
-                        'ไม้ยืนต้นทนทานอวบน้ำ', 
+                        'ไม้ยืนต้นร่มเงากว้าง', 
+                        'ต้นสนป่าหนาแน่น', 
+                        'ไม้ยืนต้นแกร่งทนทาน', 
                         'มหาพฤกษาใหญ่โตเต็มวัย'
                     ];
-                    const emojis = ['🍃', '🌱', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '🌵', '🌳'];
+                    const emojis = ['🌿', '🌱', '🪴', '☘️', '🍃', '🌴', '🌳', '🌲', '🌵', '🌳'];
                     
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji; 
@@ -525,7 +526,7 @@
 
                     let clusterHTML = `<div class="forest-cluster">`;
                     
-                    // ต้นไม้ด้านซ้าย (แสดงออเดอร์ขาดทุน / หรือต้นไม้ข้างเคียง)
+                    // ต้นไม้ด้านซ้าย (แสดงออเดอร์ขาดทุน)
                     if (lossOrd > 0) {
                         clusterHTML += `<div class="tree-extra side-tree-left">${treeEmoji}</div>`;
                     }
@@ -533,7 +534,7 @@
                     // ต้นไม้หลักเด่นตรงกลาง
                     clusterHTML += `<div class="tree-extra main-tree">${treeEmoji}</div>`;
                     
-                    // ต้นไม้ด้านขวา (แสดงออเดอร์กำไร / หรือต้นไม้ข้างเคียง)
+                    // ต้นไม้ด้านขวา (แสดงออเดอร์กำไร)
                     if (profitOrd > 0 || lossOrd === 0) {
                         clusterHTML += `<div class="tree-extra side-tree-right" style="${profitOrd > 0 ? 'filter:none;' : ''}">${treeEmoji}</div>`;
                     }
