@@ -112,29 +112,19 @@
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
-        .showcase { position: relative; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 15px; }
+        /* 🌲 ดีไซน์ Showcase ตามเลย์เอาต์ต้นไม้เด่นตรงกลางและมีต้นไม้ข้างๆ ประกอบ */
+        .showcase { position: relative; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 12px; }
         .weather-pill { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
-        /* 🍃 ใบไม้ปลิวรอบๆ สวนป่า (Forest Working Leaf Animation) */
-        .floating-leaf {
-            position: absolute; font-size: 12px; pointer-events: none; z-index: 25; opacity: 0.7;
-            animation: floatLeafAround 6s linear infinite;
-        }
-        @keyframes floatLeafAround {
-            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.8; }
-            100% { transform: translate(75px, -65px) rotate(360deg); opacity: 0; }
-        }
-
-        /* 🌳 ป่าไม้หนาแน่น ต้นใหญ่ เด่นชัด และเรียงจากเล็กไปใหญ่ */
-        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 85px; width: 100%; margin-top: 15px; padding: 0 10px; }
+        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 95px; width: 100%; margin-top: 10px; }
         .tree-extra { position: absolute; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)); line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
-        .tree-extra:hover { transform: scale(1.2) translateY(-6px); z-index: 30 !important; }
-        .tree-extra.withered { filter: grayscale(1) brightness(0.45) contrast(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.6)); animation: none !important; }
-        @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        .tree-extra.main-tree { font-size: 56px; z-index: 10; left: 50%; transform: translateX(-50%); bottom: 2px; }
+        .tree-extra.side-tree-left { font-size: 34px; z-index: 8; left: 28%; bottom: 4px; filter: grayscale(1) brightness(0.45) contrast(1.2); animation: none; }
+        .tree-extra.side-tree-right { font-size: 38px; z-index: 8; right: 26%; bottom: 4px; filter: grayscale(1) brightness(0.45) contrast(1.2); animation: none; }
+        
+        @keyframes floatTree { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-4px); } }
 
-        .level-badge { margin-top: 15px; font-size: 13px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.2); z-index: 30; }
+        .level-badge { margin-top: 10px; font-size: 13px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); padding: 5px 16px; border-radius: 20px; border: 1px solid rgba(251, 191, 36, 0.2); z-index: 30; }
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); }
@@ -382,10 +372,10 @@
                         <div class="level-badge" id="tier-${login}">เตรียมแปลง...</div>
                     </div>
                     <div class="card-metrics">
-                        <div class="metric-item"><div class="metric-label">Balance</div><div class="metric-val" id="bal-${login}">$0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">Equity</div><div class="metric-val" id="eq-${login}">$0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">Floating P/L</div><div class="metric-val" id="pl-${login}">$0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">Orders</div><div class="metric-val" id="ord-${login}">-</div></div>
+                        <div class="metric-item"><div class="metric-label">INITIAL BALANCE</div><div class="metric-val" id="bal-${login}">$0.00</div></div>
+                        <div class="metric-item"><div class="metric-label">CURRENT EQUITY</div><div class="metric-val" id="eq-${login}">$0.00</div></div>
+                        <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">$0.00</div></div>
+                        <div class="metric-item"><div class="metric-label">ORDERS (แยกไม้)</div><div class="metric-val" id="ord-${login}">-</div></div>
                     </div>
                     <div class="card-history">
                         <div class="c-hist-item"><div class="c-hist-label">วันนี้</div><div class="c-hist-val" id="today-${login}">$0.00</div></div>
@@ -443,7 +433,7 @@
             else if (pct > 10) { emoji = '☀️✨'; txt = 'เติบโตดีเยี่ยม'; }
             else if (pct > 0) { emoji = '⛅✨'; txt = 'อากาศดี'; }
             else if (pct === 0) { emoji = '🌫️'; txt = 'ทรงตัว'; }
-            else if (pct >= -5) { emoji = '🌧️'; txt = 'ฝนตก'; }
+            else if (pct >= -5) { emoji = '🌧️'; txt = 'ฝนตกปรอยๆ'; }
             else { emoji = '⛈️'; txt = 'พายุเข้า!'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
 
             wpill.innerHTML = `${emoji} ${txt}`;
@@ -479,14 +469,6 @@
             });
             if(minBal === Infinity) { minBal = 0; maxBal = 0; }
 
-            let totalPortfolioOrders = 0;
-            farms.forEach(f => {
-                const d = globalPortfolioData[f];
-                if (d && d.balance > 0) {
-                    totalPortfolioOrders += (d.open_positions || 0);
-                }
-            });
-
             let rankableFarms = farms.filter(f => globalPortfolioData[f].balance > 0);
             rankableFarms.sort((a, b) => {
                 let scoreA = (globalPortfolioData[a].profit || 0) + (globalPortfolioData[a].profit_today || 0);
@@ -507,10 +489,10 @@
                 
                 if (data.balance <= 0) {
                     activeEmoji = '🪨';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 32px;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra main-tree" style="filter: grayscale(1) opacity(0.5); animation: none;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง (Level 0)</div>`;
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 32px;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra main-tree" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
                 } else {
                     let level = 1;
                     if (maxBal > minBal) {
@@ -522,7 +504,7 @@
                     }
                     
                     const names = [
-                        'พุ่มไม้ใบดก', 
+                        'กล้าไม้สมบูรณ์', 
                         'ต้นอ่อนเพิ่งงอก', 
                         'แตกกิ่งก้านและใบพุ่มเล็ก', 
                         'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 
@@ -538,65 +520,28 @@
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji; 
                     
-                    let farmOrders = data.open_positions || 0;
-                    let farmSharePercent = totalPortfolioOrders > 0 ? (farmOrders / totalPortfolioOrders) : 0;
-                    
-                    let totalTreesCount = Math.round(farmSharePercent * 10);
-                    totalTreesCount = Math.max(1, Math.min(10, totalTreesCount));
-
-                    let totalOrders = data.profit_orders + data.loss_orders;
-                    let healthyCount = totalTreesCount;
-                    let witheredCount = 0;
-
-                    if (totalOrders > 0) {
-                        let winRatio = data.profit_orders / totalOrders;
-                        healthyCount = Math.max(1, Math.round(totalTreesCount * winRatio));
-                        witheredCount = totalTreesCount - healthyCount;
-                    }
-
-                    // 🌿 จัดลำดับพิกัดจากต้นเล็ก (ด้านหลัง/ริม) ไปหาต้นใหญ่เด่น (ด้านหน้า/ตรงกลาง)
-                    const forestCoords = [
-                        {x: 47, y: -16, size: 20, z: 1}, // เล็กสุด (ลึกสุด)
-                        {x: 25, y: -14, size: 23, z: 2}, 
-                        {x: 67, y: -14, size: 23, z: 2}, 
-                        {x: 38, y: -10, size: 27, z: 3}, 
-                        {x: 55, y: -10, size: 27, z: 3}, 
-                        {x: 18, y: -7,  size: 31, z: 4}, 
-                        {x: 74, y: -7,  size: 31, z: 4}, 
-                        {x: 30, y: -4,  size: 36, z: 5}, 
-                        {x: 61, y: -4,  size: 36, z: 5}, 
-                        {x: 45, y: -1,  size: 42, z: 6}  // ใหญ่ที่สุด (เด่นสุดตรงกลาง)
-                    ];
+                    let profitOrd = data.profit_orders || 0;
+                    let lossOrd = data.loss_orders || 0;
 
                     let clusterHTML = `<div class="forest-cluster">`;
                     
-                    // 🍃 เพิ่มใบไม้ปลิวรอบๆ ป่า (เหมือนป่ากำลังทำงาน)
-                    for(let l = 0; l < 4; l++) {
-                        let startX = 20 + Math.random() * 60;
-                        let startY = 10 + Math.random() * 40;
-                        let animDur = 4 + Math.random() * 3;
-                        let animDelay = Math.random() * 3;
-                        clusterHTML += `<div class="floating-leaf" style="left: ${startX}%; bottom: ${startY}px; animation-duration: ${animDur}s; animation-delay: ${animDelay}s;">🍃</div>`;
-                    }
-
-                    // วาดต้นไม้สมบูรณ์ (เรียงจากเล็กไปใหญ่)
-                    for(let i = 0; i < healthyCount; i++) {
-                        let pos = forestCoords[i % forestCoords.length];
-                        let animDelay = i * 0.1;
-                        clusterHTML += `<div class="tree-extra" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${animDelay}s;">${treeEmoji}</div>`;
+                    // ต้นไม้ด้านซ้าย (แสดงออเดอร์ขาดทุน / หรือต้นไม้ข้างเคียง)
+                    if (lossOrd > 0) {
+                        clusterHTML += `<div class="tree-extra side-tree-left">${treeEmoji}</div>`;
                     }
                     
-                    // วาดต้นไม้ในโซนขาดทุน (ใช้ต้นไม้ชนิดเดียวกัน โทนหม่น withered)
-                    for(let i = 0; i < witheredCount; i++) {
-                        let index = (healthyCount + i) % forestCoords.length;
-                        let pos = forestCoords[index];
-                        clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
+                    // ต้นไม้หลักเด่นตรงกลาง
+                    clusterHTML += `<div class="tree-extra main-tree">${treeEmoji}</div>`;
+                    
+                    // ต้นไม้ด้านขวา (แสดงออเดอร์กำไร / หรือต้นไม้ข้างเคียง)
+                    if (profitOrd > 0 || lossOrd === 0) {
+                        clusterHTML += `<div class="tree-extra side-tree-right" style="${profitOrd > 0 ? 'filter:none;' : ''}">${treeEmoji}</div>`;
                     }
                     
                     clusterHTML += `</div>`; 
                     
                     let elements = `${wpillHTML}${clusterHTML}`;
-                    elements += `<div class="level-badge">Level ${level} : ${names[level - 1]}</div>`;
+                    elements += `<div class="level-badge">${names[level - 1]} (Level ${level})</div>`;
                     
                     showcase.innerHTML = elements;
                 }
