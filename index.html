@@ -144,8 +144,8 @@
         .popup-close-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .popup-close-btn:hover { background: rgba(244, 63, 94, 0.2); color: var(--accent-rose); transform: rotate(90deg); }
         
-        .popup-analytics-box { margin-top: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; }
-        .analytics-title { font-size: 13px; font-weight: 600; color: var(--accent-emerald); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .popup-analytics-box { margin-top: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; }
+        .analytics-title { font-size: 14px; font-weight: 600; color: var(--accent-emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.3px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
 
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
         .empty-state span { font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.5; }
@@ -155,15 +155,15 @@
 </head>
 <body>
 
-    <div id="syncing-overlay">✨ กำลังซิงค์ข้อมูลฟาร์ม...</div>
+    <div id="syncing-overlay">กำลังซิงค์ข้อมูลฟาร์ม...</div>
     
     <div id="popup-overlay" onclick="closePopup(event)">
         <div class="popup-content" id="popup-inner-content" onclick="event.stopPropagation()">
             <button class="popup-close-btn" onclick="closePopup()">✕</button>
             <div id="popup-body-html"></div>
             <div class="popup-analytics-box">
-                <div class="analytics-title">📊 วิเคราะห์ความอุดมสมบูรณ์สวนป่า (Forest Analytics)</div>
-                <div id="popup-analytics-details" style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">กำลังประมวลผลข้อมูลเชิงลึก...</div>
+                <div class="analytics-title">บทวิเคราะห์สถิติเชิงลึก (Deep Portfolio Analytics)</div>
+                <div id="popup-analytics-details" style="font-size: 12px; color: var(--text-muted); line-height: 1.7;">กำลังประมวลผลข้อมูลเชิงลึก...</div>
             </div>
         </div>
     </div>
@@ -243,7 +243,6 @@
             }, 10000);
         };
 
-        /* 🟢 แก้ไขเฉพาะจุดนี้: นำข้อความวงเล็บ (ขาดทุนระดับ X) ออกให้เหลือแต่ชื่อสภาพอากาศเพียวๆ */
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
             let bgDark = '#070c0a'; let glowTop = 'rgba(16, 185, 129, 0.08)'; let glowBottom = 'rgba(251, 191, 36, 0.05)'; let themeBorder = 'rgba(255, 255, 255, 0.08)';
@@ -306,7 +305,7 @@
             } catch(e) {}
         }
 
-        function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">🌾 ✨ ระบบชลประทานอัจฉริยะหล่อเลี้ยงฟาร์มการลงทุน เปล่งประกายรุ่งเรือง ✨ 🌾</div>'.repeat(8); }
+        function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">ระบบชลประทานอัจฉริยะหล่อเลี้ยงฟาร์มการลงทุน เปล่งประกายรุ่งเรือง</div>'.repeat(8); }
 
         function startWeatherEffect() {
             setInterval(() => {
@@ -331,27 +330,89 @@
         
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
+        // 🟢 ปรับปรุง Pop-up: ถอดอิโมจิออกทั้งหมด และใส่บทวิเคราะห์เชิงลึกทางการเงินอย่างสมบูรณ์
         function handleCardClick(event, login) {
             if (event.target.classList.contains('btn-delete') || event.target.closest('.btn-delete')) return;
             const cardElement = document.querySelector(`.tree-card[data-login="${login}"]`);
             if (!cardElement) return;
+            
             const popupBody = document.getElementById('popup-body-html');
-            popupBody.innerHTML = cardElement.outerHTML;
+            
+            // คัดลอกและลบสัญลักษณ์อิโมจิออกทั้งหมดจากพื้นที่ Pop-up
+            let rawHTML = cardElement.outerHTML;
+            let cleanHTML = rawHTML.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+            popupBody.innerHTML = cleanHTML;
+            
             const innerDelete = popupBody.querySelector('.btn-delete');
             if (innerDelete) innerDelete.remove();
 
             const d = globalPortfolioData[login];
             const analyticsDetails = document.getElementById('popup-analytics-details');
+            
             if (d && !d.error) {
-                const winRate = (d.profit_orders + d.loss_orders) > 0 ? ((d.profit_orders / (d.profit_orders + d.loss_orders)) * 100).toFixed(1) : 0;
+                const winOrders = d.profit_orders || 0;
+                const lossOrders = d.loss_orders || 0;
+                const totalOrders = winOrders + lossOrders;
+                const winRate = totalOrders > 0 ? ((winOrders / totalOrders) * 100).toFixed(1) : '0.0';
+                
+                // คำนวณอัตราความเสี่ยง Drawdown เทียบระหว่าง Balance และ Equity
+                const drawdownVal = d.balance > 0 ? Math.max(0, d.balance - d.equity) : 0;
+                const drawdownPct = d.balance > 0 ? ((drawdownVal / d.balance) * 100).toFixed(2) : '0.00';
+                
+                // ประเมินระดับความเสี่ยงของพอร์ต
+                let riskStatus = 'ต่ำ (Safe)';
+                let riskColor = 'var(--accent-emerald)';
+                if (drawdownPct > 15) {
+                    riskStatus = 'สูงมาก (Critical Risk)';
+                    riskColor = 'var(--accent-rose)';
+                } else if (drawdownPct > 6) {
+                    riskStatus = 'ปานกลาง (Moderate Risk)';
+                    riskColor = 'var(--accent-gold)';
+                }
+
+                // ประเมินทิศทางโมเมนตัมผลตอบแทน
+                let momentum = 'ทรงตัว (Neutral)';
+                if (d.profit_today > 0 && d.profit_week > 0) {
+                    momentum = 'เชิงบวกแข็งแกร่ง (Strong Uptrend)';
+                } else if (d.profit_today < 0 || d.profit_week < 0) {
+                    momentum = 'ชะลอตัวลง (Downtrend/Consolidation)';
+                }
+
+                // สรุปบทวิเคราะห์เชิงลึกและคำแนะนำเชิงกลยุทธ์
+                let recommendation = 'พอร์ตมีเสถียรภาพอยู่ในเกณฑ์ดี สามารถดำเนินการตามแผนการจัดการความเสี่ยงมาตรฐานได้';
+                if (drawdownPct > 12) {
+                    recommendation = 'เตือนภัยความเสี่ยง: Floating Drawdown เริ่มสูงขึ้น ควรพิจารณาลดขนาด Lot Size หรือชะลอการออกออเดอร์เพิ่ม';
+                } else if (winRate < 45 && totalOrders >= 5) {
+                    recommendation = 'Win Rate ค่อนข้างต่ำ ควรทบทวนเงื่อนไขการเข้าเทรด หรือปรับระดับ Risk Ratio ให้คุ้มค่ามากขึ้น';
+                } else if (d.profit_today > 0 && winRate >= 60) {
+                    recommendation = 'พอร์ตมีประสิทธิภาพยอดเยี่ยม โมเมนตัมเป็นบวกต่อเนื่อง สามารถรันระบบต่อได้อย่างมั่นคง';
+                }
+
                 analyticsDetails.innerHTML = `
-                    • สถานะพอร์ต: <b>${d.balance > 0 ? 'กำลังรันระบบนิเวศปกติ' : 'แปลงรกร้าง'}</b><br>
-                    • อัตราความแม่นยำไม้กำไร (Win Rate): <b style="color:var(--accent-emerald);">${winRate}%</b> (${d.profit_orders} ไม้กำไร / ${d.loss_orders} ไม้ขาดทุน)<br>
-                    • ผลประกอบการรายวัน: <b class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today)}</b><br>
-                    • ดัชนีความเติบโตเทียบกับเงินต้น: <b>${d.percent >= 0 ? '+' : ''}${d.percent.toFixed(2)}%</b>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+                        <div>• อัตราความแม่นยำ (Win Rate): <b style="color:var(--accent-emerald);">${winRate}%</b></div>
+                        <div>• ดัชนีความเสี่ยง (Drawdown): <b style="color:${riskColor};">${drawdownPct}%</b> ($${drawdownVal.toFixed(2)})</div>
+                        <div>• ประเมินความเสี่ยงพอร์ต: <b style="color:${riskColor};">${riskStatus}</b></div>
+                        <div>• โมเมนตัมผลตอบแทน: <b>${momentum}</b></div>
+                    </div>
+                    <div style="margin-bottom: 12px; line-height: 1.6;">
+                        <b>รายละเอียดสถิติออเดอร์:</b><br>
+                        • ออเดอร์ชนะ: <span style="color:var(--accent-emerald); font-weight:600;">${winOrders}</span> ไม้ | ออเดอร์แพ้: <span style="color:var(--accent-rose); font-weight:600;">${lossOrders}</span> ไม้ (รวมทั้งหมด ${totalOrders} ไม้)<br>
+                        • สถานะสถานะการถือครองออเดอร์ค้าง: <b>${d.open_positions || 0} ไม้</b>
+                    </div>
+                    <div style="margin-bottom: 12px; line-height: 1.6;">
+                        <b>เปรียบเทียบแนวโน้มผลประกอบการ:</b><br>
+                        • กำไรวันนี้: <span class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today)}</span>
+                        | สัปดาห์นี้: <span class="${d.profit_week >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_week)}</span>
+                        | เดือนนี้: <span class="${d.profit_month >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_month)}</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 10px; border-left: 3px solid ${riskColor}; font-size: 11px;">
+                        <b>บทวิเคราะห์เชิงกลยุทธ์ (Strategic Summary):</b><br>
+                        <span style="color: #cbd5e1;">${recommendation}</span>
+                    </div>
                 `;
             } else {
-                analyticsDetails.innerHTML = 'ไม่มีข้อมูลสถิติเชิงลึกสำหรับแปลงนี้';
+                analyticsDetails.innerHTML = 'ไม่มีข้อมูลสถิติเชิงลึกเนื่องจากขาดการเชื่อมต่อกับเครื่องโฮสต์';
             }
 
             document.getElementById('popup-overlay').classList.add('show');
@@ -360,8 +421,8 @@
         function closePopup() { document.getElementById('popup-overlay').classList.remove('show'); }
 
         window.removeFarm = async function(login) {
-            const confirmCode = prompt(`⚠️ กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
-            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
+            const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
+            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
@@ -371,8 +432,8 @@
         };
 
         window.deleteAllFarms = async function() {
-            const confirmCode = prompt(`⚠️ คำเตือน: กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์ม "ทั้งหมด" ออกจากระบบ:`);
-            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
+            const confirmCode = prompt(`คำเตือน: กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์มทั้งหมดออกจากระบบ:`);
+            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
@@ -380,7 +441,7 @@
                 globalPortfolioData = {}; 
                 updatePortfolioSummary(); 
                 renderForest(); 
-                alert('✅ ล้างข้อมูลฟาร์มทั้งหมดเรียบร้อยแล้ว');
+                alert('ล้างข้อมูลฟาร์มทั้งหมดเรียบร้อยแล้ว');
             } catch(e) { 
                 alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); 
             }
@@ -391,7 +452,7 @@
             const farms = getFarmsList(); 
             
             if (farms.length === 0) {
-                grid.innerHTML = `<div class="empty-state"><span>🌱✨</span><h3>ยังไม่มีแปลงเกษตรในระบบ</h3><p>ระบบจะสร้างแปลงให้อัตโนมัติเมื่อ EA ส่งข้อมูลเข้ามา</p></div>`; return;
+                grid.innerHTML = `<div class="empty-state"><h3>ยังไม่มีแปลงเกษตรในระบบ</h3><p>ระบบจะสร้างแปลงให้อัตโนมัติเมื่อ EA ส่งข้อมูลเข้ามา</p></div>`; return;
             }
 
             farms.forEach(login => {
