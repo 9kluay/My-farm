@@ -150,7 +150,7 @@
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
         .empty-state span { font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        #syncing-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; z-index: 10000; }
+        #syncing-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; z-index: 10000; transition: opacity 0.3s; }
     </style>
 </head>
 <body>
@@ -238,9 +238,10 @@
             renderForest(); 
             await syncAndRefreshAll(); 
 
+            // 🚀 ปรับปรุง: เพิ่มระยะเวลาดึงข้อมูลเป็นทุกๆ 60 วินาที เพื่อไม่ให้โหลดหนักเกินไป
             setInterval(() => {
                 syncAndRefreshAll();
-            }, 10000);
+            }, 60000); 
         };
 
         function updateGlobalWeather(totalPercent) {
@@ -288,10 +289,25 @@
             document.getElementById('theme-badge').innerHTML = `สภาพอากาศ: ${themeName}`;
         }
 
+        // 🚀 ปรับปรุง: ระบบโหลดข้อมูลรวดเดียวจบ (Batch Processing) ช่วยให้หน้าจอไม่กระตุก
         async function syncAndRefreshAll() {
+            const syncOverlay = document.getElementById('syncing-overlay');
+            if (syncOverlay) syncOverlay.style.display = 'block';
+
             await syncFarmsFromCloud();
             const farms = getFarmsList();
-            if(farms.length > 0) farms.forEach(login => fetchNodeData(login));
+            
+            if(farms.length > 0) {
+                // ยิงดึงข้อมูลจาก GAS พร้อมกัน แต่รอจนครบทั้งหมดก่อนค่อยวาดหน้าจอใหม่
+                const fetchPromises = farms.map(login => fetchNodeDataSilent(login));
+                await Promise.all(fetchPromises);
+                
+                // หลังจากข้อมูลมาครบหมดแล้ว ค่อยสั่งอัปเดตหน้าจอ 1 ครั้งถ้วน
+                updatePortfolioSummary();
+                renderForest();
+            }
+
+            if (syncOverlay) syncOverlay.style.display = 'none';
         }
 
         async function syncFarmsFromCloud() {
@@ -300,7 +316,7 @@
                 const cloudFarms = await response.json();
                 if(Array.isArray(cloudFarms)) {
                     let mergedFarms = [...new Set([...getFarmsList(), ...cloudFarms])];
-                    saveFarmsList(mergedFarms); renderForest();
+                    saveFarmsList(mergedFarms); 
                 }
             } catch(e) {}
         }
@@ -392,7 +408,7 @@
                     <div style="margin-bottom: 12px; line-height: 1.6;">
                         <b>รายละเอียดสถิติออเดอร์:</b><br>
                         • ออเดอร์ชนะ: <span style="color:var(--accent-emerald); font-weight:600;">${winOrders}</span> ไม้ | ออเดอร์แพ้: <span style="color:var(--accent-rose); font-weight:600;">${lossOrders}</span> ไม้ (รวมทั้งหมด ${totalOrders} ไม้)<br>
-                        • สถานะสถานะการถือครองออเดอร์ค้าง: <b>${d.open_positions || 0} ไม้</b>
+                        • สถานะการถือครองออเดอร์ค้าง: <b>${d.open_positions || 0} ไม้</b>
                     </div>
                     <div style="margin-bottom: 12px; line-height: 1.6;">
                         <b>เปรียบเทียบแนวโน้มผลประกอบการ:</b><br>
@@ -480,28 +496,40 @@
                     </div>`;
                 grid.appendChild(card);
             });
+            
+            // 🚀 ปรับปรุง: การทำงานเหล่านี้จะถูกรันแค่ 1 ครั้งต่อการโหลดเสร็จครบจบ
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
-            updateTreeRanks(); filterForestCards();
+            updateTreeRanks(); 
+            filterForestCards();
         }
 
-        async function fetchNodeData(login) {
+        // 🚀 ปรับปรุง: ฟังก์ชันย่อยสำหรับดึงข้อมูลเงียบๆ ไม่กระตุก UI
+        async function fetchNodeDataSilent(login) {
             try {
-                const response = await fetch(`${SCRIPT_URL}?login=${login}`); const data = await response.json();
-                if (data.error || data.length === 0) { globalPortfolioData[login] = { error: true }; } 
-                else {
+                const response = await fetch(`${SCRIPT_URL}?login=${login}`); 
+                const data = await response.json();
+                
+                if (data.error || data.length === 0) { 
+                    globalPortfolioData[login] = { error: true }; 
+                } else {
                     const latest = data.at(-1); 
-                    const balance = parseFloat(latest.balance); const profitLoss = parseFloat(latest.floating_pl);
+                    const balance = parseFloat(latest.balance); 
+                    const profitLoss = parseFloat(latest.floating_pl);
                     globalPortfolioData[login] = { 
                         balance: balance, equity: parseFloat(latest.equity), profit: profitLoss,
-                        percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, open_positions: parseInt(latest.open_positions || 0), 
-                        profit_orders: parseInt(latest.profit_orders || 0), loss_orders: parseInt(latest.loss_orders || 0),
-                        profit_today: parseFloat(latest.profit_today || 0), profit_week: parseFloat(latest.profit_week || 0), profit_month: parseFloat(latest.profit_month || 0),
+                        percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, 
+                        open_positions: parseInt(latest.open_positions || 0), 
+                        profit_orders: parseInt(latest.profit_orders || 0), 
+                        loss_orders: parseInt(latest.loss_orders || 0),
+                        profit_today: parseFloat(latest.profit_today || 0), 
+                        profit_week: parseFloat(latest.profit_week || 0), 
+                        profit_month: parseFloat(latest.profit_month || 0),
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
-                updatePortfolioSummary(); updateUICard(login); updateTreeRanks(); 
-                renderForest(); 
-            } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); updateTreeRanks(); }
+            } catch (err) { 
+                globalPortfolioData[login] = { error: true }; 
+            }
         }
 
         const formatMoney = (val) => { const absVal = Math.abs(val).toFixed(2); return val > 0 ? `+$${absVal}` : (val < 0 ? `-$${absVal}` : `$${absVal}`); };
