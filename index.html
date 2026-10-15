@@ -113,7 +113,6 @@
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
-        /* 🔴 วงสีแดง: ขยายพื้นที่ความสูงของโซนแสดงผลต้นไม้ให้ใหญ่ขึ้น */
         .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; }
         .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
@@ -123,7 +122,6 @@
         .tree-extra.withered { filter: grayscale(1) brightness(0.45) contrast(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.6)); animation: none !important; }
         @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-        /* 🟣 วงสีม่วง: ลดขนาดป้าย Level ให้กะทัดรัดและสวยงามลง */
         .level-badge { margin-top: 8px; font-size: 11px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); padding: 3px 10px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.18); z-index: 30; letter-spacing: 0.2px; }
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
@@ -245,42 +243,43 @@
             }, 10000);
         };
 
+        /* 🟢 แก้ไขเฉพาะจุดนี้: นำข้อความวงเล็บ (ขาดทุนระดับ X) ออกให้เหลือแต่ชื่อสภาพอากาศเพียวๆ */
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
             let bgDark = '#070c0a'; let glowTop = 'rgba(16, 185, 129, 0.08)'; let glowBottom = 'rgba(251, 191, 36, 0.05)'; let themeBorder = 'rgba(255, 255, 255, 0.08)';
 
             if (totalPercent >= 15) {
-                themeName = 'ผลผลิตงอกงามรุ้งงามวิ้งค์ 🌈💎 (กำไรระดับ 5)'; window.weatherParticles = ['✨', '🌟', '🌈', '💎'];
+                themeName = 'ผลผลิตงอกงามรุ้งงามวิ้งค์ 🌈💎'; window.weatherParticles = ['✨', '🌟', '🌈', '💎'];
                 bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.3)'; glowBottom = 'rgba(251, 191, 36, 0.25)'; themeBorder = 'rgba(16, 185, 129, 0.4)';
             } else if (totalPercent >= 10) {
-                themeName = 'แดดจ้าประกายทอง 🌟✨ (กำไรระดับ 4)'; window.weatherParticles = ['☀️', '✨', '🌟'];
+                themeName = 'แดดจ้าประกายทอง 🌟✨'; window.weatherParticles = ['☀️', '✨', '🌟'];
                 bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.22)'; glowBottom = 'rgba(251, 191, 36, 0.18)'; themeBorder = 'rgba(16, 185, 129, 0.3)';
             } else if (totalPercent >= 6) {
-                themeName = 'แสงเช้าอบอุ่น ☀️🌿 (กำไรระดับ 3)'; window.weatherParticles = ['☀️', '🍃', '✨'];
+                themeName = 'แสงเช้าอบอุ่น ☀️🌿'; window.weatherParticles = ['☀️', '🍃', '✨'];
                 bgDark = '#071209'; glowTop = 'rgba(16, 185, 129, 0.16)'; glowBottom = 'rgba(251, 191, 36, 0.12)'; themeBorder = 'rgba(16, 185, 129, 0.22)';
             } else if (totalPercent >= 3) {
-                themeName = 'อากาศดีสดใส ⛅✨ (กำไรระดับ 2)'; window.weatherParticles = ['🍃', '☀️'];
+                themeName = 'อากาศดีสดใส ⛅✨'; window.weatherParticles = ['🍃', '☀️'];
                 bgDark = '#070f0a'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(251, 191, 36, 0.08)'; themeBorder = 'rgba(255, 255, 255, 0.12)';
             } else if (totalPercent > 0) {
-                themeName = 'ลมโชยอ่อนๆ 🍃 (กำไรระดับ 1)'; window.weatherParticles = ['🍃', '✨'];
+                themeName = 'ลมโชยอ่อนๆ 🍃'; window.weatherParticles = ['🍃', '✨'];
                 bgDark = '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.09)'; glowBottom = 'rgba(251, 191, 36, 0.06)'; themeBorder = 'rgba(255, 255, 255, 0.09)';
             } else if (totalPercent === 0) {
-                themeName = 'หมอกบางเบา 🌫️ (ทรงตัว)'; window.weatherParticles = ['✨'];
+                themeName = 'หมอกบางเบา 🌫️'; window.weatherParticles = ['✨'];
                 bgDark = '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.08)';
             } else if (totalPercent >= -1) {
-                themeName = 'หมอกบางเบา 🌫️ (ขาดทุนระดับ 1)'; window.weatherParticles = ['✨'];
+                themeName = 'หมอกบางเบา 🌫️'; window.weatherParticles = ['✨'];
                 bgDark = '#080c10'; glowTop = 'rgba(56, 189, 248, 0.08)'; glowBottom = 'rgba(14, 116, 144, 0.05)'; themeBorder = 'rgba(56, 189, 248, 0.15)';
             } else if (totalPercent >= -3) {
-                themeName = 'ฝนตกปรอยๆ 💧 (ขาดทุนระดับ 2)'; window.weatherParticles = ['💧', '🌧️'];
+                themeName = 'ฝนตกปรอยๆ 💧'; window.weatherParticles = ['💧', '🌧️'];
                 bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.12)'; glowBottom = 'rgba(14, 116, 144, 0.08)'; themeBorder = 'rgba(56, 189, 248, 0.2)';
             } else if (totalPercent >= -6) {
-                themeName = 'ฝนตกชุ่มฉ่ำหนาแน่น 🌧️ (ขาดทุนระดับ 3)'; window.weatherParticles = ['💧', '🌧️', '✨'];
+                themeName = 'ฝนตกชุ่มฉ่ำหนาแน่น 🌧️'; window.weatherParticles = ['💧', '🌧️', '✨'];
                 bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.18)'; glowBottom = 'rgba(14, 116, 144, 0.12)'; themeBorder = 'rgba(56, 189, 248, 0.25)';
             } else if (totalPercent >= -10) {
-                themeName = 'พายุฝนฟ้าคะนอง ⛈️ (ขาดทุนระดับ 4)'; window.weatherParticles = ['💧', '🌧️', '⚡'];
+                themeName = 'พายุฝนฟ้าคะนอง ⛈️'; window.weatherParticles = ['💧', '🌧️', '⚡'];
                 bgDark = '#14080a'; glowTop = 'rgba(244, 63, 94, 0.12)'; glowBottom = 'rgba(159, 18, 57, 0.08)'; themeBorder = 'rgba(244, 63, 94, 0.2)';
             } else {
-                themeName = 'มรสุมและพายุทอร์นาโด ⚡🌪️ (ขาดทุนระดับ 5 - วิกฤต)'; window.weatherParticles = ['💧', '🌧️', '⚡', '🌪️'];
+                themeName = 'มรสุมและพายุทอร์นาโด ⚡🌪️'; window.weatherParticles = ['💧', '🌧️', '⚡', '🌪️'];
                 bgDark = '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.25)'; glowBottom = 'rgba(159, 18, 57, 0.15)'; themeBorder = 'rgba(244, 63, 94, 0.35)';
             }
 
@@ -584,7 +583,6 @@
                         witheredCount = totalTreesCount - healthyCount;
                     }
 
-                    // 🔴 ขยายขนาดพิกัดต้นไม้ให้ใหญ่และโดดเด่นขึ้น
                     const forestCoords = [
                         {x: 44, y: -2, size: 48, z: 6},  {x: 28, y: -6, size: 42, z: 5},  
                         {x: 62, y: -4, size: 44, z: 5},  {x: 15, y: -10, size: 36, z: 4}, 
