@@ -216,7 +216,7 @@
         
         let globalPortfolioData = {};
         let currentSeason = {};
-        window.weatherParticles = ['✨', '🍃']; 
+        window.weatherParticles = ['✨', '🍃', '🌟']; 
         
         function getSeasonInfo() {
             const m = new Date().getMonth();
@@ -234,7 +234,6 @@
             renderForest(); 
             await syncAndRefreshAll(); 
 
-            // 🟢 เพิ่มระบบอัปเดตอัตโนมัติทุกๆ 10 วินาที เพื่อดึงข้อมูล Real-time เมื่อชีสเปลี่ยน
             setInterval(() => {
                 syncAndRefreshAll();
             }, 10000);
@@ -246,19 +245,19 @@
             let bgDark = '#070c0a'; let glowTop = 'rgba(16, 185, 129, 0.08)'; let glowBottom = 'rgba(251, 191, 36, 0.05)'; let themeBorder = 'rgba(255, 255, 255, 0.08)';
 
             if (totalPercent <= -10) {
-                themeName = 'พายุเข้าฟาร์ม ⛈️ (ตลาดผันผวน)'; window.weatherParticles = ['💧', '🌧️', '🌪️', '⚡'];
+                themeName = 'พายุเข้าฟาร์ม ⛈️ (ตลาดผันผวน)'; window.weatherParticles = ['💧', '🌧️', '⚡', '✨'];
                 bgDark = '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.15)'; glowBottom = 'rgba(159, 18, 57, 0.1)'; themeBorder = 'rgba(244, 63, 94, 0.25)';
             } else if (totalPercent <= -2) {
-                themeName = 'ฝนตกชุ่มฉ่ำ 🌧️ (ตลาดพักตัว)'; window.weatherParticles = ['💧', '🌧️'];
+                themeName = 'ฝนตกชุ่มฉ่ำ 🌧️ (ตลาดพักตัว)'; window.weatherParticles = ['💧', '🌧️', '✨'];
                 bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.1)'; glowBottom = 'rgba(14, 116, 144, 0.1)'; themeBorder = 'rgba(56, 189, 248, 0.2)';
             } else if (totalPercent >= 5) {
-                themeName = 'ผลผลิตงอกงาม 🌈 (กำไรพุ่งทะยาน)'; window.weatherParticles = ['✨', '🌈', currentSeason.icon];
+                themeName = 'ผลผลิตงอกงามประกายวิ้งค์ 🌈✨'; window.weatherParticles = ['✨', '🌟', '🌈', currentSeason.icon];
                 bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.25)'; glowBottom = 'rgba(251, 191, 36, 0.2)'; themeBorder = 'rgba(16, 185, 129, 0.3)';
             } else {
-                if (hour >= 6 && hour < 9) { themeName = 'แสงเช้าอบอุ่น 🌅'; window.weatherParticles = ['🍃', '☀️']; bgDark = '#0a0d08'; glowTop = 'rgba(251, 191, 36, 0.12)'; glowBottom = 'rgba(16, 185, 129, 0.08)'; }
-                else if (hour >= 9 && hour < 16) { themeName = 'แดดจ้า ☀️'; window.weatherParticles = ['☀️', '🍃']; bgDark = '#051208'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(52, 211, 153, 0.08)'; }
-                else if (hour >= 16 && hour < 19) { themeName = 'ลมเย็น ⛅'; window.weatherParticles = ['🍃', '☁️']; bgDark = '#0a0812'; glowTop = 'rgba(249, 115, 22, 0.1)'; glowBottom = 'rgba(16, 185, 129, 0.05)'; }
-                else { themeName = 'ฟาร์มสงบ 🌙✨'; window.weatherParticles = ['✨', '🌟', '🍃']; bgDark = '#03060a'; glowTop = 'rgba(56, 189, 248, 0.05)'; glowBottom = 'rgba(16, 185, 129, 0.05)'; }
+                if (hour >= 6 && hour < 9) { themeName = 'แสงเช้าอบอุ่นวิ้งค์ 🌅'; window.weatherParticles = ['🍃', '☀️', '✨']; bgDark = '#0a0d08'; glowTop = 'rgba(251, 191, 36, 0.12)'; glowBottom = 'rgba(16, 185, 129, 0.08)'; }
+                else if (hour >= 9 && hour < 16) { themeName = 'แดดจ้าสดใส ☀️'; window.weatherParticles = ['☀️', '🍃', '✨']; bgDark = '#051208'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(52, 211, 153, 0.08)'; }
+                else if (hour >= 16 && hour < 19) { themeName = 'ลมเย็นยามเย็น ⛅'; window.weatherParticles = ['🍃', '☁️', '✨']; bgDark = '#0a0812'; glowTop = 'rgba(249, 115, 22, 0.1)'; glowBottom = 'rgba(16, 185, 129, 0.05)'; }
+                else { themeName = 'ฟาร์มสงบยามค่ำคืน 🌙✨'; window.weatherParticles = ['✨', '🌟', '🌙']; bgDark = '#03060a'; glowTop = 'rgba(56, 189, 248, 0.05)'; glowBottom = 'rgba(16, 185, 129, 0.05)'; }
             }
 
             const root = document.documentElement;
@@ -284,18 +283,18 @@
             } catch(e) {}
         }
 
-        function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">🌾 💧 ระบบชลประทานอัจฉริยะหล่อเลี้ยงฟาร์มการลงทุน 💧 🌾</div>'.repeat(8); }
+        function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">🌾 ✨ ระบบชลประทานอัจฉริยะหล่อเลี้ยงฟาร์มการลงทุน เปล่งประกายรุ่งเรือง ✨ 🌾</div>'.repeat(8); }
 
         function startWeatherEffect() {
             setInterval(() => {
                 const particle = document.createElement('div'); particle.className = 'weather-particle';
                 const icon = window.weatherParticles[Math.floor(Math.random() * window.weatherParticles.length)];
                 particle.innerText = icon; particle.style.left = Math.random() * window.innerWidth + 'px';
-                if(['💧', '🌧️', '❄️', '🌪️'].includes(icon)) { particle.style.animationDuration = (Math.random() * 2 + 1.5) + 's'; particle.style.animationName = 'fallRain'; } 
-                else { particle.style.animationDuration = (Math.random() * 5 + 5) + 's'; particle.style.animationName = 'fallParticle'; }
+                if(['💧', '🌧️'].includes(icon)) { particle.style.animationDuration = (Math.random() * 2 + 1.5) + 's'; particle.style.animationName = 'fallRain'; } 
+                else { particle.style.animationDuration = (Math.random() * 5 + 4) + 's'; particle.style.animationName = 'fallParticle'; }
                 particle.style.fontSize = (Math.random() * 10 + 12) + 'px'; document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 10000);
-            }, 1000);
+            }, 900);
         }
 
         function getFarmsList() { 
@@ -354,7 +353,7 @@
             const farms = getFarmsList(); 
             
             if (farms.length === 0) {
-                grid.innerHTML = `<div class="empty-state"><span>🌾</span><h3>ยังไม่มีแปลงเกษตรในระบบ</h3><p>ระบบจะสร้างแปลงให้อัตโนมัติเมื่อ EA ส่งข้อมูลเข้ามา</p></div>`; return;
+                grid.innerHTML = `<div class="empty-state"><span>🌱✨</span><h3>ยังไม่มีแปลงเกษตรในระบบ</h3><p>ระบบจะสร้างแปลงให้อัตโนมัติเมื่อ EA ส่งข้อมูลเข้ามา</p></div>`; return;
             }
 
             farms.forEach(login => {
@@ -363,7 +362,6 @@
 
                 card.innerHTML = `
                     <div class="card-header">
-                        <!-- 🟢 อัปเดตใช้อิโมจิตามต้นไม้หลักที่หัวข้อแปลง -->
                         <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="stars" id="stars-${login}"></span></div>
                         <button class="btn-delete" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
@@ -431,8 +429,8 @@
             let emoji = '', txt = ''; const pct = data.percent;
             if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
             else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'รอรอบใหม่'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
-            else if (pct > 10) { emoji = '☀️'; txt = 'เติบโตดีเยี่ยม'; }
-            else if (pct > 0) { emoji = '⛅'; txt = 'อากาศดี'; }
+            else if (pct > 10) { emoji = '☀️✨'; txt = 'เติบโตดีเยี่ยม'; }
+            else if (pct > 0) { emoji = '⛅✨'; txt = 'อากาศดี'; }
             else if (pct === 0) { emoji = '🌫️'; txt = 'ทรงตัว'; }
             else if (pct >= -5) { emoji = '🌧️'; txt = 'ฝนตก'; }
             else { emoji = '⛈️'; txt = 'พายุเข้า!'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
@@ -496,8 +494,23 @@
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-base" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
                 } else {
                     let level = (maxEq > minEq) ? Math.floor(((data.equity - minEq) / (maxEq - minEq)) * 9) + 1 : 10;
-                    const names = ['เมล็ดพันธุ์','กล้าไม้สมบูรณ์','พืชคลุมดิน','ไม้พุ่มเขียว','แปลงผักสวนครัว','กอไผ่เจริญเติบโต','สวนผลผลิตดก','ไม้ผลให้ร่มเงา','ไม้ยืนต้นพรีเมียม','พฤกษาแกร่ง','มหาพฤกษาขอนไม้'];
-                    const emojis = ['🌰','🌱','🪴','🌿','☘️','🎋','🌴','🌳','🌲','🌵','🪵'];
+                    
+                    // 🌟 ชุดเลเวลพืชพรรณธรรมชาติ 11 ระดับ (ไม่มีไผ่ ผลไม้ หรือดอกไม้)
+                    const names = [
+                        'เมล็ดพันธุ์เริ่มต้น', 
+                        'กล้าไม้อ่อน', 
+                        'พืชกระถางมินิมอล', 
+                        'พุ่มใบไม้เขียว', 
+                        'ทุ่งโคลเวอร์นำโชค', 
+                        'พืชประดับหนาแน่น', 
+                        'ต้นปาล์มเขียวชะอุ่ม', 
+                        'ไม้ยืนต้นร่มรื่น', 
+                        'ต้นสนป่าพรีเมียม', 
+                        'ไม้ยืนต้นแกร่ง', 
+                        'มหาพฤกษาทองคำ'
+                    ];
+                    const emojis = ['🌰', '🌱', '🪴', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '🌵', '👑'];
+                    
                     activeEmoji = emojis[level];
                     let treeEmoji = activeEmoji;
                     
@@ -530,7 +543,7 @@
                     
                     let elements = `${wpillHTML}${clusterHTML}`;
                     elements += `<span class="sparkle" style="top:20px; right:30%; animation-delay:0s;">✨</span>`;
-                    if(level > 5) elements += `<span class="sparkle" style="bottom:40px; left:25%; animation-delay:1s;">✨</span>`;
+                    if(level > 5) elements += `<span class="sparkle" style="bottom:40px; left:25%; animation-delay:1s;">🌟</span>`;
                     elements += `<div class="level-badge">Level ${level} : ${names[level]}</div>`;
                     
                     showcase.innerHTML = elements;
