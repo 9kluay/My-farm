@@ -788,7 +788,7 @@
             
             let starMap = {};
             rankableFarms.forEach((f, index) => {
-                starMap[f] = (index < 5) ? (5 - index) : 0; // อันดับ 1 ได้ 5 ดาว, อันดับ 2 ได้ 4 ดาว ... อันดับ 6 ขึ้นไป 0 ดาว
+                starMap[f] = (index < 5) ? (5 - index) : 0; // อันดับ 1 ได้ 5 ดาว, อันดับ 2 ได้ 4 ดาว ...
             });
             // -------------------------------------------------------------
 
@@ -818,13 +818,33 @@
                     let treeEmoji = emojis[level]; let treeName = `${names[level]} (Level ${level})`;
                     
                     let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
-                    let extraHealthy = Math.min(Math.floor(data.percent / 10) || (data.profit_orders > 0 ? 1 : 0), 3);
-                    let extraWithered = Math.min(data.loss_orders, 2);
-                    let pos = 1;
-                    for(let i=0; i<extraHealthy; i++) { clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}</div>`; pos++; }
-                    for(let i=0; i<extraWithered; i++) { clusterHTML += `<div class="tree-extra extra-${pos} withered">🥀</div>`; pos++; }
-                    clusterHTML += `<span class="sparkle sparkle-1">✨</span><span class="sparkle sparkle-2">✨</span><span class="sparkle sparkle-3">✨</span></div>`;
                     
+                    // --- ระบบคำนวณต้นไม้ประดับ (อิงตาม % ชนะ/แพ้) ---
+                    let totalOrders = data.profit_orders + data.loss_orders;
+                    let extraHealthy = 0;
+                    let extraWithered = 0;
+                    
+                    if (totalOrders > 0) {
+                        let maxExtra = 4; // จำนวนต้นไม้ตกแต่งสูงสุด (สมมติให้มี 4 ต้นล้อมรอบต้นหลัก)
+                        let winRatio = data.profit_orders / totalOrders;
+                        extraHealthy = Math.round(winRatio * maxExtra);
+                        extraWithered = maxExtra - extraHealthy;
+                    }
+
+                    let pos = 1;
+                    // ต้นที่เติบโต
+                    for(let i=0; i<extraHealthy; i++) { 
+                        clusterHTML += `<div class="tree-extra extra-${pos}">${treeEmoji}</div>`; 
+                        pos++; 
+                    }
+                    // ต้นที่เหี่ยวเฉา (ใช้อิโมจิเดียวกัน แต่ใส่คลาส .withered ให้กลายเป็นสีเทาหม่น)
+                    for(let i=0; i<extraWithered; i++) { 
+                        clusterHTML += `<div class="tree-extra extra-${pos} withered">${treeEmoji}</div>`; 
+                        pos++; 
+                    }
+                    // ---------------------------------------------
+
+                    clusterHTML += `<span class="sparkle sparkle-1">✨</span><span class="sparkle sparkle-2">✨</span><span class="sparkle sparkle-3">✨</span></div>`;
                     avatarContainer.innerHTML = clusterHTML + badgeHTML; tierDiv.innerText = treeName;
                 }
 
