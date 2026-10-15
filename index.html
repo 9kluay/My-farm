@@ -115,11 +115,11 @@
         .showcase { position: relative; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 15px; }
         .weather-pill { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
-        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 75px; width: 100%; margin-top: 10px; }
-        .tree-base { font-size: 65px; position: relative; z-index: 5; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)); animation: floatTree 4s ease-in-out infinite; line-height: 1; }
-        .tree-extra { position: absolute; bottom: -5px; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)); z-index: 4; line-height: 1; }
+        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 75px; width: 100%; margin-top: 10px; flex-wrap: wrap; gap: 4px; padding: 0 10px; }
+        .tree-base { font-size: 45px; position: relative; z-index: 5; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.5)); animation: floatTree 4s ease-in-out infinite; line-height: 1; }
+        .tree-extra { position: relative; font-size: 32px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); z-index: 4; line-height: 1; }
         .tree-extra.withered { filter: grayscale(1) brightness(0.6) drop-shadow(0 4px 4px rgba(0,0,0,0.5)); animation: none !important; }
-        @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
         .level-badge { margin-top: 15px; font-size: 13px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.2); z-index: 10; }
         .sparkle { position: absolute; font-size: 16px; color: var(--accent-gold); animation: blink 2s infinite alternate; pointer-events: none; }
@@ -502,7 +502,6 @@
                         level = 10;
                     }
                     
-                    // 🌟 ชุดอิโมจิและชื่อเลเวล 10 ระดับ ตรงตามภาพที่คุณอธิวัฒน์กำกับไว้
                     const names = [
                         'พุ่มไม้ใบดก', 
                         'ต้นอ่อนเพิ่งงอก', 
@@ -520,30 +519,38 @@
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji;
                     
-                    let clusterHTML = `<div class="forest-cluster"><div class="tree-base">${treeEmoji}</div>`;
-                    
+                    // 🌟 ระบบคำนวณต้นไม้ 10 ต้น (1 ต้น = 10% ตามเงื่อนไขใหม่)
                     let totalOrders = data.profit_orders + data.loss_orders;
-                    let extraHealthy = 0; let extraWithered = 0; let maxExtra = 4; 
-                    
+                    let healthyCount = 1; // ขั้นต่ำ 1 ต้น (10%)
+                    let witheredCount = 0;
+
                     if (totalOrders > 0) {
                         let winRatio = data.profit_orders / totalOrders;
-                        extraHealthy = Math.round(winRatio * maxExtra);
-                        extraWithered = maxExtra - extraHealthy;
+                        let lossRatio = data.loss_orders / totalOrders;
+                        
+                        let calculatedHealthy = Math.round(winRatio * 10);
+                        healthyCount = Math.max(1, calculatedHealthy); // ขั้นต่ำ 1 ต้น
+                        
+                        witheredCount = Math.round(lossRatio * 10);
                     }
 
-                    const positions = [
-                        "right: 50%; margin-right: 25px; font-size: 35px; animation: floatTree 4.5s infinite 0.5s;",
-                        "left: 50%; margin-left: 25px; font-size: 32px; animation: floatTree 5s infinite 1s;",
-                        "right: 50%; margin-right: 50px; font-size: 25px; animation: floatTree 5.5s infinite 1.5s; z-index: 3;",
-                        "left: 50%; margin-left: 50px; font-size: 22px; animation: floatTree 6s infinite 2s; z-index: 3;"
-                    ];
-
-                    let posIdx = 0;
-                    for(let i=0; i<extraHealthy; i++) {
-                        if(posIdx < 4) { clusterHTML += `<div class="tree-extra" style="${positions[posIdx]}">${treeEmoji}</div>`; posIdx++; }
+                    // จำกัดผลรวมไม่ให้เกิน 10 ต้น
+                    if (healthyCount + witheredCount > 10) {
+                        witheredCount = 10 - healthyCount;
                     }
-                    for(let i=0; i<extraWithered; i++) {
-                        if(posIdx < 4) { clusterHTML += `<div class="tree-extra withered" style="${positions[posIdx]}">${treeEmoji}</div>`; posIdx++; }
+                    if (healthyCount + witheredCount < 1) {
+                        healthyCount = 1;
+                        witheredCount = 0;
+                    }
+
+                    let clusterHTML = `<div class="forest-cluster">`;
+                    // สร้างต้นไม้เติบโตตามจำนวน %
+                    for(let i = 0; i < healthyCount; i++) {
+                        clusterHTML += `<div class="tree-extra" style="animation: floatTree 4s ease-in-out infinite ${i * 0.2}s;">${treeEmoji}</div>`;
+                    }
+                    // สร้างต้นไม้เหี่ยวเฉาตาม % ขาดทุน
+                    for(let i = 0; i < witheredCount; i++) {
+                        clusterHTML += `<div class="tree-extra withered">${treeEmoji}</div>`;
                     }
                     clusterHTML += `</div>`; 
                     
