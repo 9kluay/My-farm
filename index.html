@@ -90,14 +90,30 @@
 
         /* 🛠️ Modern Toolbar */
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
-        .toolbar-left { display: flex; gap: 15px; flex-wrap: wrap; }
+        .toolbar-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         
         .btn-sync { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 12px 24px; border-radius: var(--btn-radius); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px); }
         .btn-sync:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald); transform: translateY(-2px); }
         
-        /* ปุ่มล้างฟาร์มทั้งหมด */
-        .btn-delete-all { background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); color: var(--accent-rose); padding: 12px 24px; border-radius: var(--btn-radius); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px); }
-        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.8); border-color: var(--accent-rose); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4); }
+        /* แก้ไขปุ่มล้างฟาร์มทั้งหมดให้เหลือแค่ไอคอน ไม่เด่น */
+        .btn-delete-all { 
+            background: transparent; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            color: rgba(255,255,255,0.3); 
+            padding: 10px; 
+            border-radius: var(--btn-radius); 
+            font-size: 16px; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.3s ease; 
+        }
+        .btn-delete-all:hover { 
+            background: rgba(244, 63, 94, 0.1); 
+            border-color: rgba(244, 63, 94, 0.3); 
+            color: var(--accent-rose); 
+        }
 
         .search-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--btn-radius); padding: 10px 20px; width: 300px; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
         .search-box:focus-within { border-color: var(--accent-emerald); background: rgba(0,0,0,0.5); box-shadow: 0 0 15px rgba(16,185,129,0.1); }
@@ -202,7 +218,7 @@
         <div class="toolbar">
             <div class="toolbar-left">
                 <button class="btn-sync" onclick="syncAndRefreshAll()"><span>💧 ซิงค์ข้อมูลฟาร์ม (Auto Sync)</span></button>
-                <button class="btn-delete-all" onclick="deleteAllFarms()"><span>🗑️ ล้างแปลงทั้งหมด</span></button>
+                <button class="btn-delete-all" onclick="deleteAllFarms()" title="ล้างแปลงทั้งหมด">🗑️</button>
             </div>
             <div class="search-box">
                 <span style="color: var(--text-muted); font-size: 14px;">🔍</span>
@@ -234,7 +250,6 @@
             document.getElementById('season-badge').innerHTML = `${currentSeason.icon} ${currentSeason.name}`;
             updateGlobalWeather(0); startWeatherEffect();
             
-            // เคลียร์ขยะเก่าในเครื่องผู้ใช้ด้วย เพื่อความชัวร์ 100%
             const oldFarms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
             if (oldFarms.length > 0 && String(oldFarms[0]).includes("2026-")) {
                 localStorage.setItem('my_forest_farms', '[]'); 
@@ -304,6 +319,7 @@
             }, 1000);
         }
 
+        // เรียงลำดับแปลงตามยอด Balance จากมากไปน้อย
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
             return farms.sort((a, b) => {
@@ -312,6 +328,7 @@
                 return balB - balA;
             });
         }
+        
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
         function handleCardClick(event, login) {
@@ -327,7 +344,6 @@
 
         function closePopup() { document.getElementById('popup-overlay').classList.remove('show'); }
 
-        // ฟังก์ชันลบฟาร์มเดี่ยว
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`⚠️ กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
@@ -342,7 +358,6 @@
             overlay.style.display = 'none'; overlay.style.background = 'rgba(16, 185, 129, 0.15)'; overlay.style.color = 'var(--accent-emerald)'; overlay.innerText = '✨ กำลังซิงค์ข้อมูลฟาร์ม...';
         };
 
-        // 🟢 ฟังก์ชันล้างฟาร์มทั้งหมด (ใหม่ล่าสุด)
         window.deleteAllFarms = async function() {
             const confirmCode = prompt(`⚠️ คำเตือน: กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์ม "ทั้งหมด" ออกจากระบบ:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('❌ รหัส PIN ไม่ถูกต้อง!');
@@ -364,7 +379,9 @@
         };
 
         function renderForest() {
-            const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; const farms = getFarmsList();
+            const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
+            const farms = getFarmsList(); // ดึงพอร์ตที่เรียงตาม Balance มาวาด
+            
             if (farms.length === 0) {
                 grid.innerHTML = `<div class="empty-state"><span>🌾</span><h3>ยังไม่มีแปลงเกษตรในระบบ</h3><p>ระบบจะสร้างแปลงให้อัตโนมัติเมื่อ EA ส่งข้อมูลเข้ามา</p></div>`; return;
             }
@@ -419,7 +436,11 @@
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
-                updatePortfolioSummary(); updateUICard(login); updateTreeRanks();
+                updatePortfolioSummary(); updateUICard(login); updateTreeRanks(); 
+                
+                // สั่งให้วาดใหม่เพื่อให้เรียงลำดับอัปเดตแบบ Realtime
+                renderForest(); 
+                
             } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); updateTreeRanks(); }
         }
 
