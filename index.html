@@ -126,6 +126,7 @@
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); }
+        .metric-item.full-width { grid-column: span 2; }
         .metric-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
         .metric-val { font-size: 15px; font-weight: 600; color: var(--text-main); }
         
@@ -330,7 +331,6 @@
         
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // 🟢 ปรับปรุง Pop-up: ถอดอิโมจิออกทั้งหมด และใส่บทวิเคราะห์เชิงลึกทางการเงินอย่างสมบูรณ์
         function handleCardClick(event, login) {
             if (event.target.classList.contains('btn-delete') || event.target.closest('.btn-delete')) return;
             const cardElement = document.querySelector(`.tree-card[data-login="${login}"]`);
@@ -338,7 +338,6 @@
             
             const popupBody = document.getElementById('popup-body-html');
             
-            // คัดลอกและลบสัญลักษณ์อิโมจิออกทั้งหมดจากพื้นที่ Pop-up
             let rawHTML = cardElement.outerHTML;
             let cleanHTML = rawHTML.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
             popupBody.innerHTML = cleanHTML;
@@ -355,11 +354,9 @@
                 const totalOrders = winOrders + lossOrders;
                 const winRate = totalOrders > 0 ? ((winOrders / totalOrders) * 100).toFixed(1) : '0.0';
                 
-                // คำนวณอัตราความเสี่ยง Drawdown เทียบระหว่าง Balance และ Equity
                 const drawdownVal = d.balance > 0 ? Math.max(0, d.balance - d.equity) : 0;
                 const drawdownPct = d.balance > 0 ? ((drawdownVal / d.balance) * 100).toFixed(2) : '0.00';
                 
-                // ประเมินระดับความเสี่ยงของพอร์ต
                 let riskStatus = 'ต่ำ (Safe)';
                 let riskColor = 'var(--accent-emerald)';
                 if (drawdownPct > 15) {
@@ -370,7 +367,6 @@
                     riskColor = 'var(--accent-gold)';
                 }
 
-                // ประเมินทิศทางโมเมนตัมผลตอบแทน
                 let momentum = 'ทรงตัว (Neutral)';
                 if (d.profit_today > 0 && d.profit_week > 0) {
                     momentum = 'เชิงบวกแข็งแกร่ง (Strong Uptrend)';
@@ -378,7 +374,6 @@
                     momentum = 'ชะลอตัวลง (Downtrend/Consolidation)';
                 }
 
-                // สรุปบทวิเคราะห์เชิงลึกและคำแนะนำเชิงกลยุทธ์
                 let recommendation = 'พอร์ตมีเสถียรภาพอยู่ในเกณฑ์ดี สามารถดำเนินการตามแผนการจัดการความเสี่ยงมาตรฐานได้';
                 if (drawdownPct > 12) {
                     recommendation = 'เตือนภัยความเสี่ยง: Floating Drawdown เริ่มสูงขึ้น ควรพิจารณาลดขนาด Lot Size หรือชะลอการออกออเดอร์เพิ่ม';
@@ -447,6 +442,7 @@
             }
         };
 
+        // 🟢 ปรับโครงสร้างการ์ดฟาร์ม: เพิ่มช่องแสดง DRAWDOWN (%) 
         function renderForest() {
             const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
             const farms = getFarmsList(); 
@@ -473,7 +469,8 @@
                         <div class="metric-item"><div class="metric-label">INITIAL BALANCE</div><div class="metric-val" id="bal-${login}">$0.00</div></div>
                         <div class="metric-item"><div class="metric-label">CURRENT EQUITY</div><div class="metric-val" id="eq-${login}">$0.00</div></div>
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">$0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">ORDERS (แยกไม้)</div><div class="metric-val" id="ord-${login}">-</div></div>
+                        <div class="metric-item"><div class="metric-label">DRAWDOWN (%)</div><div class="metric-val" id="dd-${login}">0.00%</div></div>
+                        <div class="metric-item full-width"><div class="metric-label">ORDERS (แยกไม้)</div><div class="metric-val" id="ord-${login}">-</div></div>
                     </div>
                     <div class="card-history">
                         <div class="c-hist-item"><div class="c-hist-label">วันนี้</div><div class="c-hist-val" id="today-${login}">$0.00</div></div>
@@ -514,6 +511,7 @@
         const formatPercent = (val) => { const absVal = Math.abs(val).toFixed(2); return val > 0 ? `(+${absVal}%)` : (val < 0 ? `(-${absVal}%)` : `(0.00%)`); };
         const getColorClass = (val) => val > 0 ? 'positive' : (val < 0 ? 'negative' : '');
 
+        // 🟢 อัปเดตค่า Drawdown % พร้อมใส่สีระบุระดับความเสี่ยงในการ์ด
         function updateUICard(login) {
             const data = globalPortfolioData[login]; if (!data) return;
             const statusDiv = document.getElementById(`status-${login}`); const wpill = document.getElementById(`wpill-${login}`);
@@ -544,6 +542,20 @@
             document.getElementById(`bal-${login}`).innerText = `$${data.balance.toFixed(2)}`; document.getElementById(`eq-${login}`).innerText = `$${data.equity.toFixed(2)}`;
             const plDiv = document.getElementById(`pl-${login}`);
             plDiv.className = `metric-val ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(pct)}`;
+            
+            // คำนวณ % Drawdown ของฟาร์มนี้
+            let ddVal = 0;
+            if (data.balance > 0 && data.equity < data.balance) {
+                ddVal = ((data.balance - data.equity) / data.balance) * 100;
+            }
+            const ddElem = document.getElementById(`dd-${login}`);
+            if (ddElem) {
+                ddElem.innerText = `${ddVal.toFixed(2)}%`;
+                if (ddVal > 15) ddElem.style.color = 'var(--accent-rose)';
+                else if (ddVal > 5) ddElem.style.color = 'var(--accent-gold)';
+                else ddElem.style.color = 'var(--accent-emerald)';
+            }
+
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
             ['today', 'week', 'month'].forEach(t => {
