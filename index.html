@@ -510,19 +510,20 @@
                         level = 10;
                     }
                     
+                    // 🌟 ชุดอิโมจิสวนป่าสมบูรณ์ 10 ระดับ (ผสมผสานพืชพรรณธรรมชาติหลากหลาย)
                     const names = [
-                        'พุ่มไม้ใบดก', 
+                        'พุ่มใบไม้เขียวขจี', 
                         'ต้นอ่อนเพิ่งงอก', 
-                        'แตกกิ่งก้านและใบพุ่มเล็ก', 
-                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 
-                        'ต้นกล้าลงกระถาง', 
+                        'พืชประดับสวนป่า', 
+                        'พุ่มโคลเวอร์หนาแน่น', 
+                        'พุ่มไม้ใบดก', 
                         'ต้นปาล์มสูงสง่า', 
-                        'ไม้ยืนต้นแผ่กิ่งก้านร่มเงา', 
-                        'ไม้ใหญ่ทรงสูงแข็งแกร่ง', 
-                        'ไม้ยืนต้นทนทานอวบน้ำ', 
+                        'ไม้ยืนต้นร่มเงากว้าง', 
+                        'ต้นสนป่าหนาแน่น', 
+                        'ไม้ยืนต้นทนทานแกร่ง', 
                         'มหาพฤกษาใหญ่โตเต็มวัย'
                     ];
-                    const emojis = ['🍃', '🌱', '🌿', '☘️', '🪴', '🌴', '🌳', '🌲', '🌵', '🌳'];
+                    const emojis = ['🌿', '🌱', '🪴', '☘️', '🍃', '🌴', '🌳', '🌲', '🌵', '🌳'];
                     
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji;
@@ -543,9 +544,13 @@
                         witheredCount = totalTreesCount - healthyCount;
                     }
 
+                    // สร้างความหลากหลายให้สวนป่าดูสมบูรณ์ (สุ่มเลือกอิโมจิธรรมชาติเสริมรอบๆ ตามเลเวล)
+                    const forestVariety = ['🌿', '🌱', '☘️', '🍃', '🪴'];
+                    
                     let clusterHTML = `<div class="forest-cluster">`;
                     for(let i = 0; i < healthyCount; i++) {
-                        clusterHTML += `<div class="tree-extra" style="animation-delay: ${i * 0.12}s;">${treeEmoji}</div>`;
+                        let currentEmoji = (i === 0) ? treeEmoji : forestVariety[i % forestVariety.length];
+                        clusterHTML += `<div class="tree-extra" style="animation-delay: ${i * 0.12}s;">${currentEmoji}</div>`;
                     }
                     for(let i = 0; i < witheredCount; i++) {
                         clusterHTML += `<div class="tree-extra withered">${treeEmoji}</div>`;
