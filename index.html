@@ -240,7 +240,6 @@
             renderForest(); 
             await syncAndRefreshAll(); 
 
-            // 🚀 ตั้งเวลา Real-time ดึงข้อมูลอัตโนมัติทุกๆ 3 วินาที เพื่อให้ทันทีที่ EA ส่งข้อมูลเข้าชีท หน้าเว็บจะอัปเดตทันที
             setInterval(() => {
                 syncAndRefreshAll();
             }, 3000);
@@ -588,15 +587,14 @@
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
             
-            let minBal = Infinity, maxBal = -Infinity;
+            // 📌 หาระดับ Max Balance ของพอร์ตทั้งหมดที่กำลังใช้งาน
+            let maxBal = 0;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
-                if (d.balance > 0 && d.open_positions >= 1) { 
-                    if (d.balance < minBal) minBal = d.balance; 
-                    if (d.balance > maxBal) maxBal = d.balance; 
+                if (d.balance > maxBal) { 
+                    maxBal = d.balance; 
                 }
             });
-            if(minBal === Infinity) { minBal = 0; maxBal = 0; }
 
             let totalPortfolioOrders = 0;
             farms.forEach(f => {
@@ -631,13 +629,13 @@
                     activeEmoji = '🏕️';
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แคมป์ปิ้งพักแปลง</div>`;
                 } else {
+                    // 📌 คำนวณเลเวลตาม Balance พอร์ตเทียบกับ Max Balance แบ่งเป็น 12 เลเวล
                     let level = 1;
-                    if (maxBal > minBal) {
-                        level = Math.floor(((data.balance - minBal) / (maxBal - minBal)) * 11) + 1;
+                    if (maxBal > 0) {
+                        let step = maxBal / 12;
+                        level = Math.ceil(data.balance / step);
                         if (level > 12) level = 12;
                         if (level < 1) level = 1;
-                    } else {
-                        level = 12;
                     }
                     
                     const names = [
