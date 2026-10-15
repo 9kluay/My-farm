@@ -116,8 +116,7 @@
         .weather-pill { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 75px; width: 100%; margin-top: 10px; flex-wrap: wrap; gap: 4px; padding: 0 10px; }
-        .tree-base { font-size: 45px; position: relative; z-index: 5; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.5)); animation: floatTree 4s ease-in-out infinite; line-height: 1; }
-        .tree-extra { position: relative; font-size: 32px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); z-index: 4; line-height: 1; }
+        .tree-extra { position: relative; font-size: 28px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); z-index: 4; line-height: 1; animation: floatTree 4s ease-in-out infinite; }
         .tree-extra.withered { filter: grayscale(1) brightness(0.6) drop-shadow(0 4px 4px rgba(0,0,0,0.5)); animation: none !important; }
         @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
@@ -367,7 +366,7 @@
                     </div>
                     <div class="showcase" id="showcase-${login}">
                         <div class="weather-pill" id="wpill-${login}">⏳ รอข้อมูล</div>
-                        <div class="forest-cluster"><div class="tree-base">🌱</div></div>
+                        <div class="forest-cluster"><div class="tree-extra">🌱</div></div>
                         <div class="level-badge" id="tier-${login}">เตรียมแปลง...</div>
                     </div>
                     <div class="card-metrics">
@@ -468,6 +467,15 @@
             });
             if(minBal === Infinity) { minBal = 0; maxBal = 0; }
 
+            // 🌟 คำนวณหาจำนวนออเดอร์รวมทั้งหมดทุกแปลงในพอร์ต (รวม open_positions หรือ profit_orders + loss_orders)
+            let totalPortfolioOrders = 0;
+            farms.forEach(f => {
+                const d = globalPortfolioData[f];
+                if (d && d.balance > 0) {
+                    totalPortfolioOrders += (d.open_positions || 0);
+                }
+            });
+
             let rankableFarms = farms.filter(f => globalPortfolioData[f].balance > 0);
             rankableFarms.sort((a, b) => {
                 let scoreA = (globalPortfolioData[a].profit || 0) + (globalPortfolioData[a].profit_today || 0);
@@ -488,10 +496,10 @@
                 
                 if (data.balance <= 0) {
                     activeEmoji = '🪨';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-base" style="filter: grayscale(1) opacity(0.5); animation: none;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none;">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-base" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none;">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">พักแปลงเตรียมรอบใหม่</div>`;
                 } else {
                     let level = 1;
                     if (maxBal > minBal) {
@@ -519,36 +527,29 @@
                     activeEmoji = emojis[level - 1];
                     let treeEmoji = activeEmoji;
                     
-                    // 🌟 ระบบคำนวณต้นไม้ 10 ต้น (1 ต้น = 10% ตามเงื่อนไขใหม่)
+                    // 🌟 คำนวณจำนวนต้นไม้ตาม % ของออเดอร์ในแปลงเทียบกับออเดอร์รวมทั้งฟาร์ม (1 ต้น = 10%)
+                    let farmOrders = data.open_positions || 0;
+                    let farmSharePercent = totalPortfolioOrders > 0 ? (farmOrders / totalPortfolioOrders) : 0; // เป็นสัดส่วน % (0 ถึง 1)
+                    
+                    // แปลงเป็นจำนวนต้นไม้ (10% = 1 ต้น, สูงสุด 10 ต้น, ขั้นต่ำอย่างน้อย 1 ต้น)
+                    let totalTreesCount = Math.round(farmSharePercent * 10);
+                    totalTreesCount = Math.max(1, Math.min(10, totalTreesCount));
+
+                    // แยกสัดส่วนต้นไม้เติบโต (กำไร) และเหี่ยวเฉา (ขาดทุน) ตาม Win/Loss Ratio เดิม
                     let totalOrders = data.profit_orders + data.loss_orders;
-                    let healthyCount = 1; // ขั้นต่ำ 1 ต้น (10%)
+                    let healthyCount = totalTreesCount;
                     let witheredCount = 0;
 
                     if (totalOrders > 0) {
                         let winRatio = data.profit_orders / totalOrders;
-                        let lossRatio = data.loss_orders / totalOrders;
-                        
-                        let calculatedHealthy = Math.round(winRatio * 10);
-                        healthyCount = Math.max(1, calculatedHealthy); // ขั้นต่ำ 1 ต้น
-                        
-                        witheredCount = Math.round(lossRatio * 10);
-                    }
-
-                    // จำกัดผลรวมไม่ให้เกิน 10 ต้น
-                    if (healthyCount + witheredCount > 10) {
-                        witheredCount = 10 - healthyCount;
-                    }
-                    if (healthyCount + witheredCount < 1) {
-                        healthyCount = 1;
-                        witheredCount = 0;
+                        healthyCount = Math.max(1, Math.round(totalTreesCount * winRatio));
+                        witheredCount = totalTreesCount - healthyCount;
                     }
 
                     let clusterHTML = `<div class="forest-cluster">`;
-                    // สร้างต้นไม้เติบโตตามจำนวน %
                     for(let i = 0; i < healthyCount; i++) {
-                        clusterHTML += `<div class="tree-extra" style="animation: floatTree 4s ease-in-out infinite ${i * 0.2}s;">${treeEmoji}</div>`;
+                        clusterHTML += `<div class="tree-extra" style="animation-delay: ${i * 0.15}s;">${treeEmoji}</div>`;
                     }
-                    // สร้างต้นไม้เหี่ยวเฉาตาม % ขาดทุน
                     for(let i = 0; i < witheredCount; i++) {
                         clusterHTML += `<div class="tree-extra withered">${treeEmoji}</div>`;
                     }
