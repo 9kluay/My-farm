@@ -58,7 +58,6 @@
         @keyframes fallParticle { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(105vh); opacity: 0; } }
 
-        /* แอนิเมชันไอน้ำ (Day) */
         @keyframes mistFloat {
             0% { transform: translateY(0) scale(0.8) rotate(-5deg); opacity: 0; }
             30% { opacity: 0.5; transform: translateY(-15px) scale(1.1) rotate(0deg); }
@@ -72,7 +71,6 @@
             font-size: 26px; font-weight: 300;
         }
 
-        /* แอนิเมชันหิ่งห้อย (Night) */
         @keyframes fireflyMove {
             0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
             20% { opacity: 1; box-shadow: 0 0 12px 2px rgba(163, 230, 53, 0.8); }
@@ -88,7 +86,6 @@
 
         .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) sepia(0.8) hue-rotate(340deg) saturate(3) !important; }
 
-        /* ดินเรืองแสงเมื่อพอร์ตบวก */
         @keyframes glowTerrainPulse {
             0% { text-shadow: 0 0 5px rgba(251, 191, 36, 0.6), 0 0 10px rgba(16, 185, 129, 0.4); transform: scale(1); }
             50% { text-shadow: 0 0 15px rgba(251, 191, 36, 0.9), 0 0 25px rgba(16, 185, 129, 0.7); transform: scale(1.03); }
@@ -101,11 +98,20 @@
 
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; }
 
-        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 0 10px; flex-wrap: wrap; gap: 15px; }
-        .nav-badges { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .badge { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-muted); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px; }
+        /* จัดระเบียบโซนหัวเว็บใหม่ให้สมดุลและสวยงาม */
+        .top-nav { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin-bottom: 25px; 
+            padding: 0 10px; 
+            flex-wrap: wrap; 
+            gap: 12px; 
+        }
+        .nav-badges { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        .badge { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-muted); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px; }
         
-        .status-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--accent-emerald); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px); }
+        .status-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--accent-emerald); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px); }
         .status-dot-pulse { width: 8px; height: 8px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 8px var(--accent-emerald); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.5; } 100% { transform: scale(0.95); opacity: 1; } }
 
@@ -234,13 +240,14 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
+        <!-- จัดวางแถบสถานะให้อยู่กึ่งกลาง สมดุล สวยงาม -->
         <div class="top-nav">
             <div class="nav-badges">
                 <div class="badge" id="time-badge">⏳ ตรวจสอบเวลา...</div>
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
+                <div class="status-badge"><div class="status-dot-pulse"></div> ระบบ Real-time Active</div>
             </div>
-            <div class="status-badge"><div class="status-dot-pulse"></div> ระบบ Real-time Active</div>
         </div>
 
         <header>
@@ -736,9 +743,8 @@
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
                     
-                    // 🚀 เงื่อนไขดินเรืองแสงเมื่อบวก หรือเลเวล 1-5 เมื่อติดลบ
                     let terrainEmoji = '';
-                    let terrainType = ''; // 'glow' หรือ เลเวล 1-5
+                    let terrainType = '';
                     
                     if (data.profit > 0) {
                         terrainType = 'glow';
