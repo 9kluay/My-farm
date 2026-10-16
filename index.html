@@ -194,11 +194,9 @@
         
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 110px; width: 100%; margin-top: 10px; padding: 0 5px; }
         
-        /* แก้ไข z-index ให้ข้อความพื้นดินอยู่ชั้นล่างสุด ไม่บังต้นไม้ */
-        .terrain-base { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 13px; z-index: 1; opacity: 0.85; letter-spacing: 1px; user-select: none; pointer-events: none; }
-        .terrain-base.lv5-crit { filter: hue-rotate(-15deg) saturate(1.5); font-size: 14px; }
+        .terrain-base { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 14px; z-index: 1; opacity: 0.85; letter-spacing: 3px; user-select: none; pointer-events: none; }
+        .terrain-base.lv5-crit { filter: hue-rotate(-15deg) saturate(1.5); font-size: 15px; }
 
-        /* กำหนด z-index ให้ต้นไม้ลอยอยู่เหนือข้อความพื้นดิน */
         .tree-extra { position: absolute; z-index: 5; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)); line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
         .tree-extra:hover { transform: scale(1.2) translateY(-6px); z-index: 30 !important; }
         .tree-extra.withered { filter: grayscale(1) brightness(0.45) contrast(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.6)); animation: none !important; }
@@ -641,7 +639,7 @@
             wpill.style.color = 'var(--accent-emerald)'; wpill.style.borderColor = 'rgba(16,185,129,0.3)';
 
             let emoji = '', txt = ''; const pct = data.percent;
-            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1);'; }
+            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
             else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'แคมป์ปิ้งพักแปลง'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
             else if (pct >= 15) { emoji = '🌈💎'; txt = 'ผลผลิตงอกงามรุ้งงามวิ้งค์'; }
             else if (pct >= 10) { emoji = '🌟✨'; txt = 'แดดจ้าประกายทอง'; }
@@ -774,20 +772,21 @@
                         
                         terrainType = 'lv' + terrainLevel;
 
+                        /* ปรับแต่งเอาข้อความภาษาไทยออกทั้งหมด เหลือเฉพาะอีโมจิตกแต่งพื้นดิน */
                         if (terrainLevel === 1) {
-                            terrainEmoji = '🪨 หินขาว 🪨';
+                            terrainEmoji = '⚪ 🪨 ⚪';
                             showcaseDiv.classList.remove('danger-zone');
                         } else if (terrainLevel === 2) {
-                            terrainEmoji = '🪨 🌾 หิน หญ้า 🌾 🪨';
+                            terrainEmoji = '🪨 🌾 🪨 🌾 🪨';
                             showcaseDiv.classList.remove('danger-zone');
                         } else if (terrainLevel === 3) {
-                            terrainEmoji = '🌱 🌾 หญ้า 🌾 🌱';
+                            terrainEmoji = '🌱 🌾 🌱 🌾 🌱';
                             showcaseDiv.classList.remove('danger-zone');
                         } else if (terrainLevel === 4) {
-                            terrainEmoji = '🪵 🌾 ขอนไม้ หญ้า 🌾 🪵';
+                            terrainEmoji = '🪵 🌾 🪵 🌾 🪵';
                             showcaseDiv.classList.remove('danger-zone');
                         } else if (terrainLevel === 5) {
-                            terrainEmoji = '🪵 🔥 ขอนไม้ ไฟลุก 🔥 🪵';
+                            terrainEmoji = '🪵 🔥 🪵 🔥 🪵';
                             showcaseDiv.classList.add('danger-zone');
                         }
                     }
