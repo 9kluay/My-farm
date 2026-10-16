@@ -729,18 +729,15 @@
                         showcaseDiv.classList.remove('danger-zone');
                     }
                 } else if (data.open_positions === 0) {
-                    /* ปรับปรุงโหมดแคมป์ปิ้งพักแปลง (Idle) ให้เด่นตระการตาเท่าต้นไม้ใหญ่ */
+                    /* โหมดแคมป์ปิ้งพักแปลง (Idle) - แสดงเฉพาะเต็นท์แคมป์ปิ้งและกองไฟ */
                     activeEmoji = '🏕️';
                     let stateKey = 'idle-' + isNightTime;
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
                         let fireEmoji = isNightTime ? '🔥' : '♨️';
                         clusterDiv.innerHTML = `
-                            <div class="terrain-base" style="color:var(--accent-gold); text-shadow:0 0 8px rgba(251,191,36,0.5);">✨ 🌿 🏕️ 🌿 ✨</div>
-                            <div class="tree-extra" style="left: 15%; bottom: -4px; font-size: 38px; z-index: 5;">🌲</div>
-                            <div class="tree-extra" style="left: 75%; bottom: -4px; font-size: 38px; z-index: 5;">🌲</div>
-                            <div class="tree-extra" style="left: 30%; bottom: -2px; font-size: 36px; z-index: 8;">⛺</div>
-                            <div class="tree-extra glow-profit" style="left: 48%; bottom: -2px; font-size: 48px; z-index: 10;">🏕️</div>
-                            <div class="tree-extra" style="left: 54%; bottom: -12px; font-size: 24px; z-index: 12; animation: floatTree 1.5s ease-in-out infinite alternate;">${fireEmoji}</div>
+                            <div class="terrain-base" style="color:var(--accent-gold); text-shadow:0 0 8px rgba(251,191,36,0.5);">✨ 🏕️ ✨</div>
+                            <div class="tree-extra glow-profit" style="left: 40%; bottom: 0px; font-size: 52px; z-index: 10;">🏕️</div>
+                            <div class="tree-extra" style="left: 58%; bottom: -4px; font-size: 28px; z-index: 12; animation: floatTree 1.5s ease-in-out infinite alternate;">${fireEmoji}</div>
                         `;
                         clusterDiv.setAttribute('data-state', stateKey);
                         tierDiv.innerHTML = '🏕️ โหมดแคมป์ปิ้งพักแปลง';
