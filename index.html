@@ -88,6 +88,17 @@
 
         .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) sepia(0.8) hue-rotate(340deg) saturate(3) !important; }
 
+        /* ดินเรืองแสงเมื่อพอร์ตบวก */
+        @keyframes glowTerrainPulse {
+            0% { text-shadow: 0 0 5px rgba(251, 191, 36, 0.6), 0 0 10px rgba(16, 185, 129, 0.4); transform: scale(1); }
+            50% { text-shadow: 0 0 15px rgba(251, 191, 36, 0.9), 0 0 25px rgba(16, 185, 129, 0.7); transform: scale(1.03); }
+            100% { text-shadow: 0 0 5px rgba(251, 191, 36, 0.6), 0 0 10px rgba(16, 185, 129, 0.4); transform: scale(1); }
+        }
+        .terrain-glow {
+            animation: glowTerrainPulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+        }
+
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; }
 
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 0 10px; flex-wrap: wrap; gap: 15px; }
@@ -159,14 +170,12 @@
 
         .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; transition: all 0.5s ease; }
         
-        /* State สีแดงเมื่อถึงเลเวล 5 (ไฟลุก/วิกฤต) */
         .showcase.danger-zone { background: radial-gradient(circle at center, rgba(244, 63, 94, 0.15) 0%, transparent 70%) !important; border-color: rgba(244, 63, 94, 0.3) !important; }
 
         .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 110px; width: 100%; margin-top: 10px; padding: 0 5px; }
         
-        /* สภาพพื้นดิน 5 เลเวล */
         .terrain-base { position: absolute; bottom: 0; width: 100%; text-align: center; font-size: 14px; z-index: 5; opacity: 0.85; letter-spacing: 2px; user-select: none; }
         .terrain-base.lv5-crit { filter: hue-rotate(-15deg) saturate(1.5); font-size: 15px; }
 
@@ -652,7 +661,6 @@
             if (farms.length === 0) { applySortOrder(); return; }
             
             let maxBal = 0; let totalPortfolioOrders = 0;
-            // หาระดับการติดลบที่มากที่สุดในกลุ่ม (Max Negative P/L) เพื่อใช้เป็นฐานคำนวณ 5 เลเวล
             let maxNegativePL = 0;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
@@ -663,7 +671,6 @@
                 }
             });
 
-            // ป้องกันการหารด้วย 0
             const stepPL = maxNegativePL > 0 ? maxNegativePL / 5 : 1;
 
             let rankableFarms = farms.filter(f => globalPortfolioData[f].balance > 0);
@@ -729,38 +736,40 @@
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
                     
-                    // 🚀 คำนวณสภาพดิน 5 เลเวล ตามเงื่อนไข (ลบมากที่สุด ÷ 5)
+                    // 🚀 เงื่อนไขดินเรืองแสงเมื่อบวก หรือเลเวล 1-5 เมื่อติดลบ
                     let terrainEmoji = '';
-                    let terrainLevel = 1;
+                    let terrainType = ''; // 'glow' หรือ เลเวล 1-5
                     
-                    if (data.profit >= 0) {
-                        terrainLevel = 3; // ถ้ากำไรหรือเท่าทุน ให้ดินอยู่เลเวล 3 (หญ้า) เป็นค่ากลาง
+                    if (data.profit > 0) {
+                        terrainType = 'glow';
+                        terrainEmoji = '✨ 🌿 💎 🌿 ✨';
+                        showcaseDiv.classList.remove('danger-zone');
                     } else {
                         let absLoss = Math.abs(data.profit);
-                        // คำนวณสัดส่วนเทียบกับ stepPL (ค่าลบสูงสุดหาร 5)
-                        terrainLevel = Math.ceil(absLoss / stepPL);
+                        let terrainLevel = data.profit === 0 ? 3 : Math.ceil(absLoss / stepPL);
                         terrainLevel = Math.max(1, Math.min(5, terrainLevel));
+                        
+                        terrainType = 'lv' + terrainLevel;
+
+                        if (terrainLevel === 1) {
+                            terrainEmoji = '🪨 หินขาว 🪨';
+                            showcaseDiv.classList.remove('danger-zone');
+                        } else if (terrainLevel === 2) {
+                            terrainEmoji = '🪨 🌾 หิน หญ้า 🌾 🪨';
+                            showcaseDiv.classList.remove('danger-zone');
+                        } else if (terrainLevel === 3) {
+                            terrainEmoji = '🌱 🌾 หญ้า 🌾 🌱';
+                            showcaseDiv.classList.remove('danger-zone');
+                        } else if (terrainLevel === 4) {
+                            terrainEmoji = '🪵 🌾 ขอนไม้ หญ้า 🌾 🪵';
+                            showcaseDiv.classList.remove('danger-zone');
+                        } else if (terrainLevel === 5) {
+                            terrainEmoji = '🪵 🔥 ขอนไม้ ไฟลุก 🔥 🪵';
+                            showcaseDiv.classList.add('danger-zone');
+                        }
                     }
 
-                    // Mapping เลเวลดินตามที่คุณอธิวัฒน์กำหนด
-                    if (terrainLevel === 1) {
-                        terrainEmoji = '🪨 หินขาว 🪨';
-                        showcaseDiv.classList.remove('danger-zone');
-                    } else if (terrainLevel === 2) {
-                        terrainEmoji = '🪨 🌾 หิน หญ้า 🌾 🪨';
-                        showcaseDiv.classList.remove('danger-zone');
-                    } else if (terrainLevel === 3) {
-                        terrainEmoji = '🌱 🌾 หญ้า 🌾 🌱';
-                        showcaseDiv.classList.remove('danger-zone');
-                    } else if (terrainLevel === 4) {
-                        terrainEmoji = '🪵 🌾 ขอนไม้ หญ้า 🌾 🪵';
-                        showcaseDiv.classList.remove('danger-zone');
-                    } else if (terrainLevel === 5) {
-                        terrainEmoji = '🪵 🔥 ขอนไม้ ไฟลุก 🔥 🪵';
-                        showcaseDiv.classList.add('danger-zone'); // เตือนภัยสีแดงที่เลเวล 5
-                    }
-
-                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-lv${terrainLevel}`;
+                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-${terrainType}`;
                     
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
                         const forestCoords = [
@@ -769,7 +778,7 @@
                             {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
                         ];
 
-                        let clusterHTML = `<div class="terrain-base ${terrainLevel === 5 ? 'lv5-crit':''}">${terrainEmoji}</div>`;
+                        let clusterHTML = `<div class="terrain-base ${terrainType === 'glow' ? 'terrain-glow' : (terrainType === 'lv5' ? 'lv5-crit' : '')}">${terrainEmoji}</div>`;
 
                         for(let i = 0; i < healthyCount; i++) {
                             let pos = forestCoords[i % forestCoords.length];
