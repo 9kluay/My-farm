@@ -58,6 +58,7 @@
         @keyframes fallParticle { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(105vh); opacity: 0; } }
 
+        /* แอนิเมชันไอน้ำ (Day) */
         @keyframes mistFloat {
             0% { transform: translateY(0) scale(0.8) rotate(-5deg); opacity: 0; }
             30% { opacity: 0.5; transform: translateY(-15px) scale(1.1) rotate(0deg); }
@@ -69,6 +70,20 @@
             animation: mistFloat 4s ease-in-out infinite;
             filter: blur(3px); color: rgba(255, 255, 255, 0.5);
             font-size: 26px; font-weight: 300;
+        }
+
+        /* แอนิเมชันหิ่งห้อย (Night) */
+        @keyframes fireflyMove {
+            0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; box-shadow: 0 0 12px 2px rgba(163, 230, 53, 0.8); }
+            50% { transform: translate(20px, -25px) scale(1.3); box-shadow: 0 0 16px 4px rgba(163, 230, 53, 0.9); }
+            80% { opacity: 0.8; box-shadow: 0 0 10px 2px rgba(163, 230, 53, 0.6); }
+            100% { transform: translate(-15px, -45px) scale(0.5); opacity: 0; }
+        }
+        .firefly-particle {
+            position: absolute; z-index: 20; pointer-events: none;
+            width: 4px; height: 4px; background: #d9f99d; border-radius: 50%;
+            animation: fireflyMove 3.5s ease-in-out infinite alternate;
         }
 
         .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) sepia(0.8) hue-rotate(340deg) saturate(3) !important; }
@@ -119,7 +134,6 @@
         .search-input { background: transparent; border: none; color: var(--text-main); font-size: 14px; font-family: inherit; width: 100%; outline: none; }
         .search-input::placeholder { color: rgba(255,255,255,0.3); }
 
-        /* ดรอปดาวน์เรียงลำดับ */
         .sort-select {
             background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1);
             border-radius: var(--btn-radius); padding: 10px 15px; color: var(--text-main);
@@ -143,10 +157,19 @@
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
-        .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; }
+        .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; transition: all 0.5s ease; }
+        
+        /* State สีแดงเมื่อ Drawdown สูง (วิกฤต) */
+        .showcase.danger-zone { background: radial-gradient(circle at center, rgba(244, 63, 94, 0.15) 0%, transparent 70%) !important; border-color: rgba(244, 63, 94, 0.3) !important; }
+
         .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 110px; width: 100%; margin-top: 10px; padding: 0 5px; }
+        
+        /* สภาพพื้นดิน (Terrain) */
+        .terrain-base { position: absolute; bottom: 0; width: 100%; text-align: center; font-size: 14px; z-index: 5; opacity: 0.85; letter-spacing: 2px; user-select: none; }
+        .terrain-base.dd-crit { filter: hue-rotate(-15deg) saturate(1.5); font-size: 15px; }
+
         .tree-extra { position: absolute; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)); line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
         .tree-extra:hover { transform: scale(1.2) translateY(-6px); z-index: 30 !important; }
         .tree-extra.withered { filter: grayscale(1) brightness(0.45) contrast(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.6)); animation: none !important; }
@@ -204,6 +227,7 @@
     <div class="container">
         <div class="top-nav">
             <div class="nav-badges">
+                <div class="badge" id="time-badge">⏳ ตรวจสอบเวลา...</div>
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
             </div>
@@ -259,6 +283,7 @@
         let globalPortfolioData = {};
         let currentSeason = {};
         let currentSortMode = 'balance';
+        let isNightTime = false; // เช็คสถานะเวลา
         window.weatherParticles = ['✨', '🍃', '🌟']; 
         
         function getSeasonInfo() {
@@ -268,10 +293,17 @@
             return { name: 'ฤดูฝน', icon: '🌧️' };
         }
 
+        function updateTimeCycle() {
+            const hour = new Date().getHours();
+            isNightTime = (hour >= 18 || hour < 6); // 18:00 - 05:59 ถือเป็นกลางคืน
+            document.getElementById('time-badge').innerHTML = isNightTime ? '🌙 โหมดกลางคืน (Night)' : '☀️ โหมดกลางวัน (Day)';
+        }
+
         window.onload = async () => {
             initRiver();
             currentSeason = getSeasonInfo();
-            document.getElementById('season-badge').innerHTML = `${currentSeason.icon}${currentSeason.name}`;
+            document.getElementById('season-badge').innerHTML = `${currentSeason.icon} ${currentSeason.name}`;
+            updateTimeCycle();
             updateGlobalWeather(0); 
             startWeatherEffect();
             
@@ -279,6 +311,7 @@
             await syncAndRefreshAll(); 
 
             setInterval(() => {
+                updateTimeCycle();
                 syncAndRefreshAll();
             }, 3000);
         };
@@ -289,37 +322,37 @@
 
             if (totalPercent >= 15) {
                 themeName = 'ผลผลิตงอกงามรุ้งงามวิ้งค์ 🌈💎'; window.weatherParticles = ['✨', '🌟', '🌈', '💎'];
-                bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.3)'; glowBottom = 'rgba(251, 191, 36, 0.25)'; themeBorder = 'rgba(16, 185, 129, 0.4)';
+                bgDark = isNightTime ? '#030805' : '#06140a'; glowTop = 'rgba(16, 185, 129, 0.3)'; glowBottom = 'rgba(251, 191, 36, 0.25)'; themeBorder = 'rgba(16, 185, 129, 0.4)';
             } else if (totalPercent >= 10) {
                 themeName = 'แดดจ้าประกายทอง 🌟✨'; window.weatherParticles = ['☀️', '✨', '🌟'];
-                bgDark = '#06140a'; glowTop = 'rgba(16, 185, 129, 0.22)'; glowBottom = 'rgba(251, 191, 36, 0.18)'; themeBorder = 'rgba(16, 185, 129, 0.3)';
+                bgDark = isNightTime ? '#030805' : '#06140a'; glowTop = 'rgba(16, 185, 129, 0.22)'; glowBottom = 'rgba(251, 191, 36, 0.18)'; themeBorder = 'rgba(16, 185, 129, 0.3)';
             } else if (totalPercent >= 6) {
                 themeName = 'แสงเช้าอบอุ่น ☀️🌿'; window.weatherParticles = ['☀️', '🍃', '✨'];
-                bgDark = '#071209'; glowTop = 'rgba(16, 185, 129, 0.16)'; glowBottom = 'rgba(251, 191, 36, 0.12)'; themeBorder = 'rgba(16, 185, 129, 0.22)';
+                bgDark = isNightTime ? '#040a06' : '#071209'; glowTop = 'rgba(16, 185, 129, 0.16)'; glowBottom = 'rgba(251, 191, 36, 0.12)'; themeBorder = 'rgba(16, 185, 129, 0.22)';
             } else if (totalPercent >= 3) {
                 themeName = 'อากาศดีสดใส ⛅✨'; window.weatherParticles = ['🍃', '☀️'];
-                bgDark = '#070f0a'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(251, 191, 36, 0.08)'; themeBorder = 'rgba(255, 255, 255, 0.12)';
+                bgDark = isNightTime ? '#040805' : '#070f0a'; glowTop = 'rgba(16, 185, 129, 0.12)'; glowBottom = 'rgba(251, 191, 36, 0.08)'; themeBorder = 'rgba(255, 255, 255, 0.12)';
             } else if (totalPercent > 0) {
                 themeName = 'ลมโชยอ่อนๆ 🍃'; window.weatherParticles = ['🍃', '✨'];
-                bgDark = '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.09)'; glowBottom = 'rgba(251, 191, 36, 0.06)'; themeBorder = 'rgba(255, 255, 255, 0.09)';
+                bgDark = isNightTime ? '#030605' : '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.09)'; glowBottom = 'rgba(251, 191, 36, 0.06)'; themeBorder = 'rgba(255, 255, 255, 0.09)';
             } else if (totalPercent === 0) {
                 themeName = 'หมอกบางเบา 🌫️'; window.weatherParticles = ['✨'];
-                bgDark = '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.08)';
+                bgDark = isNightTime ? '#030605' : '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.08)';
             } else if (totalPercent >= -1) {
                 themeName = 'หมอกบางเบา 🌫️'; window.weatherParticles = ['✨'];
-                bgDark = '#080c10'; glowTop = 'rgba(56, 189, 248, 0.08)'; glowBottom = 'rgba(14, 116, 144, 0.05)'; themeBorder = 'rgba(56, 189, 248, 0.15)';
+                bgDark = isNightTime ? '#040608' : '#080c10'; glowTop = 'rgba(56, 189, 248, 0.08)'; glowBottom = 'rgba(14, 116, 144, 0.05)'; themeBorder = 'rgba(56, 189, 248, 0.15)';
             } else if (totalPercent >= -3) {
                 themeName = 'ฝนตกปรอยๆ 💧'; window.weatherParticles = ['💧', '🌧️'];
-                bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.12)'; glowBottom = 'rgba(14, 116, 144, 0.08)'; themeBorder = 'rgba(56, 189, 248, 0.2)';
+                bgDark = isNightTime ? '#02070a' : '#050f14'; glowTop = 'rgba(56, 189, 248, 0.12)'; glowBottom = 'rgba(14, 116, 144, 0.08)'; themeBorder = 'rgba(56, 189, 248, 0.2)';
             } else if (totalPercent >= -6) {
                 themeName = 'ฝนตกชุ่มฉ่ำหนาแน่น 🌧️'; window.weatherParticles = ['💧', '🌧️', '✨'];
-                bgDark = '#050f14'; glowTop = 'rgba(56, 189, 248, 0.18)'; glowBottom = 'rgba(14, 116, 144, 0.12)'; themeBorder = 'rgba(56, 189, 248, 0.25)';
+                bgDark = isNightTime ? '#02070a' : '#050f14'; glowTop = 'rgba(56, 189, 248, 0.18)'; glowBottom = 'rgba(14, 116, 144, 0.12)'; themeBorder = 'rgba(56, 189, 248, 0.25)';
             } else if (totalPercent >= -10) {
                 themeName = 'พายุฝนฟ้าคะนอง ⛈️'; window.weatherParticles = ['💧', '🌧️', '⚡'];
-                bgDark = '#14080a'; glowTop = 'rgba(244, 63, 94, 0.12)'; glowBottom = 'rgba(159, 18, 57, 0.08)'; themeBorder = 'rgba(244, 63, 94, 0.2)';
+                bgDark = isNightTime ? '#0a0405' : '#14080a'; glowTop = 'rgba(244, 63, 94, 0.12)'; glowBottom = 'rgba(159, 18, 57, 0.08)'; themeBorder = 'rgba(244, 63, 94, 0.2)';
             } else {
                 themeName = 'มรสุมและพายุทอร์นาโด ⚡🌪️'; window.weatherParticles = ['💧', '🌧️', '⚡', '🌪️'];
-                bgDark = '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.25)'; glowBottom = 'rgba(159, 18, 57, 0.15)'; themeBorder = 'rgba(244, 63, 94, 0.35)';
+                bgDark = isNightTime ? '#0d0202' : '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.25)'; glowBottom = 'rgba(159, 18, 57, 0.15)'; themeBorder = 'rgba(244, 63, 94, 0.35)';
             }
 
             const root = document.documentElement;
@@ -378,12 +411,10 @@
                 const balA = dataA.balance || 0;
                 const balB = dataB.balance || 0;
 
-                // กฎสูงสุด: ถ้าแปลงไหน Balance = 0 (หรือไม่มีข้อมูล) ให้อยู่ล่างสุดเสมอ
                 if (balA === 0 && balB !== 0) return 1;
                 if (balB === 0 && balA !== 0) return -1;
                 if (balA === 0 && balB === 0) return a.localeCompare(b);
 
-                // เรียงตามตัวเลือกที่กำหนด
                 if (currentSortMode === 'login') {
                     const numA = parseInt(a), numB = parseInt(b);
                     if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
@@ -391,7 +422,6 @@
                 } else if (currentSortMode === 'balance') {
                     return balB - balA;
                 } else if (currentSortMode === 'percent') {
-                    // 🚀 เรียงตาม % P/L (จากมากไปน้อย)
                     return (dataB.percent || 0) - (dataA.percent || 0);
                 }
                 return 0;
@@ -400,7 +430,6 @@
         
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // สลับที่การ์ดแปลงพอร์ต โดยใช้ CSS Order (Flex/Grid Order)
         function applySortOrder() {
             const sortedFarms = getFarmsList();
             sortedFarms.forEach((login, index) => {
@@ -450,7 +479,7 @@
                 analyticsDetails.innerHTML = `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
                         <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
-                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}\%</b> ($${drawdownVal.toFixed(2)})</div>
+                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}%</b> ($${drawdownVal.toFixed(2)})</div>
                         <div>• สถานะความเสี่ยง: <b style="color:${riskColor};">${riskStatus}</b></div>
                         <div>• โมเมนตัม: <b>${momentum}</b></div>
                     </div>
@@ -593,10 +622,10 @@
             else if (pct >= -10) { emoji = '⛈️'; txt = 'พายุฝนฟ้าคะนอง'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
             else { emoji = '⚡🌪️'; txt = 'มรสุมและพายุทอร์นาโด'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
 
-            wpill.innerHTML = `${emoji}${txt}`;
+            wpill.innerHTML = `${emoji} ${txt}`;
             document.getElementById(`bal-${login}`).innerText = `$${data.balance.toFixed(2)}`; document.getElementById(`eq-${login}`).innerText = `$${data.equity.toFixed(2)}`;
             const plDiv = document.getElementById(`pl-${login}`);
-            plDiv.className = `metric-val ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)}${formatPercent(pct)}`;
+            plDiv.className = `metric-val ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(pct)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
             ['today', 'week', 'month'].forEach(t => {
@@ -620,19 +649,12 @@
 
         function updateTreeRanks() {
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
-            if (farms.length === 0) {
-                applySortOrder(); return; 
-            }
+            if (farms.length === 0) { applySortOrder(); return; }
             
-            let maxBal = 0;
+            let maxBal = 0; let totalPortfolioOrders = 0;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
                 if (d.balance > maxBal) { maxBal = d.balance; }
-            });
-
-            let totalPortfolioOrders = 0;
-            farms.forEach(f => {
-                const d = globalPortfolioData[f];
                 if (d && d.balance > 0) { totalPortfolioOrders += (d.open_positions || 0); }
             });
 
@@ -647,11 +669,12 @@
 
             farms.forEach(f => {
                 const data = globalPortfolioData[f]; 
+                const showcaseDiv = document.getElementById(`showcase-${f}`);
                 const clusterDiv = document.getElementById(`cluster-${f}`);
                 const tierDiv = document.getElementById(`tier-${f}`);
                 const starsSpan = document.getElementById(`stars-${f}`); 
                 const plotIconSpan = document.getElementById(`plot-icon-${f}`);
-                if (!clusterDiv || !tierDiv) return;
+                if (!clusterDiv || !tierDiv || !showcaseDiv) return;
                 
                 let activeEmoji = '🌱';
                 
@@ -659,60 +682,57 @@
                     activeEmoji = '🪨';
                     let stateKey = 'empty';
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
-                        clusterDiv.innerHTML = `<div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🪨</div>`;
+                        clusterDiv.innerHTML = `<div class="terrain-base" style="color:var(--text-muted)">รกร้างว่างเปล่า</div><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🪨</div>`;
                         clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = 'แปลงรกร้าง';
-                        tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                        tierDiv.innerHTML = 'แปลงรกร้าง'; tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                        showcaseDiv.classList.remove('danger-zone');
                     }
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
                     let stateKey = 'idle';
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
-                        clusterDiv.innerHTML = `<div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div>`;
+                        clusterDiv.innerHTML = `<div class="terrain-base">🌱 🏕️ 🌱 🏕️ 🌱</div><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div>`;
                         clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = 'ว่างงาน / พักแปลง';
-                        tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                        tierDiv.innerHTML = 'ว่างงาน / พักแปลง'; tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                        showcaseDiv.classList.remove('danger-zone');
                     }
                 } else {
-                    let level = 1;
-                    if (maxBal > 0) {
-                        let step = maxBal / 12;
-                        level = Math.ceil(data.balance / step);
-                        if (level > 12) level = 12;
-                        if (level < 1) level = 1;
-                    }
+                    let level = Math.ceil(data.balance / (maxBal / 12));
+                    level = Math.max(1, Math.min(12, level));
                     
                     const names = [
-                        'ต้นอ่อนเพิ่งงอก / มีใบแรกเกิด', 'ต้นอ่อนเพิ่งงอกซ้อนกัน 2 ต้น', 
-                        'แตกกิ่งก้านและใบพุ่มเล็ก', 'แตกกิ่งก้านและใบพุ่มคู่', 
-                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 'พุ่มใบหนาแน่นแตกกอคู่', 
-                        'ต้นปาล์ม / ต้นไม้ลำต้นเดี่ยวสูงสง่า', 'ต้นปาล์มคู่สูงสง่า', 
-                        'ไม้ใหญ่ทรงสูง / ลำต้นหนาแน่นแข็งแกร่ง', 'ไม้ใหญ่ทรงสูงคู่หนาแน่น', 
-                        'มหาพฤกษาใหญ่โตเต็มวัย / ระบบรากและพุ่มใบสมบูรณ์สูงสุด', 'มหาพฤกษาคู่บารมีสมบูรณ์สูงสุด'
+                        'ต้นอ่อนเพิ่งงอก / มีใบแรกเกิด', 'ต้นอ่อนเพิ่งงอกซ้อนกัน 2 ต้น', 'แตกกิ่งก้านและใบพุ่มเล็ก', 'แตกกิ่งก้านและใบพุ่มคู่', 
+                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 'พุ่มใบหนาแน่นแตกกอคู่', 'ต้นปาล์ม / ต้นไม้ลำต้นเดี่ยวสูงสง่า', 'ต้นปาล์มคู่สูงสง่า', 
+                        'ไม้ใหญ่ทรงสูง / ลำต้นหนาแน่นแข็งแกร่ง', 'ไม้ใหญ่ทรงสูงคู่หนาแน่น', 'มหาพฤกษาใหญ่โตเต็มวัย', 'มหาพฤกษาคู่บารมีสมบูรณ์สูงสุด'
                     ];
                     const emojis = ['🌱', '🌱🌱', '🌿', '🌿🌿', '☘️', '☘️☘️', '🌴', '🌴🌴', '🌲', '🌲🌲', '🌳', '🌳🌳'];
-                    
                     activeEmoji = emojis[level - 1]; let treeEmoji = activeEmoji; 
                     
-                    let farmOrders = data.open_positions || 0;
-                    let farmSharePercent = totalPortfolioOrders > 0 ? (farmOrders / totalPortfolioOrders) : 0;
-                    
-                    let totalTreesCount = Math.round(farmSharePercent * 10);
-                    totalTreesCount = Math.max(1, Math.min(10, totalTreesCount));
-
+                    let farmSharePercent = totalPortfolioOrders > 0 ? (data.open_positions / totalPortfolioOrders) : 0;
+                    let totalTreesCount = Math.max(1, Math.min(10, Math.round(farmSharePercent * 10)));
                     let totalOrders = data.profit_orders + data.loss_orders;
+                    
                     let healthyCount = totalTreesCount; let witheredCount = 0;
-
                     if (totalOrders > 0) {
-                        let winRatio = data.profit_orders / totalOrders;
-                        healthyCount = Math.max(1, Math.round(totalTreesCount * winRatio));
+                        healthyCount = Math.max(1, Math.round(totalTreesCount * (data.profit_orders / totalOrders)));
                         witheredCount = totalTreesCount - healthyCount;
                     }
                     
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
+                    
+                    // คำนวณ Drawdown สำหรับ Terrain
+                    let drawdownVal = Math.max(0, data.balance - data.equity);
+                    let drawdownPct = (drawdownVal / data.balance) * 100;
+                    let ddLevel = 'good'; let terrainEmoji = '🌱 🌾 🌼 🌾 🌱';
+                    
+                    if (drawdownPct > 15) { ddLevel = 'crit'; terrainEmoji = '🏜️ 🔥 🏜️ 🔥 🏜️'; showcaseDiv.classList.add('danger-zone'); }
+                    else { showcaseDiv.classList.remove('danger-zone'); }
+                    
+                    if (drawdownPct <= 15 && drawdownPct > 6) { ddLevel = 'warn'; terrainEmoji = '🍂 🪨 🍂 🪨 🍂'; }
 
-                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}`;
+                    // เพิ่ม Time และ DDLevel เข้าไปใน State
+                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-${ddLevel}`;
                     
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
                         const forestCoords = [
@@ -721,14 +741,13 @@
                             {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
                         ];
 
-                        let clusterHTML = ``;
+                        let clusterHTML = `<div class="terrain-base ${ddLevel === 'crit' ? 'dd-crit':''}">${terrainEmoji}</div>`;
 
                         for(let i = 0; i < healthyCount; i++) {
                             let pos = forestCoords[i % forestCoords.length];
                             let extraClass = isProfiting ? 'glow-profit' : '';
                             clusterHTML += `<div class="tree-extra ${extraClass}" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
                         }
-                        
                         for(let i = 0; i < witheredCount; i++) {
                             let pos = forestCoords[(healthyCount + i) % forestCoords.length];
                             clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
@@ -737,16 +756,18 @@
                         if (isWorking) {
                             let numMist = Math.min(3, data.open_positions); 
                             for(let c = 0; c < numMist; c++) {
-                                let left = 20 + (Math.random() * 60); 
-                                let delay = Math.random() * 2; 
-                                clusterHTML += `<div class="mist-particle" style="left: ${left}%; bottom: 20px; animation-delay: ${delay}s;">☁️</div>`;
+                                let left = 20 + (Math.random() * 60); let delay = Math.random() * 2; 
+                                if (isNightTime) {
+                                    clusterHTML += `<div class="firefly-particle" style="left: ${left}%; bottom: 15px; animation-delay: ${delay}s;"></div>`;
+                                } else {
+                                    clusterHTML += `<div class="mist-particle" style="left: ${left}%; bottom: 20px; animation-delay: ${delay}s;">☁️</div>`;
+                                }
                             }
                         }
 
                         clusterDiv.innerHTML = clusterHTML;
                         clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = `Level ${level} : ${names[level - 1]}`;
-                        tierDiv.removeAttribute('style'); 
+                        tierDiv.innerHTML = `Level ${level} : ${names[level - 1]}`; tierDiv.removeAttribute('style'); 
                     }
                 }
 
@@ -754,7 +775,6 @@
                 if (starsSpan) starsSpan.innerText = '★'.repeat(starMap[f] || 0);
             });
 
-            // จัดเรียงตำแหน่งการ์ด (อิงตามดรอปดาวน์และข้อมูลล่าสุด)
             applySortOrder();
         }
 
