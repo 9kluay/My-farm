@@ -227,6 +227,17 @@
         .popup-analytics-box { margin-top: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; }
         .analytics-title { font-size: 14px; font-weight: 600; color: var(--accent-emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.3px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
 
+        /* สไตล์ Popup PIN เข้าเว็บครั้งแรก */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 10, 7, 0.95); backdrop-filter: blur(20px); z-index: 999999; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .auth-box { background: rgba(12, 20, 16, 0.95); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 40px 30px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 35px rgba(16, 185, 129, 0.2); }
+        .auth-title { font-size: 26px; font-weight: 600; margin-bottom: 10px; background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
+        .auth-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--btn-radius); padding: 14px 20px; color: var(--text-main); font-size: 16px; font-family: inherit; width: 100%; outline: none; text-align: center; margin-bottom: 20px; transition: 0.3s; }
+        .auth-input:focus { border-color: var(--accent-emerald); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+        .auth-btn { background: var(--accent-emerald); border: none; color: #04100a; font-weight: 600; padding: 14px; border-radius: var(--btn-radius); width: 100%; font-size: 15px; cursor: pointer; transition: 0.3s; font-family: inherit; }
+        .auth-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); }
+        .auth-error { color: var(--accent-rose); font-size: 12px; margin-top: 12px; display: none; }
+
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
         .empty-state span { font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.5; }
 
@@ -235,6 +246,17 @@
     </style>
 </head>
 <body>
+
+    <!-- Popup PIN หน้าแรกเมื่อเข้าเว็บครั้งแรก -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <div class="auth-title">เจ้าคนไส</div>
+            <div class="auth-subtitle">กรุณากรอกรหัส PIN เพื่อเข้าสู่ระบบนิเวศสวนป่า</div>
+            <input type="password" id="authPinInput" class="auth-input" placeholder="กรอกรหัส PIN..." onkeydown="if(event.key === 'Enter') verifyAppPin()">
+            <button class="auth-btn" onclick="verifyAppPin()">ยืนยันตัวตน</button>
+            <div id="authErrorMsg" class="auth-error">รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</div>
+        </div>
+    </div>
 
     <div class="landscape-bg"></div>
 
@@ -316,6 +338,26 @@
         let currentSortMode = 'balance';
         let isNightTime = false; 
         window.weatherParticles = ['✨', '🍃', '🌟']; 
+
+        // ตรวจสอบสถานะการยืนยัน PIN ครั้งแรกเมื่อเปิดเว็บ
+        document.addEventListener("DOMContentLoaded", () => {
+            const isVerified = localStorage.getItem('app_verified_sarakharm');
+            if (isVerified === 'true') {
+                document.getElementById('auth-overlay').style.display = 'none';
+            }
+        });
+
+        function verifyAppPin() {
+            const pinVal = document.getElementById('authPinInput').value.trim();
+            const errorMsg = document.getElementById('authErrorMsg');
+            if (pinVal === 'คนสารคาม') {
+                localStorage.setItem('app_verified_sarakharm', 'true');
+                document.getElementById('auth-overlay').style.display = 'none';
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('authPinInput').value = '';
+            }
+        }
         
         function getSeasonInfo() {
             const m = new Date().getMonth();
@@ -772,7 +814,6 @@
                         
                         terrainType = 'lv' + terrainLevel;
 
-                        /* ปรับแต่งเอาข้อความภาษาไทยออกทั้งหมด เหลือเฉพาะอีโมจิตกแต่งพื้นดิน */
                         if (terrainLevel === 1) {
                             terrainEmoji = '⚪ 🪨 ⚪';
                             showcaseDiv.classList.remove('danger-zone');
