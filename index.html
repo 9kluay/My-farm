@@ -58,6 +58,21 @@
         @keyframes fallParticle { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(105vh); opacity: 0; } }
 
+        /* แอนิเมชันปั๊มเงิน / เฟืองทำงาน */
+        @keyframes floatUpFade {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-15px) scale(1.1) rotate(10deg); }
+            80% { opacity: 0.8; transform: translateY(-45px) scale(0.9) rotate(-10deg); }
+            100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+        }
+        .work-particle {
+            position: absolute; z-index: 15; pointer-events: none;
+            animation: floatUpFade 2.5s ease-in infinite;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
+        }
+        .glow-profit { filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(251, 191, 36, 0.85)) !important; }
+        .glow-working { filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 12px rgba(56, 189, 248, 0.7)) !important; }
+
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; }
 
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 0 10px; flex-wrap: wrap; gap: 15px; }
@@ -293,11 +308,8 @@
         async function syncAndRefreshAll() {
             await syncFarmsFromCloud();
             const farms = getFarmsList();
-            
             if (farms.length > 0) {
-                farms.forEach(login => {
-                    fetchNodeData(login);
-                });
+                farms.forEach(login => { fetchNodeData(login); });
             }
         }
 
@@ -310,8 +322,7 @@
                     let mergedFarms = [...new Set([...oldFarms, ...cloudFarms])];
                     
                     if (oldFarms.length !== mergedFarms.length) {
-                        saveFarmsList(mergedFarms); 
-                        renderForest();
+                        saveFarmsList(mergedFarms); renderForest();
                     }
                 }
             } catch(e) {}
@@ -348,7 +359,6 @@
             if (!cardElement) return;
             
             const popupBody = document.getElementById('popup-body-html');
-            
             let rawHTML = cardElement.outerHTML;
             let cleanHTML = rawHTML.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
             popupBody.innerHTML = cleanHTML;
@@ -368,59 +378,41 @@
                 const drawdownVal = d.balance > 0 ? Math.max(0, d.balance - d.equity) : 0;
                 const drawdownPct = d.balance > 0 ? ((drawdownVal / d.balance) * 100).toFixed(2) : '0.00';
                 
-                let riskStatus = 'ต่ำ (Safe)';
-                let riskColor = 'var(--accent-emerald)';
-                if (drawdownPct > 15) {
-                    riskStatus = 'สูงมาก (Critical Risk)';
-                    riskColor = 'var(--accent-rose)';
-                } else if (drawdownPct > 6) {
-                    riskStatus = 'ปานกลาง (Moderate Risk)';
-                    riskColor = 'var(--accent-gold)';
-                }
+                let riskStatus = 'ต่ำ (Safe)'; let riskColor = 'var(--accent-emerald)';
+                if (drawdownPct > 15) { riskStatus = 'สูงมาก (Critical)'; riskColor = 'var(--accent-rose)'; } 
+                else if (drawdownPct > 6) { riskStatus = 'ปานกลาง (Moderate)'; riskColor = 'var(--accent-gold)'; }
 
                 let momentum = 'ทรงตัว (Neutral)';
-                if (d.profit_today > 0 && d.profit_week > 0) {
-                    momentum = 'เชิงบวกแข็งแกร่ง (Strong Uptrend)';
-                } else if (d.profit_today < 0 || d.profit_week < 0) {
-                    momentum = 'ชะลอตัวลง (Downtrend/Consolidation)';
-                }
+                if (d.profit_today > 0 && d.profit_week > 0) momentum = 'เชิงบวกแข็งแกร่ง (Strong Uptrend)';
+                else if (d.profit_today < 0 || d.profit_week < 0) momentum = 'ชะลอตัวลง (Downtrend)';
 
                 let recommendation = 'พอร์ตมีเสถียรภาพอยู่ในเกณฑ์ดี สามารถดำเนินการตามแผนการจัดการความเสี่ยงมาตรฐานได้';
-                if (drawdownPct > 12) {
-                    recommendation = 'เตือนภัยความเสี่ยง: Floating Drawdown เริ่มสูงขึ้น ควรพิจารณาลดขนาด Lot Size หรือชะลอการออกออเดอร์เพิ่ม';
-                } else if (winRate < 45 && totalOrders >= 5) {
-                    recommendation = 'Win Rate ค่อนข้างต่ำ ควรทบทวนเงื่อนไขการเข้าเทรด หรือปรับระดับ Risk Ratio ให้คุ้มค่ามากขึ้น';
-                } else if (d.profit_today > 0 && winRate >= 60) {
-                    recommendation = 'พอร์ตมีประสิทธิภาพยอดเยี่ยม โมเมนตัมเป็นบวกต่อเนื่อง สามารถรันระบบต่อได้อย่างมั่นคง';
-                }
+                if (drawdownPct > 12) recommendation = 'เตือนภัย: Floating Drawdown เริ่มสูงขึ้น ควรพิจารณาลด Lot หรือชะลอการออกออเดอร์เพิ่ม';
+                else if (winRate < 45 && totalOrders >= 5) recommendation = 'Win Rate ค่อนข้างต่ำ ควรทบทวนเงื่อนไขการเข้าเทรด หรือปรับระดับ Risk Ratio';
+                else if (d.profit_today > 0 && winRate >= 60) recommendation = 'พอร์ตมีประสิทธิภาพยอดเยี่ยม โมเมนตัมเป็นบวกต่อเนื่อง แผนการเทรดสมบูรณ์';
 
                 analyticsDetails.innerHTML = `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
-                        <div>• อัตราความแม่นยำ (Win Rate): <b style="color:var(--accent-emerald);">${winRate}%</b></div>
-                        <div>• ดัชนีความเสี่ยง (Drawdown): <b style="color:${riskColor};">${drawdownPct}%</b> ($${drawdownVal.toFixed(2)})</div>
-                        <div>• ประเมินความเสี่ยงพอร์ต: <b style="color:${riskColor};">${riskStatus}</b></div>
-                        <div>• โมเมนตัมผลตอบแทน: <b>${momentum}</b></div>
+                        <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
+                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}%</b> ($${drawdownVal.toFixed(2)})</div>
+                        <div>• สถานะความเสี่ยง: <b style="color:${riskColor};">${riskStatus}</b></div>
+                        <div>• โมเมนตัม: <b>${momentum}</b></div>
                     </div>
                     <div style="margin-bottom: 12px; line-height: 1.6;">
-                        <b>รายละเอียดสถิติออเดอร์:</b><br>
-                        • ออเดอร์ชนะ: <span style="color:var(--accent-emerald); font-weight:600;">${winOrders}</span> ไม้ | ออเดอร์แพ้: <span style="color:var(--accent-rose); font-weight:600;">${lossOrders}</span> ไม้ (รวมทั้งหมด ${totalOrders} ไม้)<br>
-                        • สถานะการถือครองออเดอร์ค้าง: <b>${d.open_positions || 0} ไม้</b>
+                        <b>สถิติออเดอร์:</b> ชนะ <span style="color:var(--accent-emerald); font-weight:600;">${winOrders}</span> ไม้ | แพ้ <span style="color:var(--accent-rose); font-weight:600;">${lossOrders}</span> ไม้ (รวม ${totalOrders} ไม้)<br>
+                        • ออเดอร์กำลังทำงาน: <b>${d.open_positions || 0} ไม้</b>
                     </div>
                     <div style="margin-bottom: 12px; line-height: 1.6;">
-                        <b>เปรียบเทียบแนวโน้มผลประกอบการ:</b><br>
-                        • กำไรวันนี้: <span class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today)}</span>
-                        | สัปดาห์นี้: <span class="${d.profit_week >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_week)}</span>
-                        | เดือนนี้: <span class="${d.profit_month >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_month)}</span>
+                        <b>เปรียบเทียบกำไร:</b> วันนี้ <span class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today)}</span>
+                        | สัปดาห์นี้ <span class="${d.profit_week >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_week)}</span>
+                        | เดือนนี้ <span class="${d.profit_month >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_month)}</span>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 10px; border-left: 3px solid ${riskColor}; font-size: 11px;">
-                        <b>บทวิเคราะห์เชิงกลยุทธ์ (Strategic Summary):</b><br>
-                        <span style="color: #cbd5e1;">${recommendation}</span>
-                    </div>
-                `;
+                        <b>AI Strategic Summary:</b><br><span style="color: #cbd5e1;">${recommendation}</span>
+                    </div>`;
             } else {
-                analyticsDetails.innerHTML = 'ไม่มีข้อมูลสถิติเชิงลึกเนื่องจากขาดการเชื่อมต่อกับเครื่องโฮสต์';
+                analyticsDetails.innerHTML = 'ไม่มีข้อมูลสถิติเชิงลึกเนื่องจากขาดการเชื่อมต่อ';
             }
-
             document.getElementById('popup-overlay').classList.add('show');
         }
 
@@ -429,7 +421,6 @@
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
-            
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
                 let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
@@ -440,23 +431,16 @@
         window.deleteAllFarms = async function() {
             const confirmCode = prompt(`คำเตือน: กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์มทั้งหมดออกจากระบบ:`);
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
-            
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
-                localStorage.setItem('my_forest_farms', '[]'); 
-                globalPortfolioData = {}; 
-                updatePortfolioSummary(); 
-                renderForest(); 
-                alert('ล้างข้อมูลฟาร์มทั้งหมดเรียบร้อยแล้ว');
-            } catch(e) { 
-                alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); 
-            }
+                localStorage.setItem('my_forest_farms', '[]'); globalPortfolioData = {}; 
+                updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลฟาร์มทั้งหมดเรียบร้อยแล้ว');
+            } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); }
         };
 
         function renderForest() {
             const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
             const farms = getFarmsList(); 
-            
             if (farms.length === 0) {
                 grid.innerHTML = `<div class="empty-state"><h3>ยังไม่มีแปลงเกษตรในระบบ</h3><p>ระบบจะสร้างแปลงให้อัตโนมัติเมื่อ EA ส่งข้อมูลเข้ามา</p></div>`; return;
             }
@@ -464,7 +448,6 @@
             farms.forEach(login => {
                 const card = document.createElement('div'); card.className = 'tree-card'; 
                 card.setAttribute('data-login', login); card.onclick = (e) => handleCardClick(e, login);
-
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="stars" id="stars-${login}"></span></div>
@@ -492,7 +475,6 @@
                     </div>`;
                 grid.appendChild(card);
             });
-            
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
             scheduleTreeRanksUpdate();
         }
@@ -519,12 +501,9 @@
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
-                updatePortfolioSummary(); 
-                updateUICard(login); 
-                scheduleTreeRanksUpdate();
+                updatePortfolioSummary(); updateUICard(login); scheduleTreeRanksUpdate();
             } catch (err) { 
-                globalPortfolioData[login] = { error: true }; 
-                updateUICard(login); 
+                globalPortfolioData[login] = { error: true }; updateUICard(login); 
             }
         }
 
@@ -545,7 +524,7 @@
 
             let emoji = '', txt = ''; const pct = data.percent;
             if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
-            else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'แคมป์ปิ้ง'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
+            else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'แคมป์ปิ้งพักแปลง'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
             else if (pct >= 15) { emoji = '🌈💎'; txt = 'ผลผลิตงอกงามรุ้งงามวิ้งค์'; }
             else if (pct >= 10) { emoji = '🌟✨'; txt = 'แดดจ้าประกายทอง'; }
             else if (pct >= 6) { emoji = '☀️🌿'; txt = 'แสงเช้าอบอุ่น'; }
@@ -587,21 +566,16 @@
             const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
             if (farms.length === 0) return;
             
-            // 📌 หาระดับ Max Balance ของพอร์ตทั้งหมดที่กำลังใช้งาน
             let maxBal = 0;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
-                if (d.balance > maxBal) { 
-                    maxBal = d.balance; 
-                }
+                if (d.balance > maxBal) { maxBal = d.balance; }
             });
 
             let totalPortfolioOrders = 0;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
-                if (d && d.balance > 0) {
-                    totalPortfolioOrders += (d.open_positions || 0);
-                }
+                if (d && d.balance > 0) { totalPortfolioOrders += (d.open_positions || 0); }
             });
 
             let rankableFarms = farms.filter(f => globalPortfolioData[f].balance > 0);
@@ -615,8 +589,7 @@
 
             farms.forEach(f => {
                 const data = globalPortfolioData[f]; const showcase = document.getElementById(`showcase-${f}`);
-                const starsSpan = document.getElementById(`stars-${f}`);
-                const plotIconSpan = document.getElementById(`plot-icon-${f}`);
+                const starsSpan = document.getElementById(`stars-${f}`); const plotIconSpan = document.getElementById(`plot-icon-${f}`);
                 if (!showcase) return;
                 
                 const wpillHTML = document.getElementById(`wpill-${f}`).outerHTML;
@@ -627,9 +600,8 @@
                     showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แคมป์ปิ้งพักแปลง</div>`;
+                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">ว่างงาน / พักแปลง</div>`;
                 } else {
-                    // 📌 คำนวณเลเวลตาม Balance พอร์ตเทียบกับ Max Balance แบ่งเป็น 12 เลเวล
                     let level = 1;
                     if (maxBal > 0) {
                         let step = maxBal / 12;
@@ -648,8 +620,7 @@
                     ];
                     const emojis = ['🌱', '🌱🌱', '🌿', '🌿🌿', '☘️', '☘️☘️', '🌴', '🌴🌴', '🌲', '🌲🌲', '🌳', '🌳🌳'];
                     
-                    activeEmoji = emojis[level - 1];
-                    let treeEmoji = activeEmoji; 
+                    activeEmoji = emojis[level - 1]; let treeEmoji = activeEmoji; 
                     
                     let farmOrders = data.open_positions || 0;
                     let farmSharePercent = totalPortfolioOrders > 0 ? (farmOrders / totalPortfolioOrders) : 0;
@@ -658,8 +629,7 @@
                     totalTreesCount = Math.max(1, Math.min(10, totalTreesCount));
 
                     let totalOrders = data.profit_orders + data.loss_orders;
-                    let healthyCount = totalTreesCount;
-                    let witheredCount = 0;
+                    let healthyCount = totalTreesCount; let witheredCount = 0;
 
                     if (totalOrders > 0) {
                         let winRatio = data.profit_orders / totalOrders;
@@ -668,24 +638,48 @@
                     }
 
                     const forestCoords = [
-                        {x: 44, y: -2, size: 48, z: 6},  {x: 28, y: -6, size: 42, z: 5},  
-                        {x: 62, y: -4, size: 44, z: 5},  {x: 15, y: -10, size: 36, z: 4}, 
-                        {x: 75, y: -8, size: 38, z: 4},  {x: 36, y: -14, size: 32, z: 3}, 
-                        {x: 54, y: -12, size: 34, z: 3}, {x: 22, y: -18, size: 28, z: 2}, 
+                        {x: 44, y: -2, size: 48, z: 6}, {x: 28, y: -6, size: 42, z: 5}, {x: 62, y: -4, size: 44, z: 5}, {x: 15, y: -10, size: 36, z: 4}, 
+                        {x: 75, y: -8, size: 38, z: 4}, {x: 36, y: -14, size: 32, z: 3}, {x: 54, y: -12, size: 34, z: 3}, {x: 22, y: -18, size: 28, z: 2}, 
                         {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
                     ];
 
                     let clusterHTML = `<div class="forest-cluster">`;
+                    let isWorking = data.open_positions > 0;
+                    let isProfiting = data.profit > 0;
+
+                    // 1. วาดต้นไม้ปกติ (ใส่แสงออร่าถ้ากำลังทำงาน)
                     for(let i = 0; i < healthyCount; i++) {
                         let pos = forestCoords[i % forestCoords.length];
-                        clusterHTML += `<div class="tree-extra" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
+                        let extraClass = '';
+                        if (isProfiting) extraClass = 'glow-profit';
+                        else if (isWorking) extraClass = 'glow-working';
+
+                        clusterHTML += `<div class="tree-extra ${extraClass}" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
                     }
+                    // 2. วาดต้นไม้ที่เฉา (แพ้เยอะ)
                     for(let i = 0; i < witheredCount; i++) {
                         let pos = forestCoords[(healthyCount + i) % forestCoords.length];
                         clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
                     }
+
+                    // 3. ปล่อย VFX Particels เอฟเฟกต์ทำเงิน หรือทำงานหนัก
+                    if (isWorking) {
+                        let numParticles = Math.min(6, data.open_positions + 2); // 2 ถึง 6 ชิ้น
+                        for(let c = 0; c < numParticles; c++) {
+                            let left = 15 + (Math.random() * 70); 
+                            let delay = Math.random() * 2.5; 
+                            let size = 12 + (Math.random() * 8); 
+                            let duration = 2 + (Math.random() * 1.5);
+                            
+                            // ถ้าบวก = โยนเงิน/เหรียญ | ถ้าลบแต่มีไม้ = โยนเฟือง/เหงื่อทำงานหนัก
+                            let icons = isProfiting ? ['💵', '💰', '✨', '🪙', '💎'] : ['⚙️', '💦', '💨', '⚡', '🔨'];
+                            let icon = icons[Math.floor(Math.random() * icons.length)];
+                            
+                            clusterHTML += `<div class="work-particle" style="left: ${left}%; bottom: 30px; font-size: ${size}px; animation-delay: ${delay}s; animation-duration: ${duration}s;">${icon}</div>`;
+                        }
+                    }
+
                     clusterHTML += `</div>`; 
-                    
                     showcase.innerHTML = `${wpillHTML}${clusterHTML}<div class="level-badge">Level ${level} : ${names[level - 1]}</div>`;
                 }
 
