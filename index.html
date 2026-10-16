@@ -58,20 +58,24 @@
         @keyframes fallParticle { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(105vh); opacity: 0; } }
 
-        /* แอนิเมชันปั๊มเงิน / เฟืองทำงาน */
-        @keyframes floatUpFade {
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            20% { opacity: 1; transform: translateY(-15px) scale(1.1) rotate(10deg); }
-            80% { opacity: 0.8; transform: translateY(-45px) scale(0.9) rotate(-10deg); }
-            100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+        /* แอนิเมชันไอน้ำลอยขึ้น (Mist/Steam) */
+        @keyframes mistFloat {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.1; }
+            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
         }
-        .work-particle {
+        .mist-particle {
             position: absolute; z-index: 15; pointer-events: none;
-            animation: floatUpFade 2.5s ease-in infinite;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
+            animation: mistFloat 3.5s ease-in infinite;
+            filter: blur(2px); color: rgba(255, 255, 255, 0.5);
+            font-size: 24px; font-weight: 300;
         }
-        .glow-profit { filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(251, 191, 36, 0.85)) !important; }
-        .glow-working { filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 12px rgba(56, 189, 248, 0.7)) !important; }
+
+        /* ออร่าสีทองเมื่อทำกำไร */
+        .glow-profit { 
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) sepia(0.8) hue-rotate(340deg) saturate(3) !important; 
+        }
 
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; }
 
@@ -257,7 +261,7 @@
 
             setInterval(() => {
                 syncAndRefreshAll();
-            }, 3000);
+            }, 3000); // อัปเดตทุก 3 วินาที
         };
 
         function updateGlobalWeather(totalPercent) {
@@ -647,35 +651,26 @@
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
 
-                    // 1. วาดต้นไม้ปกติ (ใส่แสงออร่าถ้ากำลังทำงาน)
+                    // 1. วาดต้นไม้ปกติ (ใส่แสงออร่าสีทองถ้ากำลังกำไร)
                     for(let i = 0; i < healthyCount; i++) {
                         let pos = forestCoords[i % forestCoords.length];
-                        let extraClass = '';
-                        if (isProfiting) extraClass = 'glow-profit';
-                        else if (isWorking) extraClass = 'glow-working';
-
+                        let extraClass = isProfiting ? 'glow-profit' : '';
                         clusterHTML += `<div class="tree-extra ${extraClass}" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
                     }
+                    
                     // 2. วาดต้นไม้ที่เฉา (แพ้เยอะ)
                     for(let i = 0; i < witheredCount; i++) {
                         let pos = forestCoords[(healthyCount + i) % forestCoords.length];
                         clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
                     }
 
-                    // 3. ปล่อย VFX Particels เอฟเฟกต์ทำเงิน หรือทำงานหนัก
+                    // 3. ปล่อยไอเย็น/ไอน้ำลอยขึ้น เมื่อมีการทำงาน (มีออเดอร์)
                     if (isWorking) {
-                        let numParticles = Math.min(6, data.open_positions + 2); // 2 ถึง 6 ชิ้น
-                        for(let c = 0; c < numParticles; c++) {
-                            let left = 15 + (Math.random() * 70); 
-                            let delay = Math.random() * 2.5; 
-                            let size = 12 + (Math.random() * 8); 
-                            let duration = 2 + (Math.random() * 1.5);
-                            
-                            // ถ้าบวก = โยนเงิน/เหรียญ | ถ้าลบแต่มีไม้ = โยนเฟือง/เหงื่อทำงานหนัก
-                            let icons = isProfiting ? ['💵', '💰', '✨', '🪙', '💎'] : ['⚙️', '💦', '💨', '⚡', '🔨'];
-                            let icon = icons[Math.floor(Math.random() * icons.length)];
-                            
-                            clusterHTML += `<div class="work-particle" style="left: ${left}%; bottom: 30px; font-size: ${size}px; animation-delay: ${delay}s; animation-duration: ${duration}s;">${icon}</div>`;
+                        let numMist = Math.min(3, data.open_positions); // 1-3 สาย
+                        for(let c = 0; c < numMist; c++) {
+                            let left = 20 + (Math.random() * 60); 
+                            let delay = Math.random() * 2; 
+                            clusterHTML += `<div class="mist-particle" style="left: ${left}%; bottom: 20px; animation-delay: ${delay}s;">☁️</div>`;
                         }
                     }
 
