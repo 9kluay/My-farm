@@ -58,7 +58,6 @@
         @keyframes fallParticle { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(105vh); opacity: 0; } }
 
-        /* แอนิเมชันไอน้ำลอยขึ้นแบบธรรมชาติและสมูท */
         @keyframes mistFloat {
             0% { transform: translateY(0) scale(0.8) rotate(-5deg); opacity: 0; }
             30% { opacity: 0.5; transform: translateY(-15px) scale(1.1) rotate(0deg); }
@@ -72,10 +71,7 @@
             font-size: 26px; font-weight: 300;
         }
 
-        /* ออร่าสีทองเมื่อทำกำไร */
-        .glow-profit { 
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) sepia(0.8) hue-rotate(340deg) saturate(3) !important; 
-        }
+        .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) sepia(0.8) hue-rotate(340deg) saturate(3) !important; }
 
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; }
 
@@ -245,7 +241,7 @@
                 <select id="sortSelect" class="sort-select" onchange="changeSortMode()">
                     <option value="balance" selected>💰 เรียงตาม Balance</option>
                     <option value="login">📌 เรียงตามเลขพอร์ต</option>
-                    <option value="profit">📈 เรียงตาม P/L (กำไร/ขาดทุน)</option>
+                    <option value="percent">📈 เรียงตาม % กำไร/ขาดทุน</option>
                 </select>
             </div>
             <div class="toolbar-right">
@@ -369,7 +365,6 @@
             }, 900);
         }
 
-        // ระบบจัดเรียงตามเงื่อนไข (รวมกฎ Balance=0 อยู่ล่างสุดเสมอ)
         function changeSortMode() {
             currentSortMode = document.getElementById('sortSelect').value;
             applySortOrder();
@@ -378,25 +373,26 @@
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
             return farms.sort((a, b) => {
-                const dataA = globalPortfolioData[a] || { balance: 0, profit: 0 };
-                const dataB = globalPortfolioData[b] || { balance: 0, profit: 0 };
+                const dataA = globalPortfolioData[a] || { balance: 0, percent: 0 };
+                const dataB = globalPortfolioData[b] || { balance: 0, percent: 0 };
                 const balA = dataA.balance || 0;
                 const balB = dataB.balance || 0;
 
-                // กฎสูงสุด: ถ้าแปลงไหน Balance = 0 ให้อยู่ล่างสุดเสมอ
+                // กฎสูงสุด: ถ้าแปลงไหน Balance = 0 (หรือไม่มีข้อมูล) ให้อยู่ล่างสุดเสมอ
                 if (balA === 0 && balB !== 0) return 1;
                 if (balB === 0 && balA !== 0) return -1;
                 if (balA === 0 && balB === 0) return a.localeCompare(b);
 
-                // เรียงตามตัวเลือก
+                // เรียงตามตัวเลือกที่กำหนด
                 if (currentSortMode === 'login') {
                     const numA = parseInt(a), numB = parseInt(b);
                     if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
                     return a.localeCompare(b);
                 } else if (currentSortMode === 'balance') {
                     return balB - balA;
-                } else if (currentSortMode === 'profit') {
-                    return (dataB.profit || 0) - (dataA.profit || 0);
+                } else if (currentSortMode === 'percent') {
+                    // 🚀 เรียงตาม % P/L (จากมากไปน้อย)
+                    return (dataB.percent || 0) - (dataA.percent || 0);
                 }
                 return 0;
             });
@@ -404,7 +400,7 @@
         
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
 
-        // สลับที่การ์ดแปลงพอร์ต โดยไม่ทำลาย DOM (เพื่อให้แอนิเมชันลื่นไหลต่อเนื่อง)
+        // สลับที่การ์ดแปลงพอร์ต โดยใช้ CSS Order (Flex/Grid Order)
         function applySortOrder() {
             const sortedFarms = getFarmsList();
             sortedFarms.forEach((login, index) => {
