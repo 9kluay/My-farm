@@ -159,16 +159,16 @@
 
         .showcase { position: relative; height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 18px; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 10px; transition: all 0.5s ease; }
         
-        /* State สีแดงเมื่อ Drawdown สูง (วิกฤต) */
+        /* State สีแดงเมื่อถึงเลเวล 5 (ไฟลุก/วิกฤต) */
         .showcase.danger-zone { background: radial-gradient(circle at center, rgba(244, 63, 94, 0.15) 0%, transparent 70%) !important; border-color: rgba(244, 63, 94, 0.3) !important; }
 
         .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; z-index: 10; }
         
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 110px; width: 100%; margin-top: 10px; padding: 0 5px; }
         
-        /* สภาพพื้นดิน (Terrain) */
+        /* สภาพพื้นดิน 5 เลเวล */
         .terrain-base { position: absolute; bottom: 0; width: 100%; text-align: center; font-size: 14px; z-index: 5; opacity: 0.85; letter-spacing: 2px; user-select: none; }
-        .terrain-base.dd-crit { filter: hue-rotate(-15deg) saturate(1.5); font-size: 15px; }
+        .terrain-base.lv5-crit { filter: hue-rotate(-15deg) saturate(1.5); font-size: 15px; }
 
         .tree-extra { position: absolute; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)); line-height: 1; transition: transform 0.3s ease; animation: floatTree 4s ease-in-out infinite; }
         .tree-extra:hover { transform: scale(1.2) translateY(-6px); z-index: 30 !important; }
@@ -652,11 +652,19 @@
             if (farms.length === 0) { applySortOrder(); return; }
             
             let maxBal = 0; let totalPortfolioOrders = 0;
+            // หาระดับการติดลบที่มากที่สุดในกลุ่ม (Max Negative P/L) เพื่อใช้เป็นฐานคำนวณ 5 เลเวล
+            let maxNegativePL = 0;
             farms.forEach(f => {
                 const d = globalPortfolioData[f];
                 if (d.balance > maxBal) { maxBal = d.balance; }
                 if (d && d.balance > 0) { totalPortfolioOrders += (d.open_positions || 0); }
+                if (d.profit < 0 && Math.abs(d.profit) > maxNegativePL) {
+                    maxNegativePL = Math.abs(d.profit);
+                }
             });
+
+            // ป้องกันการหารด้วย 0
+            const stepPL = maxNegativePL > 0 ? maxNegativePL / 5 : 1;
 
             let rankableFarms = farms.filter(f => globalPortfolioData[f].balance > 0);
             rankableFarms.sort((a, b) => {
@@ -721,31 +729,38 @@
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
                     
-                    // ระบบคำนวณ 3 โซน DD แบบเจาะจง
-                    let drawdownVal = Math.max(0, data.balance - data.equity);
-                    let drawdownPct = (drawdownVal / data.balance) * 100;
+                    // 🚀 คำนวณสภาพดิน 5 เลเวล ตามเงื่อนไข (ลบมากที่สุด ÷ 5)
+                    let terrainEmoji = '';
+                    let terrainLevel = 1;
                     
-                    let ddLevel = 'good'; let terrainEmoji = '';
-                    
-                    if (drawdownPct >= 20) {
-                        // โซน 3: วิกฤต (DD >= 20%) -> ไฟลุก
-                        ddLevel = 'crit'; 
-                        terrainEmoji = '🔥 🏜️ 🔥 🏜️ 🔥'; 
-                        showcaseDiv.classList.add('danger-zone');
-                    } else if (drawdownPct >= 10) {
-                        // โซน 2: เฝ้าระวัง (DD 10% - 19.99%) -> ใบไม้ร่วง
-                        ddLevel = 'warn'; 
-                        terrainEmoji = '🍂 🪨 🍂 🪨 🍂'; 
-                        showcaseDiv.classList.remove('danger-zone');
+                    if (data.profit >= 0) {
+                        terrainLevel = 3; // ถ้ากำไรหรือเท่าทุน ให้ดินอยู่เลเวล 3 (หญ้า) เป็นค่ากลาง
                     } else {
-                        // โซน 1: ปลอดภัย (DD 0% - 9.99%) -> มีต้นหญ้าขึ้น
-                        ddLevel = 'good'; 
-                        terrainEmoji = '🌱 🌾 🌼 🌾 🌱'; 
-                        showcaseDiv.classList.remove('danger-zone');
+                        let absLoss = Math.abs(data.profit);
+                        // คำนวณสัดส่วนเทียบกับ stepPL (ค่าลบสูงสุดหาร 5)
+                        terrainLevel = Math.ceil(absLoss / stepPL);
+                        terrainLevel = Math.max(1, Math.min(5, terrainLevel));
                     }
 
-                    // เพิ่มเงื่อนไขเข้าไปใน State เพื่อให้แสดงผลสมูท
-                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-${ddLevel}`;
+                    // Mapping เลเวลดินตามที่คุณอธิวัฒน์กำหนด
+                    if (terrainLevel === 1) {
+                        terrainEmoji = '🪨 หินขาว 🪨';
+                        showcaseDiv.classList.remove('danger-zone');
+                    } else if (terrainLevel === 2) {
+                        terrainEmoji = '🪨 🌾 หิน หญ้า 🌾 🪨';
+                        showcaseDiv.classList.remove('danger-zone');
+                    } else if (terrainLevel === 3) {
+                        terrainEmoji = '🌱 🌾 หญ้า 🌾 🌱';
+                        showcaseDiv.classList.remove('danger-zone');
+                    } else if (terrainLevel === 4) {
+                        terrainEmoji = '🪵 🌾 ขอนไม้ หญ้า 🌾 🪵';
+                        showcaseDiv.classList.remove('danger-zone');
+                    } else if (terrainLevel === 5) {
+                        terrainEmoji = '🪵 🔥 ขอนไม้ ไฟลุก 🔥 🪵';
+                        showcaseDiv.classList.add('danger-zone'); // เตือนภัยสีแดงที่เลเวล 5
+                    }
+
+                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-lv${terrainLevel}`;
                     
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
                         const forestCoords = [
@@ -754,7 +769,7 @@
                             {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
                         ];
 
-                        let clusterHTML = `<div class="terrain-base ${ddLevel === 'crit' ? 'dd-crit':''}">${terrainEmoji}</div>`;
+                        let clusterHTML = `<div class="terrain-base ${terrainLevel === 5 ? 'lv5-crit':''}">${terrainEmoji}</div>`;
 
                         for(let i = 0; i < healthyCount; i++) {
                             let pos = forestCoords[i % forestCoords.length];
