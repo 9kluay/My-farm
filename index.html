@@ -58,18 +58,18 @@
         @keyframes fallParticle { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(105vh); opacity: 0; } }
 
-        /* แอนิเมชันไอน้ำลอยขึ้น (Mist/Steam) */
+        /* แอนิเมชันไอน้ำลอยขึ้นแบบธรรมชาติและสมูท (Continuous Float) */
         @keyframes mistFloat {
-            0% { transform: translateY(0) scale(0.8); opacity: 0; }
-            20% { opacity: 0.4; }
-            80% { opacity: 0.1; }
-            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+            0% { transform: translateY(0) scale(0.8) rotate(-5deg); opacity: 0; }
+            30% { opacity: 0.5; transform: translateY(-15px) scale(1.1) rotate(0deg); }
+            70% { opacity: 0.2; transform: translateY(-35px) scale(1.3) rotate(5deg); }
+            100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
         }
         .mist-particle {
             position: absolute; z-index: 15; pointer-events: none;
-            animation: mistFloat 3.5s ease-in infinite;
-            filter: blur(2px); color: rgba(255, 255, 255, 0.5);
-            font-size: 24px; font-weight: 300;
+            animation: mistFloat 4s ease-in-out infinite;
+            filter: blur(3px); color: rgba(255, 255, 255, 0.5);
+            font-size: 26px; font-weight: 300;
         }
 
         /* ออร่าสีทองเมื่อทำกำไร */
@@ -252,7 +252,7 @@
         window.onload = async () => {
             initRiver();
             currentSeason = getSeasonInfo();
-            document.getElementById('season-badge').innerHTML = `${currentSeason.icon} ${currentSeason.name}`;
+            document.getElementById('season-badge').innerHTML = `${currentSeason.icon}${currentSeason.name}`;
             updateGlobalWeather(0); 
             startWeatherEffect();
             
@@ -398,7 +398,7 @@
                 analyticsDetails.innerHTML = `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
                         <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
-                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}%</b> ($${drawdownVal.toFixed(2)})</div>
+                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}\%</b> ($${drawdownVal.toFixed(2)})</div>
                         <div>• สถานะความเสี่ยง: <b style="color:${riskColor};">${riskStatus}</b></div>
                         <div>• โมเมนตัม: <b>${momentum}</b></div>
                     </div>
@@ -442,6 +442,7 @@
             } catch(e) { alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); }
         };
 
+        // 🚀 ปรับโครงสร้าง HTML ให้ต้นไม้อยู่ใน Container แยก เพื่อไม่ให้โดนรีเซ็ตกราฟิกบ่อยๆ
         function renderForest() {
             const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
             const farms = getFarmsList(); 
@@ -459,7 +460,7 @@
                     </div>
                     <div class="showcase" id="showcase-${login}">
                         <div class="weather-pill" id="wpill-${login}">⏳ รอข้อมูล</div>
-                        <div class="forest-cluster"><div class="tree-extra">🌱</div></div>
+                        <div class="forest-cluster" id="cluster-${login}" data-state="none"><div class="tree-extra">🌱</div></div>
                         <div class="level-badge" id="tier-${login}">เตรียมแปลง...</div>
                     </div>
                     <div class="card-metrics">
@@ -541,10 +542,10 @@
             else if (pct >= -10) { emoji = '⛈️'; txt = 'พายุฝนฟ้าคะนอง'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
             else { emoji = '⚡🌪️'; txt = 'มรสุมและพายุทอร์นาโด'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
 
-            wpill.innerHTML = `${emoji} ${txt}`;
+            wpill.innerHTML = `${emoji}${txt}`;
             document.getElementById(`bal-${login}`).innerText = `$${data.balance.toFixed(2)}`; document.getElementById(`eq-${login}`).innerText = `$${data.equity.toFixed(2)}`;
             const plDiv = document.getElementById(`pl-${login}`);
-            plDiv.className = `metric-val ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(pct)}`;
+            plDiv.className = `metric-val ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)}${formatPercent(pct)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
             ['today', 'week', 'month'].forEach(t => {
@@ -592,19 +593,33 @@
             let starMap = {}; rankableFarms.forEach((f, index) => { starMap[f] = (index < 5) ? (5 - index) : 0; });
 
             farms.forEach(f => {
-                const data = globalPortfolioData[f]; const showcase = document.getElementById(`showcase-${f}`);
-                const starsSpan = document.getElementById(`stars-${f}`); const plotIconSpan = document.getElementById(`plot-icon-${f}`);
-                if (!showcase) return;
+                const data = globalPortfolioData[f]; 
+                const clusterDiv = document.getElementById(`cluster-${f}`);
+                const tierDiv = document.getElementById(`tier-${f}`);
+                const starsSpan = document.getElementById(`stars-${f}`); 
+                const plotIconSpan = document.getElementById(`plot-icon-${f}`);
+                if (!clusterDiv || !tierDiv) return;
                 
-                const wpillHTML = document.getElementById(`wpill-${f}`).outerHTML;
                 let activeEmoji = '🌱';
                 
                 if (data.balance <= 0) {
                     activeEmoji = '🪨';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🪨</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">แปลงรกร้าง</div>`;
+                    let stateKey = 'empty';
+                    if (clusterDiv.getAttribute('data-state') !== stateKey) {
+                        clusterDiv.innerHTML = `<div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🪨</div>`;
+                        clusterDiv.setAttribute('data-state', stateKey);
+                        tierDiv.innerHTML = 'แปลงรกร้าง';
+                        tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                    }
                 } else if (data.open_positions === 0) {
                     activeEmoji = '🏕️';
-                    showcase.innerHTML = `${wpillHTML}<div class="forest-cluster"><div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div></div><div class="level-badge" style="color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)">ว่างงาน / พักแปลง</div>`;
+                    let stateKey = 'idle';
+                    if (clusterDiv.getAttribute('data-state') !== stateKey) {
+                        clusterDiv.innerHTML = `<div class="tree-extra" style="animation: none; font-size: 34px; left: 50%; transform: translateX(-50%);">🏕️</div>`;
+                        clusterDiv.setAttribute('data-state', stateKey);
+                        tierDiv.innerHTML = 'ว่างงาน / พักแปลง';
+                        tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                    }
                 } else {
                     let level = 1;
                     if (maxBal > 0) {
@@ -640,42 +655,50 @@
                         healthyCount = Math.max(1, Math.round(totalTreesCount * winRatio));
                         witheredCount = totalTreesCount - healthyCount;
                     }
-
-                    const forestCoords = [
-                        {x: 44, y: -2, size: 48, z: 6}, {x: 28, y: -6, size: 42, z: 5}, {x: 62, y: -4, size: 44, z: 5}, {x: 15, y: -10, size: 36, z: 4}, 
-                        {x: 75, y: -8, size: 38, z: 4}, {x: 36, y: -14, size: 32, z: 3}, {x: 54, y: -12, size: 34, z: 3}, {x: 22, y: -18, size: 28, z: 2}, 
-                        {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
-                    ];
-
-                    let clusterHTML = `<div class="forest-cluster">`;
+                    
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
 
-                    // 1. วาดต้นไม้ปกติ (ใส่แสงออร่าสีทองถ้ากำลังกำไร)
-                    for(let i = 0; i < healthyCount; i++) {
-                        let pos = forestCoords[i % forestCoords.length];
-                        let extraClass = isProfiting ? 'glow-profit' : '';
-                        clusterHTML += `<div class="tree-extra ${extraClass}" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
-                    }
+                    // 🚀 เช็ค State ก่อนวาดใหม่ ป้องกันการรีเซ็ตแอนิเมชันไอน้ำ
+                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}`;
                     
-                    // 2. วาดต้นไม้ที่เฉา (แพ้เยอะ)
-                    for(let i = 0; i < witheredCount; i++) {
-                        let pos = forestCoords[(healthyCount + i) % forestCoords.length];
-                        clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
-                    }
+                    if (clusterDiv.getAttribute('data-state') !== stateKey) {
+                        const forestCoords = [
+                            {x: 44, y: -2, size: 48, z: 6}, {x: 28, y: -6, size: 42, z: 5}, {x: 62, y: -4, size: 44, z: 5}, {x: 15, y: -10, size: 36, z: 4}, 
+                            {x: 75, y: -8, size: 38, z: 4}, {x: 36, y: -14, size: 32, z: 3}, {x: 54, y: -12, size: 34, z: 3}, {x: 22, y: -18, size: 28, z: 2}, 
+                            {x: 69, y: -16, size: 30, z: 2}, {x: 46, y: -20, size: 26, z: 1}  
+                        ];
 
-                    // 3. ปล่อยไอเย็น/ไอน้ำลอยขึ้น เมื่อมีการทำงาน (มีออเดอร์)
-                    if (isWorking) {
-                        let numMist = Math.min(3, data.open_positions); // 1-3 สาย
-                        for(let c = 0; c < numMist; c++) {
-                            let left = 20 + (Math.random() * 60); 
-                            let delay = Math.random() * 2; 
-                            clusterHTML += `<div class="mist-particle" style="left: ${left}%; bottom: 20px; animation-delay: ${delay}s;">☁️</div>`;
+                        let clusterHTML = ``;
+
+                        // 1. วาดต้นไม้ปกติ (ใส่แสงออร่าสีทองถ้ากำลังกำไร)
+                        for(let i = 0; i < healthyCount; i++) {
+                            let pos = forestCoords[i % forestCoords.length];
+                            let extraClass = isProfiting ? 'glow-profit' : '';
+                            clusterHTML += `<div class="tree-extra ${extraClass}" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
                         }
-                    }
+                        
+                        // 2. วาดต้นไม้ที่เฉา (แพ้เยอะ)
+                        for(let i = 0; i < witheredCount; i++) {
+                            let pos = forestCoords[(healthyCount + i) % forestCoords.length];
+                            clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
+                        }
 
-                    clusterHTML += `</div>`; 
-                    showcase.innerHTML = `${wpillHTML}${clusterHTML}<div class="level-badge">Level ${level} : ${names[level - 1]}</div>`;
+                        // 3. ปล่อยหมอกไอน้ำลอยขึ้น เมื่อมีการทำงาน (มีออเดอร์)
+                        if (isWorking) {
+                            let numMist = Math.min(3, data.open_positions); 
+                            for(let c = 0; c < numMist; c++) {
+                                let left = 20 + (Math.random() * 60); 
+                                let delay = Math.random() * 2; 
+                                clusterHTML += `<div class="mist-particle" style="left: ${left}%; bottom: 20px; animation-delay: ${delay}s;">☁️</div>`;
+                            }
+                        }
+
+                        clusterDiv.innerHTML = clusterHTML;
+                        clusterDiv.setAttribute('data-state', stateKey);
+                        tierDiv.innerHTML = `Level ${level} : ${names[level - 1]}`;
+                        tierDiv.removeAttribute('style'); // กลับไปใช้ Style ปกติ
+                    }
                 }
 
                 if (plotIconSpan) plotIconSpan.innerText = activeEmoji;
