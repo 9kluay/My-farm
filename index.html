@@ -283,7 +283,7 @@
         let globalPortfolioData = {};
         let currentSeason = {};
         let currentSortMode = 'balance';
-        let isNightTime = false; // เช็คสถานะเวลา
+        let isNightTime = false; 
         window.weatherParticles = ['✨', '🍃', '🌟']; 
         
         function getSeasonInfo() {
@@ -295,7 +295,7 @@
 
         function updateTimeCycle() {
             const hour = new Date().getHours();
-            isNightTime = (hour >= 18 || hour < 6); // 18:00 - 05:59 ถือเป็นกลางคืน
+            isNightTime = (hour >= 18 || hour < 6); 
             document.getElementById('time-badge').innerHTML = isNightTime ? '🌙 โหมดกลางคืน (Night)' : '☀️ โหมดกลางวัน (Day)';
         }
 
@@ -721,17 +721,30 @@
                     let isWorking = data.open_positions > 0;
                     let isProfiting = data.profit > 0;
                     
-                    // คำนวณ Drawdown สำหรับ Terrain
+                    // ระบบคำนวณ 3 โซน DD แบบเจาะจง
                     let drawdownVal = Math.max(0, data.balance - data.equity);
                     let drawdownPct = (drawdownVal / data.balance) * 100;
-                    let ddLevel = 'good'; let terrainEmoji = '🌱 🌾 🌼 🌾 🌱';
                     
-                    if (drawdownPct > 15) { ddLevel = 'crit'; terrainEmoji = '🏜️ 🔥 🏜️ 🔥 🏜️'; showcaseDiv.classList.add('danger-zone'); }
-                    else { showcaseDiv.classList.remove('danger-zone'); }
+                    let ddLevel = 'good'; let terrainEmoji = '';
                     
-                    if (drawdownPct <= 15 && drawdownPct > 6) { ddLevel = 'warn'; terrainEmoji = '🍂 🪨 🍂 🪨 🍂'; }
+                    if (drawdownPct >= 20) {
+                        // โซน 3: วิกฤต (DD >= 20%) -> ไฟลุก
+                        ddLevel = 'crit'; 
+                        terrainEmoji = '🔥 🏜️ 🔥 🏜️ 🔥'; 
+                        showcaseDiv.classList.add('danger-zone');
+                    } else if (drawdownPct >= 10) {
+                        // โซน 2: เฝ้าระวัง (DD 10% - 19.99%) -> ใบไม้ร่วง
+                        ddLevel = 'warn'; 
+                        terrainEmoji = '🍂 🪨 🍂 🪨 🍂'; 
+                        showcaseDiv.classList.remove('danger-zone');
+                    } else {
+                        // โซน 1: ปลอดภัย (DD 0% - 9.99%) -> มีต้นหญ้าขึ้น
+                        ddLevel = 'good'; 
+                        terrainEmoji = '🌱 🌾 🌼 🌾 🌱'; 
+                        showcaseDiv.classList.remove('danger-zone');
+                    }
 
-                    // เพิ่ม Time และ DDLevel เข้าไปใน State
+                    // เพิ่มเงื่อนไขเข้าไปใน State เพื่อให้แสดงผลสมูท
                     let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-${ddLevel}`;
                     
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
