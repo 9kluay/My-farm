@@ -100,7 +100,7 @@
             animation: fireflyMove 3.5s ease-in-out infinite alternate;
         }
 
-        .glow-profit { filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.7)); }
+        .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.85)); }
 
         @keyframes glowTerrainPulse {
             0%, 100% { text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); transform: scale(1); }
@@ -338,10 +338,11 @@
             renderForest(); 
             await syncAndRefreshAll(); 
 
+            // ปรับระยะเวลาซิงค์ข้อมูลเรียลไทม์เป็นทุกๆ 60 วินาที (60,000 ms)
             setInterval(() => {
                 updateTimeCycle();
                 syncAndRefreshAll();
-            }, 3000);
+            }, 60000);
         };
 
         function updateGlobalWeather(totalPercent) {
@@ -728,12 +729,22 @@
                         showcaseDiv.classList.remove('danger-zone');
                     }
                 } else if (data.open_positions === 0) {
+                    /* ปรับปรุงโหมดแคมป์ปิ้งพักแปลง (Idle) ให้เด่นตระการตาเท่าต้นไม้ใหญ่ */
                     activeEmoji = '🏕️';
-                    let stateKey = 'idle';
+                    let stateKey = 'idle-' + isNightTime;
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
-                        clusterDiv.innerHTML = `<div class="terrain-base">🌱 🏕️ 🌱 🏕️ 🌱</div><div class="tree-extra" style="animation: none; font-size: 32px; left: 50%; transform: translate3d(-50%,0,0);">🏕️</div>`;
+                        let fireEmoji = isNightTime ? '🔥' : '♨️';
+                        clusterDiv.innerHTML = `
+                            <div class="terrain-base" style="color:var(--accent-gold); text-shadow:0 0 8px rgba(251,191,36,0.5);">✨ 🌿 🏕️ 🌿 ✨</div>
+                            <div class="tree-extra" style="left: 15%; bottom: -4px; font-size: 38px; z-index: 5;">🌲</div>
+                            <div class="tree-extra" style="left: 75%; bottom: -4px; font-size: 38px; z-index: 5;">🌲</div>
+                            <div class="tree-extra" style="left: 30%; bottom: -2px; font-size: 36px; z-index: 8;">⛺</div>
+                            <div class="tree-extra glow-profit" style="left: 48%; bottom: -2px; font-size: 48px; z-index: 10;">🏕️</div>
+                            <div class="tree-extra" style="left: 54%; bottom: -12px; font-size: 24px; z-index: 12; animation: floatTree 1.5s ease-in-out infinite alternate;">${fireEmoji}</div>
+                        `;
                         clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = 'ว่างงาน / พักแปลง'; tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
+                        tierDiv.innerHTML = '🏕️ โหมดแคมป์ปิ้งพักแปลง';
+                        tierDiv.style.cssText = 'color: var(--accent-gold); border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15); font-weight: 600; box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);';
                         showcaseDiv.classList.remove('danger-zone');
                     }
                 } else {
