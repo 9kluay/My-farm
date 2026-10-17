@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K Sarakharm EA : Smart Agritech Dashboard</title>
+    <title>K Sarakharm EA : Smart Agritech Ecosystem</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #040906;
-            --surface-1: #0a140f;
-            --surface-2: #101c15;
+            --surface-1: rgba(10, 20, 15, 0.85);
+            --surface-2: rgba(16, 28, 21, 0.9);
             --surface-3: #16261d;
             
-            --border-dim: rgba(16, 185, 129, 0.15);
+            --border-dim: rgba(255, 255, 255, 0.08);
             --border-glow: rgba(16, 185, 129, 0.4);
             
-            --text-primary: #ffffff;
+            --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-mono: 'JetBrains Mono', monospace;
             
             --brand-green: #10b981;
-            --brand-gold: #f59e0b;
-            --brand-red: #ef4444;
-            --brand-blue: #3b82f6;
+            --brand-gold: #fbbf24;
+            --brand-red: #f43f5e;
+            --brand-blue: #38bdf8;
 
             --radius-lg: 16px;
             --radius-md: 10px;
+            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,112 +35,158 @@
         body {
             font-family: 'Prompt', sans-serif;
             background-color: var(--bg-base);
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                linear-gradient(0deg, rgba(4,9,6,1) 0%, rgba(10,20,15,0.8) 100%);
             color: var(--text-primary);
-            min-height: 100vh;
+            min-height: 100vh; overflow-x: hidden;
             padding: 20px 20px 80px 20px;
+            position: relative;
+            transition: background-color 1.2s ease;
         }
 
+        /* --- Living Ecosystem Backgrounds --- */
+        .landscape-bg {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 300px;
+            pointer-events: none; z-index: 0; opacity: 0.1;
+            background-repeat: no-repeat; background-position: bottom center; background-size: cover;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2310b981' fill-opacity='0.4' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3Cpath fill='%23059669' fill-opacity='0.7' d='M0,256L60,240C120,224,240,192,360,192C480,192,600,224,720,234.7C840,245,960,235,1080,213.3C1200,192,1320,160,1380,144L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+        
+        .river-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 30px; background: rgba(4, 15, 10, 0.95); border-top: 1px solid var(--border-dim); z-index: 90; display: flex; align-items: center; overflow: hidden; backdrop-filter: blur(5px); }
+        .river-wave-track { display: flex; white-space: nowrap; animation: flowRiver 50s linear infinite; will-change: transform; }
+        .river-wave-item { font-size: 12px; color: rgba(148, 163, 184, 0.6); padding-right: 50px; display: inline-flex; align-items: center; gap: 10px; font-family: var(--text-mono); }
+        @keyframes flowRiver { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
+
+        .weather-particle, .mist-particle, .firefly-particle, .tree-extra { will-change: transform, opacity; pointer-events: none; }
+        .weather-particle { position: fixed; top: -40px; z-index: 1; opacity: 0.6; }
+        @keyframes fallRain { 0% { transform: translate3d(0,0,0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translate3d(0, 105vh, 0); opacity: 0; } }
+        @keyframes fallParticle { 0% { transform: translate3d(0,0,0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translate3d(0, 105vh, 0) rotate(360deg); opacity: 0; } }
+        @keyframes mistFloat { 0% { transform: translate3d(0,0,0) scale(0.8); opacity: 0; } 50% { opacity: 0.4; transform: translate3d(0,-20px,0) scale(1.2); } 100% { transform: translate3d(0,-40px,0) scale(1.4); opacity: 0; } }
+        @keyframes fireflyMove { 0% { transform: translate3d(0,0,0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 50% { transform: translate3d(15px,-15px,0) scale(1.2); } 100% { transform: translate3d(-10px,-30px,0) scale(0.5); opacity: 0; } }
+        @keyframes fireFlicker { 0%, 100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.6)); } 50% { transform: scale(1.1) translateY(-2px) rotate(2deg); filter: drop-shadow(0 0 18px rgba(249, 115, 22, 1)); } }
+        @keyframes floatTree { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-3px,0); } }
+
         /* --- Layout & Typography --- */
-        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; animation: fadeUp 0.6s ease-out; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; animation: fadeUp 0.6s var(--ease-smooth) forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translate3d(0, 20px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
 
         .system-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border-dim); padding-bottom: 15px; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         .brand h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, var(--brand-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .brand p { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; }
         
-        .sys-status { display: flex; gap: 10px; align-items: center; }
-        .status-pill { background: rgba(16, 185, 129, 0.05); border: 1px solid var(--border-dim); padding: 6px 12px; border-radius: 20px; font-size: 11px; color: var(--brand-green); display: flex; align-items: center; gap: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+        .sys-status { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .status-pill { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-dim); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-family: var(--text-mono); color: var(--text-secondary); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(8px); }
+        .status-pill.active { color: var(--brand-green); border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); font-weight: 600; }
         .dot { width: 6px; height: 6px; background: var(--brand-green); border-radius: 50%; box-shadow: 0 0 8px var(--brand-green); animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
         /* --- Global Stats Dashboard --- */
-        .master-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: var(--surface-1); border: 1px solid var(--border-dim); border-radius: var(--radius-lg); padding: 20px; position: relative; overflow: hidden; }
+        .master-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--surface-1); backdrop-filter: blur(12px); border: 1px solid var(--border-dim); border-radius: var(--radius-lg); padding: 20px; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--brand-green); opacity: 0.5; }
         .stat-card:nth-child(2)::before { background: var(--brand-gold); }
         .stat-card:nth-child(3)::before { background: var(--brand-blue); }
         .stat-card h3 { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 500; }
         .stat-card .value { font-size: 26px; font-family: var(--text-mono); font-weight: 700; color: #fff; }
         .stat-card .sub-value { font-size: 12px; margin-top: 5px; color: var(--text-secondary); }
+        .text-green { color: var(--brand-green) !important; } .text-red { color: var(--brand-red) !important; } .text-gold { color: var(--brand-gold) !important; }
 
         /* --- Controls --- */
-        .controls-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--surface-1); padding: 12px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-dim); flex-wrap: wrap; gap: 15px; }
+        .controls-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--surface-1); backdrop-filter: blur(12px); padding: 12px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-dim); flex-wrap: wrap; gap: 15px; }
         .search-group { display: flex; gap: 10px; align-items: center; }
-        .input-pro { background: var(--surface-2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 13px; outline: none; transition: 0.3s; }
+        .input-pro { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 13px; outline: none; transition: 0.3s; }
         .input-pro:focus { border-color: var(--brand-green); box-shadow: 0 0 10px rgba(16,185,129,0.1); }
         
         .btn-pro { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--brand-green); color: var(--brand-green); padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
-        .btn-pro:hover { background: var(--brand-green); color: #000; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+        .btn-pro:hover { background: var(--brand-green); color: #000; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
+        .btn-danger { background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.4); color: var(--brand-red); }
+        .btn-danger:hover { background: var(--brand-red); color: #fff; box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); }
 
-        /* --- Farm Grid & Pro Cards --- */
+        /* --- Pro-Nature Hybrid Grid --- */
         .grid-system { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; }
         
-        .farm-node { background: var(--surface-1); border: 1px solid var(--border-dim); border-radius: var(--radius-lg); overflow: hidden; transition: 0.3s ease; position: relative; display: flex; flex-direction: column; }
-        .farm-node:hover { transform: translateY(-3px); border-color: var(--border-glow); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(16,185,129,0.05); }
+        .farm-node { background: var(--surface-1); backdrop-filter: blur(12px); border: 1px solid var(--border-dim); border-radius: var(--radius-lg); overflow: hidden; transition: 0.3s var(--ease-smooth); position: relative; display: flex; flex-direction: column; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .farm-node:hover { transform: translate3d(0, -5px, 0); border-color: var(--border-glow); box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(16,185,129,0.1); z-index: 10; }
 
-        .node-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); }
-        .node-id { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .node-header { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); }
+        .node-id { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .node-id span { font-family: var(--text-mono); color: var(--brand-green); }
-        .node-status { font-size: 10px; background: rgba(16,185,129,0.1); padding: 3px 8px; border-radius: 4px; color: var(--brand-green); }
+        .weather-pill { font-size: 10px; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-dim); font-family: var(--text-mono); letter-spacing: 0.5px; }
 
-        .node-body { padding: 20px; display: grid; grid-template-columns: 100px 1fr; gap: 20px; align-items: center; }
+        /* Terrarium Showcase (The Hybrid Element) */
+        .terrarium { height: 140px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background: radial-gradient(ellipse at bottom, rgba(255,255,255,0.03) 0%, transparent 70%); border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .terrarium.danger { background: radial-gradient(ellipse at bottom, rgba(244, 63, 94, 0.15) 0%, transparent 70%); }
+        .terrarium.camp { background: radial-gradient(ellipse at bottom, rgba(251, 191, 36, 0.1) 0%, transparent 70%); }
         
-        /* Ecosystem Monitor (The Visual Part) */
-        .eco-monitor { width: 100px; height: 100px; border-radius: 50%; border: 2px dashed rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; position: relative; background: var(--surface-2); }
-        .eco-monitor::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); pointer-events: none; }
-        .eco-visual { font-size: 42px; position: relative; z-index: 5; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); transition: 0.3s; }
-        .camp-fire { position: absolute; right: -10px; bottom: 0; font-size: 24px; animation: flicker 1.5s infinite alternate; z-index: 10; }
-        @keyframes flicker { 0% { transform: scale(1); filter: drop-shadow(0 0 5px #f97316); } 100% { transform: scale(1.1); filter: drop-shadow(0 0 15px #f97316); } }
+        .forest-cluster { position: relative; display: flex; justify-content: center; height: 100px; width: 100%; padding: 0 5px; }
+        .terrain-base { position: absolute; bottom: 5px; width: 100%; text-align: center; font-size: 12px; z-index: 1; opacity: 0.6; letter-spacing: 3px; font-family: var(--text-mono); }
+        .tree-extra.withered { filter: grayscale(1) brightness(0.4) drop-shadow(0 2px 4px rgba(0,0,0,0.5)); animation: none; }
+        .tree-extra { position: absolute; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.7)); transition: 0.3s var(--ease-smooth); animation: floatTree 4s ease-in-out infinite; }
         
-        /* Data Layout */
-        .fin-data { display: flex; flex-direction: column; gap: 12px; }
-        .data-row { display: flex; justify-content: space-between; align-items: center; }
-        .d-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
+        .level-badge { position: absolute; top: 10px; left: 15px; font-size: 9px; font-family: var(--text-mono); padding: 3px 8px; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); z-index: 20; color: var(--text-secondary); text-transform: uppercase; }
+        .level-badge.active { color: var(--brand-gold); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.1); }
+
+        .node-body { padding: 15px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .fin-data { display: flex; flex-direction: column; justify-content: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
+        .d-label { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 2px; }
         .d-val { font-family: var(--text-mono); font-size: 14px; font-weight: 600; }
-        .d-val.lg { font-size: 18px; }
-        .text-green { color: var(--brand-green); } .text-red { color: var(--brand-red); } .text-gold { color: var(--brand-gold); }
+        .d-val.lg { font-size: 16px; }
 
-        .node-footer { padding: 12px 20px; background: var(--surface-2); border-top: 1px solid rgba(255,255,255,0.02); display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-        .f-box h4 { font-size: 9px; color: var(--text-secondary); margin-bottom: 3px; font-weight: 400; }
+        .node-footer { padding: 12px 20px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.02); display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; text-align: center; }
+        .f-box h4 { font-size: 9px; color: var(--text-secondary); margin-bottom: 2px; font-weight: 400; text-transform: uppercase; }
         .f-box p { font-family: var(--text-mono); font-size: 11px; font-weight: 600; }
         .f-box:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.05); }
 
-        .sync-hud { position: fixed; bottom: 20px; right: 20px; background: var(--surface-1); border: 1px solid var(--border-dim); padding: 8px 15px; border-radius: 8px; font-size: 11px; font-family: var(--text-mono); color: var(--brand-green); display: flex; align-items: center; gap: 8px; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.3s; opacity: 0; transform: translateY(10px); }
+        /* Delete Button inside Card */
+        .btn-del-card { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); width: 28px; height: 28px; border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; z-index: 30; }
+        .btn-del-card:hover { background: rgba(244,63,94,0.2); border-color: var(--brand-red); color: var(--brand-red); }
+
+        /* --- Popup Analytics --- */
+        #popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s ease; padding: 20px; }
+        #popup-overlay.show { display: flex; opacity: 1; }
+        .popup-content { background: var(--surface-2); border: 1px solid var(--border-glow); border-radius: var(--radius-lg); padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(16,185,129,0.05); transform: scale(0.95); transition: 0.3s var(--ease-smooth); position: relative; }
+        #popup-overlay.show .popup-content { transform: scale(1); }
+        .popup-close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); border: none; color: var(--text-secondary); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .popup-close-btn:hover { background: var(--brand-red); color: #fff; }
+        .analytics-title { font-size: 14px; font-weight: 600; color: var(--brand-green); margin-top: 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+        .sync-hud { position: fixed; bottom: 40px; right: 20px; background: var(--surface-2); border: 1px solid var(--brand-green); padding: 8px 16px; border-radius: 20px; font-size: 11px; font-family: var(--text-mono); color: var(--brand-green); display: flex; align-items: center; gap: 8px; z-index: 100; box-shadow: 0 5px 20px rgba(16,185,129,0.2); transition: 0.4s var(--ease-smooth); opacity: 0; transform: translateY(20px); pointer-events: none; }
         .sync-hud.active { opacity: 1; transform: translateY(0); }
         .spinner { width: 12px; height: 12px; border: 2px solid rgba(16,185,129,0.3); border-top-color: var(--brand-green); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--border-dim); }
 
     </style>
 </head>
 <body>
 
-    <div class="sync-hud" id="sync-hud">
-        <div class="spinner"></div> <span>SYNCING DATA...</span>
+    <div class="landscape-bg"></div>
+    
+    <div class="sync-hud" id="sync-hud"><div class="spinner"></div> <span>SYNCING NETWORK...</span></div>
+
+    <div id="popup-overlay" onclick="closePopup(event)">
+        <div class="popup-content" id="popup-inner-content" onclick="event.stopPropagation()">
+            <button class="popup-close-btn" onclick="closePopup()">✕</button>
+            <div id="popup-body-html"></div>
+            <div class="analytics-title">📊 DEEP PORTFOLIO ANALYTICS</div>
+            <div id="popup-analytics-details" style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; font-family: var(--text-mono);">Analyzing data...</div>
+        </div>
     </div>
+
+    <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
         <!-- Header -->
         <header class="system-header">
             <div class="brand">
                 <h1>K SARAKHARM EA</h1>
-                <p>Agritech Ecosystem Dashboard v2.0</p>
+                <p>Smart Agritech Ecosystem v3.0</p>
             </div>
             <div class="sys-status">
-                <div class="status-pill" id="weather-sys">📡 WEATHER: CALM</div>
-                <div class="status-pill"><div class="dot"></div> NETWORK ACTIVE</div>
+                <div class="status-pill active" id="time-badge">⏳ TIME: SYNCING...</div>
+                <div class="status-pill active" id="theme-badge">📡 WEATHER: CALM</div>
+                <div class="status-pill active"><div class="dot"></div> SYSTEM ONLINE</div>
             </div>
         </header>
 
-        <!-- Global Master Stats -->
+        <!-- Global Stats -->
         <section class="master-stats">
             <div class="stat-card">
                 <h3>Total Balance</h3>
@@ -149,7 +196,7 @@
             <div class="stat-card">
                 <h3>Total Equity</h3>
                 <div class="value" id="sys-eq">$0.00</div>
-                <div class="sub-value">Current Value</div>
+                <div class="sub-value">Current Realized Value</div>
             </div>
             <div class="stat-card">
                 <h3>Floating P/L</h3>
@@ -157,9 +204,9 @@
                 <div class="sub-value" id="sys-pct">0.00% Net Yield</div>
             </div>
             <div class="stat-card">
-                <h3>Active Sectors</h3>
-                <div class="value text-gold"><span id="sys-farms">0</span> / <span id="sys-trees">0</span></div>
-                <div class="sub-value">Plots / Operational Nodes</div>
+                <h3>Active Network</h3>
+                <div class="value text-gold"><span id="sys-farms">0</span> <span style="font-size:14px; color:var(--text-secondary)">PLOTS</span> / <span id="sys-trees">0</span> <span style="font-size:14px; color:var(--text-secondary)">NODES</span></div>
+                <div class="sub-value">Operational Capacity</div>
             </div>
         </section>
 
@@ -169,69 +216,76 @@
                 <input type="text" id="searchInput" class="input-pro" placeholder="Search Plot ID..." oninput="renderGrid()">
                 <select id="sortInput" class="input-pro" onchange="renderGrid()">
                     <option value="bal">Sort: Balance (High-Low)</option>
-                    <option value="pl">Sort: Profit (High-Low)</option>
                     <option value="id">Sort: Plot ID</option>
+                    <option value="pl">Sort: Yield % (High-Low)</option>
                 </select>
             </div>
             <div class="search-group">
                 <button class="btn-pro" onclick="forceSync()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-10.31l5.63 2.74"/></svg>
-                    FORCE SYNC
+                    SYNC NET
                 </button>
+                <button class="btn-pro btn-danger" onclick="deleteAllFarms()">FORMAT SYS</button>
             </div>
         </div>
 
         <!-- Grid -->
-        <div class="grid-system" id="farm-grid">
-            <!-- Cards injected via JS -->
-        </div>
+        <div class="grid-system" id="farm-grid"></div>
     </div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         let db = {}; 
+        let isNightTime = false;
+        window.weatherParticles = ['✨'];
 
-        // Utility Formatter
-        const fmtMoney = (v) => {
-            const val = parseFloat(v) || 0;
-            const abs = Math.abs(val).toFixed(2);
-            return val > 0 ? `+$${abs}` : (val < 0 ? `-$${abs}` : `$0.00`);
-        };
-        const fmtPct = (v) => {
-            const val = parseFloat(v) || 0;
-            return val > 0 ? `+${val.toFixed(2)}%` : `${val.toFixed(2)}%`;
-        };
-        const colorClass = (v) => v > 0 ? 'text-green' : (v < 0 ? 'text-red' : 'text-secondary');
+        // Formatting Utils
+        const fmtMoney = (v) => { const val = parseFloat(v) || 0; const abs = Math.abs(val).toFixed(2); return val > 0 ? `+$${abs}` : (val < 0 ? `-$${abs}` : `$0.00`); };
+        const fmtPct = (v) => { const val = parseFloat(v) || 0; return val > 0 ? `+${val.toFixed(2)}%` : `${val.toFixed(2)}%`; };
+        const cClass = (v) => v > 0 ? 'text-green' : (v < 0 ? 'text-red' : 'text-secondary');
 
-        // Initializer
+        // Initialization
         window.onload = async () => {
-            await syncData();
-            setInterval(syncData, 60000); // 60s Auto Sync
+            initRiver();
+            updateTimeCycle();
+            startWeatherEffect();
+            renderGrid();
+            await forceSync();
+            
+            // Loop 60s
+            setInterval(() => {
+                updateTimeCycle();
+                syncData();
+            }, 60000);
         };
+
+        function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">IRRIGATION SYSTEM ACTIVE // ECOSYSTEM OPTIMIZED // FLUID DATA STREAM ONLINE // </div>'.repeat(5); }
+        
+        function updateTimeCycle() {
+            const h = new Date().getHours();
+            isNightTime = (h >= 18 || h < 6); 
+            document.getElementById('time-badge').innerHTML = `⏳ TIME: ${isNightTime ? 'NIGHT CYCLE' : 'DAY CYCLE'}`;
+        }
 
         async function forceSync() {
             document.getElementById('sync-hud').classList.add('active');
             await syncData();
-            setTimeout(() => document.getElementById('sync-hud').classList.remove('active'), 800);
+            setTimeout(() => document.getElementById('sync-hud').classList.remove('active'), 1000);
         }
 
         async function syncData() {
             try {
-                // Fetch list
                 const resList = await fetch(`${SCRIPT_URL}?action=getAllFarms`);
                 const cloudList = await resList.json();
-                
                 if(Array.isArray(cloudList)) {
-                    let localList = JSON.parse(localStorage.getItem('sf_farms') || '[]');
+                    let localList = JSON.parse(localStorage.getItem('sf_farms_v3') || '[]');
                     let merged = [...new Set([...localList, ...cloudList])];
-                    localStorage.setItem('sf_farms', JSON.stringify(merged));
+                    localStorage.setItem('sf_farms_v3', JSON.stringify(merged));
                     
-                    // Fetch details
                     await Promise.all(merged.map(id => fetchNodeInfo(id)));
-                    updateGlobalHUD();
-                    renderGrid();
+                    updateGlobalHUD(); renderGrid();
                 }
-            } catch(e) { console.error("Sync Error", e); }
+            } catch(e) { console.error(e); }
         }
 
         async function fetchNodeInfo(id) {
@@ -239,7 +293,7 @@
                 const res = await fetch(`${SCRIPT_URL}?login=${id}`);
                 const data = await res.json();
                 if(!data.error && data.length > 0) {
-                    const latest = data[data.length - 1];
+                    const latest = data.at(-1);
                     const bal = parseFloat(latest.balance);
                     const pl = parseFloat(latest.floating_pl);
                     db[id] = {
@@ -251,157 +305,205 @@
                         tdy: parseFloat(latest.profit_today||0),
                         wk: parseFloat(latest.profit_week||0),
                         mo: parseFloat(latest.profit_month||0),
-                        last: latest.lastUpdated, err: false
+                        err: false
                     };
                 } else { db[id] = {err: true}; }
             } catch(e) { db[id] = {err: true}; }
         }
 
-        function getSortedFarms() {
-            let farms = JSON.parse(localStorage.getItem('sf_farms') || '[]');
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const sortMethod = document.getElementById('sortInput').value;
-
-            farms = farms.filter(f => f.toLowerCase().includes(query));
-
-            return farms.sort((a, b) => {
-                const dA = db[a] || {}; const dB = db[b] || {};
-                const bA = dA.bal || 0; const bB = dB.bal || 0;
-                
-                if (bA === 0 && bB !== 0) return 1;
-                if (bB === 0 && bA !== 0) return -1;
-
-                if(sortMethod === 'pl') return (dB.pl||0) - (dA.pl||0);
-                if(sortMethod === 'id') return parseInt(a) - parseInt(b);
-                return bB - bA; // default bal
-            });
-        }
-
         function updateGlobalHUD() {
-            let tBal = 0, tEq = 0, tPl = 0, tOrders = 0;
-            let activeNodes = 0;
-            
+            let tBal = 0, tEq = 0, tPl = 0, tOrders = 0, aNodes = 0;
             Object.values(db).forEach(d => {
-                if(!d.err && d.bal > 0) {
-                    tBal += d.bal; tEq += d.eq; tPl += d.pl; tOrders += d.orders; activeNodes++;
-                }
+                if(!d.err && d.bal > 0) { tBal += d.bal; tEq += d.eq; tPl += d.pl; tOrders += d.orders; aNodes++; }
             });
 
             document.getElementById('sys-bal').innerText = `$${tBal.toFixed(2)}`;
             document.getElementById('sys-eq').innerText = `$${tEq.toFixed(2)}`;
-            
             const plEl = document.getElementById('sys-pl');
-            plEl.innerText = fmtMoney(tPl);
-            plEl.className = `value ${colorClass(tPl)}`;
-            
+            plEl.innerText = fmtMoney(tPl); plEl.className = `value ${cClass(tPl)}`;
             const pct = tBal > 0 ? (tPl/tBal)*100 : 0;
             document.getElementById('sys-pct').innerText = `${fmtPct(pct)} Net Yield`;
-            
-            document.getElementById('sys-farms').innerText = activeNodes;
+            document.getElementById('sys-farms').innerText = aNodes;
             document.getElementById('sys-trees').innerText = tOrders;
 
-            // Simple Weather logic
-            const wSys = document.getElementById('weather-sys');
-            if (pct >= 5) { wSys.innerText = '📡 WEATHER: EXCELLENT'; wSys.style.color = 'var(--brand-green)'; }
-            else if (pct < -5) { wSys.innerText = '📡 WEATHER: STORM WARNING'; wSys.style.color = 'var(--brand-red)'; }
-            else { wSys.innerText = '📡 WEATHER: CALM'; wSys.style.color = 'var(--text-secondary)'; }
+            // Weather System based on Portfolio
+            let wTxt = 'CALM 🌫️'; window.weatherParticles = ['✨'];
+            let bGlow = 'rgba(16, 185, 129, 0.08)'; let rGlow = 'rgba(251, 191, 36, 0.05)';
+            
+            if(pct >= 10) { wTxt = 'GOLDEN SUN ✨'; window.weatherParticles = ['☀️', '✨', '💎']; bGlow = 'rgba(251, 191, 36, 0.2)'; rGlow = 'rgba(16, 185, 129, 0.2)'; }
+            else if(pct >= 3) { wTxt = 'BREEZE 🍃'; window.weatherParticles = ['🍃', '✨']; bGlow = 'rgba(16, 185, 129, 0.15)'; }
+            else if(pct >= -1) { wTxt = 'CALM 🌫️'; }
+            else if(pct >= -5) { wTxt = 'RAIN 💧'; window.weatherParticles = ['💧', '🌧️']; bGlow = 'rgba(56, 189, 248, 0.1)'; rGlow = 'transparent'; }
+            else { wTxt = 'STORM ⛈️'; window.weatherParticles = ['💧', '⚡', '🌪️']; bGlow = 'rgba(244, 63, 94, 0.15)'; rGlow = 'rgba(159, 18, 57, 0.1)'; }
+
+            document.getElementById('theme-badge').innerHTML = `📡 WEATHER: ${wTxt}`;
+            document.documentElement.style.setProperty('--glow-top', bGlow);
+            document.documentElement.style.setProperty('--glow-bottom', rGlow);
+        }
+
+        function startWeatherEffect() {
+            setInterval(() => {
+                const p = document.createElement('div'); p.className = 'weather-particle';
+                const icon = window.weatherParticles[Math.floor(Math.random() * window.weatherParticles.length)];
+                p.innerText = icon; p.style.left = Math.random() * window.innerWidth + 'px';
+                if(['💧','🌧️','🌪️'].includes(icon)) { p.style.animation = `fallRain ${Math.random()*2+1.5}s linear forwards`; } 
+                else { p.style.animation = `fallParticle ${Math.random()*5+4}s linear forwards`; }
+                p.style.fontSize = (Math.random()*8+10) + 'px'; document.body.appendChild(p);
+                setTimeout(() => p.remove(), 9000);
+            }, 1000);
         }
 
         function renderGrid() {
-            const grid = document.getElementById('farm-grid');
-            grid.innerHTML = '';
-            const farms = getSortedFarms();
+            const grid = document.getElementById('farm-grid'); grid.innerHTML = '';
+            let farms = JSON.parse(localStorage.getItem('sf_farms_v3') || '[]');
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const sort = document.getElementById('sortInput').value;
 
-            if(farms.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 50px; color: var(--text-secondary);">NO DATA FOUND OR NO NODES CONNECTED.</div>`;
-                return;
-            }
+            farms = farms.filter(f => f.toLowerCase().includes(q));
+            farms.sort((a,b) => {
+                const dA = db[a]||{}; const dB = db[b]||{};
+                const bA = dA.bal||0; const bB = dB.bal||0;
+                if(bA===0 && bB!==0) return 1; if(bB===0 && bA!==0) return -1;
+                if(sort==='pl') return (dB.pct||0) - (dA.pct||0);
+                if(sort==='id') return parseInt(a) - parseInt(b);
+                return bB - bA;
+            });
 
-            // Find Max Bal for Level Calculation
-            let maxB = 1;
-            farms.forEach(f => { if(db[f] && db[f].bal > maxB) maxB = db[f].bal; });
+            if(farms.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-secondary);font-family:var(--text-mono)">NO ACTIVE NODES DETECTED.</div>`; return; }
+
+            let maxB = 1; farms.forEach(f => { if(db[f] && db[f].bal > maxB) maxB = db[f].bal; });
+            const fCoords = [ {x:40, y:2, s:42, z:6}, {x:25, y:6, s:38, z:5}, {x:60, y:4, s:40, z:5}, {x:15, y:12, s:34, z:4}, {x:75, y:8, s:36, z:4}, {x:35, y:15, s:30, z:3}, {x:55, y:14, s:32, z:3}, {x:22, y:20, s:26, z:2}, {x:70, y:18, s:28, z:2}, {x:48, y:22, s:24, z:1} ];
+            const emojis = ['🌱', '🌿', '☘️', '🌴', '🌲', '🌳'];
+            const names = ['Seedling', 'Sprout', 'Bush', 'Palm', 'Pine', 'Great Tree'];
 
             farms.forEach(id => {
-                const d = db[id] || { bal:0, eq:0, pl:0, pct:0, orders:0, tdy:0, wk:0, mo:0, err:true };
-                
-                // Logic for Visual Monitor
-                let visualHtml = '';
-                let statusText = 'OFFLINE';
-                let statusClass = 'text-secondary';
-                let borderColor = 'transparent';
+                const d = db[id] || {bal:0,eq:0,pl:0,pct:0,orders:0,tdy:0,wk:0,mo:0,err:true};
+                let wPill = 'OFFLINE', cHtml = '', tClass = '', bColor = 'var(--border-dim)', lvlText = 'LOCKED';
 
-                if (d.err) {
-                    visualHtml = `<div class="eco-visual" style="filter:grayscale(1); opacity:0.3;">🪨</div>`;
-                } else if (d.bal <= 0) {
-                    statusText = 'EMPTY PLOT';
-                    visualHtml = `<div class="eco-visual" style="filter:grayscale(1); opacity:0.5;">🪨</div>`;
-                } else if (d.orders === 0) {
-                    statusText = 'STANDBY (CAMP)';
-                    statusClass = 'text-gold';
-                    borderColor = 'var(--brand-gold)';
-                    visualHtml = `
-                        <div class="eco-visual" style="font-size: 48px;">🏕️</div>
-                        <div class="camp-fire">🔥</div>
+                if(d.err) {
+                    wPill = 'ERR_CONN'; tClass = ''; cHtml = `<div class="tree-extra" style="left:50%;bottom:10px;font-size:36px;transform:translateX(-50%);filter:grayscale(1) opacity(0.3)">🪨</div>`;
+                } else if(d.bal <= 0) {
+                    wPill = 'EMPTY PLOT'; tClass = ''; cHtml = `<div class="tree-extra" style="left:50%;bottom:10px;font-size:36px;transform:translateX(-50%);filter:grayscale(1) opacity(0.5)">🪨</div>`;
+                } else if(d.orders === 0) {
+                    wPill = 'STANDBY'; tClass = 'camp'; bColor = 'rgba(251,191,36,0.3)'; lvlText = 'CAMP MODE';
+                    let f = isNightTime ? '🔥' : '♨️';
+                    cHtml = `
+                        <div class="terrain-base" style="color:var(--brand-gold);">[ CAMP SECURED ]</div>
+                        <div class="tree-extra" style="left:25%; bottom:5px; font-size:38px; z-index:12; animation: fireFlicker 1.5s infinite;">${f}</div>
+                        <div class="tree-extra" style="left:45%; bottom:0px; font-size:60px; z-index:10; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.8));">🏕️</div>
                     `;
                 } else {
-                    statusText = 'ACTIVE YIELD';
-                    statusClass = 'text-green';
-                    borderColor = d.pl > 0 ? 'var(--brand-green)' : (d.pl < 0 ? 'var(--brand-red)' : 'var(--border-dim)');
+                    wPill = `YIELD: ${fmtPct(d.pct)}`; 
+                    if(d.pl < 0) { tClass = 'danger'; bColor = 'rgba(244,63,94,0.3)'; } else { bColor = 'rgba(16,185,129,0.3)'; }
                     
                     let lvl = Math.ceil(d.bal / (maxB / 6)); lvl = Math.max(1, Math.min(6, lvl));
-                    const trees = ['🌱', '🌿', '☘️', '🌴', '🌲', '🌳'];
+                    lvlText = `LVL ${lvl} : ${names[lvl-1].toUpperCase()}`;
                     
-                    visualHtml = `<div class="eco-visual" style="font-size: 54px; ${d.pl > 0 ? 'filter: drop-shadow(0 0 10px rgba(16,185,129,0.8));' : ''}">${trees[lvl-1]}</div>`;
+                    let tCount = Math.max(1, Math.min(10, Math.ceil((d.orders/10)))); 
+                    let winR = (d.win+d.loss) > 0 ? d.win/(d.win+d.loss) : 1;
+                    let hCount = Math.round(tCount * winR); let wCount = tCount - hCount;
+                    
+                    cHtml = `<div class="terrain-base" style="${d.pl>0?'color:var(--brand-green);text-shadow:0 0 5px var(--brand-green)':'color:var(--text-secondary)'}">[ SECTOR ACTIVE ]</div>`;
+                    
+                    for(let i=0; i<hCount; i++) {
+                        let pos = fCoords[i%fCoords.length];
+                        cHtml += `<div class="tree-extra" style="left:${pos.x}%; bottom:${pos.y}px; font-size:${pos.s}px; z-index:${pos.z+10}; ${d.pl>0?'filter:drop-shadow(0 0 8px rgba(16,185,129,0.6));':''}">${emojis[lvl-1]}</div>`;
+                    }
+                    for(let i=0; i<wCount; i++) {
+                        let pos = fCoords[(hCount+i)%fCoords.length];
+                        cHtml += `<div class="tree-extra withered" style="left:${pos.x}%; bottom:${pos.y}px; font-size:${pos.s}px; z-index:${pos.z+5};">${emojis[lvl-1]}</div>`;
+                    }
+                    
+                    // Add Mist/Fireflies for active working nodes
+                    for(let c=0; c<Math.min(3, d.orders); c++) {
+                        let left = 20 + Math.random()*60; let del = Math.random()*2;
+                        if(isNightTime) cHtml += `<div class="firefly-particle" style="left:${left}%; bottom:15px; animation:fireflyMove 3s infinite alternate ${del}s; width:4px; height:4px; background:#d9f99d; border-radius:50%; position:absolute; z-index:20;"></div>`;
+                        else cHtml += `<div class="mist-particle" style="left:${left}%; bottom:20px; animation:mistFloat 4s infinite ${del}s; position:absolute; z-index:15; color:rgba(255,255,255,0.3); font-size:20px;">☁️</div>`;
+                    }
                 }
 
-                // Card HTML Construction
-                const card = document.createElement('div');
-                card.className = 'farm-node';
+                const card = document.createElement('div'); card.className = 'farm-node';
+                card.onclick = (e) => { if(!e.target.closest('.btn-del-card')) openPopup(id); };
                 card.innerHTML = `
-                    <div class="node-header">
-                        <div class="node-id">PLOT <span>#${id}</span></div>
-                        <div class="node-status" style="color: ${statusClass}; border: 1px solid ${statusClass}; background: transparent;">${statusText}</div>
+                    <button class="btn-del-card" onclick="removeFarm('${id}')">✕</button>
+                    <div class="node-header"><div class="node-id">PLOT <span>#${id}</span></div><div class="weather-pill" style="color:${d.err?'var(--text-secondary)':(d.pl<0?'var(--brand-red)':'var(--brand-green)')}; border-color:currentColor;">${wPill}</div></div>
+                    
+                    <div class="terrarium ${tClass}" style="border-color: ${bColor}">
+                        <div class="level-badge ${d.orders===0 && d.bal>0 ? 'active':''}">${lvlText}</div>
+                        <div class="forest-cluster">${cHtml}</div>
                     </div>
                     
                     <div class="node-body">
-                        <div class="eco-monitor" style="border-color: ${borderColor}">
-                            ${visualHtml}
-                        </div>
-                        
-                        <div class="fin-data">
-                            <div class="data-row">
-                                <span class="d-label">Balance</span>
-                                <span class="d-val">$${d.bal.toFixed(2)}</span>
-                            </div>
-                            <div class="data-row">
-                                <span class="d-label">Equity</span>
-                                <span class="d-val">$${d.eq.toFixed(2)}</span>
-                            </div>
-                            <div class="data-row" style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(255,255,255,0.05);">
-                                <span class="d-label">Floating</span>
-                                <span class="d-val lg ${colorClass(d.pl)}">${fmtMoney(d.pl)} <span style="font-size:10px;">(${fmtPct(d.pct)})</span></span>
-                            </div>
-                        </div>
+                        <div class="fin-data"><span class="d-label">Balance</span><span class="d-val">$${d.bal.toFixed(2)}</span></div>
+                        <div class="fin-data"><span class="d-label">Equity</span><span class="d-val">$${d.eq.toFixed(2)}</span></div>
+                        <div class="fin-data"><span class="d-label">Floating P/L</span><span class="d-val lg ${cClass(d.pl)}">${fmtMoney(d.pl)}</span></div>
+                        <div class="fin-data"><span class="d-label">Active Nodes</span><span class="d-val text-gold">${d.orders}</span></div>
                     </div>
-
+                    
                     <div class="node-footer">
-                        <div class="f-box">
-                            <h4>TODAY</h4>
-                            <p class="${colorClass(d.tdy)}">${fmtMoney(d.tdy)}</p>
-                        </div>
-                        <div class="f-box">
-                            <h4>THIS WEEK</h4>
-                            <p class="${colorClass(d.wk)}">${fmtMoney(d.wk)}</p>
-                        </div>
-                        <div class="f-box">
-                            <h4>THIS MONTH</h4>
-                            <p class="${colorClass(d.mo)}">${fmtMoney(d.mo)}</p>
-                        </div>
+                        <div class="f-box"><h4>TODAY</h4><p class="${cClass(d.tdy)}">${fmtMoney(d.tdy)}</p></div>
+                        <div class="f-box"><h4>THIS WEEK</h4><p class="${cClass(d.wk)}">${fmtMoney(d.wk)}</p></div>
+                        <div class="f-box"><h4>THIS MONTH</h4><p class="${cClass(d.mo)}">${fmtMoney(d.mo)}</p></div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
+
+        function openPopup(id) {
+            const d = db[id]; if(!d || d.err) return;
+            const tOrders = d.win + d.loss; const wRate = tOrders>0 ? ((d.win/tOrders)*100).toFixed(1) : '0.0';
+            const ddVal = d.bal>0 ? Math.max(0, d.bal-d.eq) : 0; const ddPct = d.bal>0 ? ((ddVal/d.bal)*100).toFixed(2) : '0.00';
+            
+            let rStat = 'SAFE (LOW RISK)'; let rCol = 'var(--brand-green)';
+            if(ddPct > 15) { rStat = 'CRITICAL (HIGH RISK)'; rCol = 'var(--brand-red)'; } else if(ddPct > 6) { rStat = 'WARNING (MODERATE)'; rCol = 'var(--brand-gold)'; }
+            
+            let aiText = '> PORTFOLIO STABLE. MAINTAIN CURRENT STRATEGY.';
+            if(ddPct > 12) aiText = '> ALERT: DRAWDOWN EXCEEDS SAFE THRESHOLD. CONSIDER DE-RISKING.';
+            else if(wRate < 45 && tOrders >= 5) aiText = '> ALERT: LOW WIN RATE DETECTED. REVIEW ALGORITHM LOGIC.';
+
+            document.getElementById('popup-analytics-details').innerHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px; border-bottom:1px solid var(--border-dim); padding-bottom:15px;">
+                    <div>WIN RATE:<br><span style="color:var(--brand-green); font-size:16px; font-weight:700;">${wRate}%</span></div>
+                    <div>MAX DRAWDOWN:<br><span style="color:${rCol}; font-size:16px; font-weight:700;">${ddPct}%</span> <span style="font-size:11px;">($${ddVal.toFixed(2)})</span></div>
+                    <div>RISK STATUS:<br><span style="color:${rCol}; font-weight:600;">${rStat}</span></div>
+                    <div>TOTAL NODES:<br><span style="color:#fff; font-weight:600;">${tOrders} EXECUTED</span></div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:8px; border-left:3px solid ${rCol};">
+                    <span style="color:var(--brand-green);">AI DIAGNOSTIC:</span><br>
+                    <span style="color:#cbd5e1;">${aiText}</span>
+                </div>
+            `;
+            
+            const pBody = document.getElementById('popup-body-html');
+            const cardHtml = document.querySelector(`.farm-node:nth-child(${getSortedFarms().indexOf(id)+1})`).outerHTML;
+            pBody.innerHTML = cardHtml.replace(/<button class="btn-del-card".*?<\/button>/, ''); // Remove delete btn in popup
+            
+            document.getElementById('popup-overlay').classList.add('show');
+        }
+
+        function closePopup(e) { if(!e || e.target.id === 'popup-overlay' || e.target.closest('.popup-close-btn')) document.getElementById('popup-overlay').classList.remove('show'); }
+
+        window.removeFarm = async function(id) {
+            const pin = prompt(`Enter PIN to DELETE Plot #${id}:`);
+            if(pin !== '17091709') return alert('ACCESS DENIED: Invalid PIN');
+            try {
+                await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${id}`);
+                let list = JSON.parse(localStorage.getItem('sf_farms_v3')||'[]').filter(f => f !== id);
+                localStorage.setItem('sf_farms_v3', JSON.stringify(list)); delete db[id];
+                updateGlobalHUD(); renderGrid(); closePopup();
+            } catch(e) { alert('NETWORK ERROR'); }
+        };
+
+        window.deleteAllFarms = async function() {
+            const pin = prompt(`WARNING: FORMAT SYSTEM? Enter PIN to confirm:`);
+            if(pin !== '17091709') return alert('ACCESS DENIED: Invalid PIN');
+            try {
+                await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
+                localStorage.setItem('sf_farms_v3', '[]'); db = {};
+                updateGlobalHUD(); renderGrid(); alert('SYSTEM FORMATTED');
+            } catch(e) { alert('NETWORK ERROR'); }
+        };
     </script>
 </body>
 </html>
