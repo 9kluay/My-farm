@@ -879,27 +879,47 @@
 
         function updatePortfolioSummary() {
             let tb = 0, te = 0, tp = 0, tTrees = 0, tToday = 0, tWeek = 0, tMonth = 0;
-            getFarmsList().forEach(login => {
+            let syncedCount = 0; // เพิ่มตัวแปรนับจำนวนที่ซิงก์สำเร็จ
+            
+            const allFarms = getFarmsList();
+            const totalFarmsCount = allFarms.length;
+
+            allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
-                if (d && !d.error && d.balance > 0) { 
-                    tb += d.balance; te += d.equity; tp += d.profit; tTrees += d.open_positions; 
-                    tToday += d.profit_today || 0; tWeek += d.profit_week || 0; tMonth += d.profit_month || 0;
+                if (d && !d.error) { 
+                    syncedCount++; // นับเพิ่มเฉพาะพอร์ตที่ดึงข้อมูลได้และไม่ออฟไลน์
+                    if (d.balance > 0) { 
+                        tb += d.balance; te += d.equity; tp += d.profit; tTrees += d.open_positions; 
+                        tToday += d.profit_today || 0; tWeek += d.profit_week || 0; tMonth += d.profit_month || 0;
+                    }
                 }
             });
 
-            document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
-            const plElem = document.getElementById('sum-pl'); plElem.className = 'stat-value ' + getColorClass(tp); plElem.innerText = formatMoney(tp);
+            document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; 
+            document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
+            const plElem = document.getElementById('sum-pl'); 
+            plElem.className = 'stat-value ' + getColorClass(tp); 
+            plElem.innerText = formatMoney(tp);
             
             const totalPercent = (tb > 0) ? (tp / tb) * 100 : 0;
-            const percentElem = document.getElementById('sum-percent'); percentElem.className = 'stat-value ' + getColorClass(totalPercent); percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
+            const percentElem = document.getElementById('sum-percent'); 
+            percentElem.className = 'stat-value ' + getColorClass(totalPercent); 
+            percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            document.getElementById('sum-farms').innerText = `${getFarmsList().length} แปลง`; document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
+            // เปลี่ยนการแสดงผลเป็น จำนวนที่ซิงก์ / จำนวนทั้งหมด
+            document.getElementById('sum-farms').innerText = `${syncedCount}/${totalFarmsCount} แปลง`; 
+            document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
-            const updateSum = (id, val) => { const el = document.getElementById(id); el.innerText = formatMoney(val); el.className = 'history-value ' + getColorClass(val); };
+            const updateSum = (id, val) => { 
+                const el = document.getElementById(id); 
+                el.innerText = formatMoney(val); 
+                el.className = 'history-value ' + getColorClass(val); 
+            };
             updateSum('sum-today', tToday); updateSum('sum-week', tWeek); updateSum('sum-month', tMonth);
 
             updateGlobalWeather(totalPercent);
         }
+
     </script>
 </body>
 </html>
