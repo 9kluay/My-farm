@@ -200,6 +200,7 @@
             </div>
             <div class="divider"></div>
             <div class="history-stats-grid">
+                <!-- ลบภาษาอังกฤษออกแล้ว -->
                 <div class="history-box"><div class="history-label">กำไรรวมวันนี้</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้</div><div class="history-value" id="sum-week">$0.00</div></div>
                 <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้</div><div class="history-value" id="sum-month">$0.00</div></div>
@@ -272,32 +273,25 @@
             setInterval(() => { fetchRealWorldWeather(); }, 900000);
         };
 
-        // ระบบ GPS ประมวลผลและบันทึก/อ่าน จาก Google Sheets
         function fetchRealWorldWeather() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
-                        // 1. ถ้าผู้ใช้กด Allow อนุญาต GPS
                         const lat = position.coords.latitude;
                         const lon = position.coords.longitude;
-                        
-                        // ส่งไปบันทึกบน Google Sheet (Backend)
                         try {
                             await fetch(`${SCRIPT_URL}?action=updateGPS&lat=${lat}&lon=${lon}`);
-                        } catch(e) { console.log("กำลังพยายามบันทึกพิกัด..."); }
-
-                        // อัปเดตสภาพอากาศ
+                        } catch(e) {}
                         fetchWeatherByCoords(lat, lon, "พิกัดล่าสุด (บันทึกแล้ว)");
                     }, 
                     async (error) => {
-                        // 2. ถ้าผู้ใช้กด Block หรือ GPS ไม่ทำงาน ให้ดึงข้อมูลเก่าที่เคยบันทึกไว้ในระบบมาใช้
                         try {
                             const res = await fetch(`${SCRIPT_URL}?action=getGPS`);
                             const data = await res.json();
                             if(data && data.lat && data.lon) {
                                 fetchWeatherByCoords(data.lat, data.lon, "พิกัดที่บันทึกไว้");
                             } else {
-                                fallbackDefaultWeather(); // ถ้ายังไม่เคยบันทึกเลย ให้ใช้ค่ามาตรฐาน
+                                fallbackDefaultWeather(); 
                             }
                         } catch(e) {
                             fallbackDefaultWeather();
@@ -424,11 +418,6 @@
             await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
             saveFarmsList(farms); delete globalPortfolioData[login]; 
-            
-            let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
-            delete ddLogs[login];
-            localStorage.setItem('my_farm_dd_logs', JSON.stringify(ddLogs));
-
             updatePortfolioSummary(); renderForest();
         };
 
@@ -437,7 +426,6 @@
             if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
             localStorage.setItem('my_forest_farms', '[]'); 
-            localStorage.removeItem('my_farm_dd_logs');
             globalPortfolioData = {}; 
             updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลเรียบร้อยแล้ว');
         };
@@ -470,6 +458,7 @@
                         
                         <div class="metric-item-compact"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
                         <div class="metric-item-compact" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
+                            <!-- เปลี่ยนคำเป็น DRAWDOWN ตามที่ขอ -->
                             <div class="metric-label" style="color: var(--accent-rose);">DRAWDOWN</div>
                             <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 11px;">0.00 (0.00%)</div>
                         </div>
@@ -485,26 +474,6 @@
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
         }
 
-        function checkAndStoreDrawdownLog(login, balance, profit, percent, currency) {
-            let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
-            
-            if (balance === 0) {
-                delete ddLogs[login];
-            } else if (profit < 0) {
-                if (!ddLogs[login] || profit < ddLogs[login].max_dd_amount) {
-                    ddLogs[login] = {
-                        login: login,
-                        currency: currency,
-                        balance: balance,
-                        max_dd_amount: profit,
-                        max_dd_percent: percent,
-                        timestamp: new Date().toISOString()
-                    };
-                }
-            }
-            localStorage.setItem('my_farm_dd_logs', JSON.stringify(ddLogs));
-        }
-
         async function fetchNodeData(login) {
             try {
                 const response = await fetch(`${SCRIPT_URL}?login=${login}`); 
@@ -512,10 +481,9 @@
                 if (data.error || data.length === 0) { 
                     globalPortfolioData[login] = { error: true }; 
                 } else {
-                    const latest = data.at(-1); 
+                    const latest = data[0]; // อ่านค่าที่ Backend ส่งมาให้
                     const balance = parseFloat(latest.balance); 
                     const profitLoss = parseFloat(latest.floating_pl);
-                    const percentVal = (balance > 0) ? (Math.abs(profitLoss) / balance) * 100 : 0;
 
                     globalPortfolioData[login] = { 
                         balance: balance, equity: parseFloat(latest.equity), profit: profitLoss,
@@ -528,10 +496,12 @@
                         profit_month: parseFloat(latest.profit_month || 0),
                         currency: latest.currency || 'USD',
                         open_pairs: latest.open_pairs || '-',
-                        lastUpdated: latest.lastUpdated, error: false 
+                        lastUpdated: latest.lastUpdated, error: false,
+                        
+                        // รับค่า DD จากฐานข้อมูล (Google Sheets) โดยตรง ไม่ใช้ Cache แล้ว
+                        dd_amount: latest.max_dd_amount || 0,
+                        dd_percent: latest.max_dd_percent || 0
                     };
-
-                    checkAndStoreDrawdownLog(login, balance, profitLoss, percentVal, latest.currency || 'USD');
                 }
                 updatePortfolioSummary(); updateUICard(login);
             } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); }
@@ -561,13 +531,12 @@
             plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(data.percent)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
-            let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
-            let portDD = ddLogs[login];
+            // อ่านค่า DD จากตัวแปรที่รับมาจาก Google Sheets
             const ddElem = document.getElementById(`dd-${login}`);
-            if (portDD) {
-                const absAmount = Math.abs(portDD.max_dd_amount).toFixed(2);
-                const absPercent = Math.abs(portDD.max_dd_percent).toFixed(2);
-                ddElem.innerText = `-${absAmount} ${portDD.currency} (-${absPercent}%)`;
+            if (data.dd_amount < 0) {
+                const absAmount = Math.abs(data.dd_amount).toFixed(2);
+                const absPercent = Math.abs(data.dd_percent).toFixed(2);
+                ddElem.innerText = `-${absAmount} ${data.currency} (-${absPercent}%)`;
             } else {
                 ddElem.innerText = `0.00 ${data.currency} (0.00%)`;
             }
