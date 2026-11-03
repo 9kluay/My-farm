@@ -187,6 +187,19 @@
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .plot-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+        
+        /* สไตล์สำหรับป้ายสกุลเงิน */
+        .currency-badge {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--accent-gold);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
         .stars { color: var(--accent-gold); font-size: 13px; }
         .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 16px; cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 4px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); transform: rotate(90deg); }
@@ -209,9 +222,12 @@
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
+        .metric-item-wide { grid-column: 1 / -1; } /* ทำให้การ์ดคู่เทรดกว้างเต็มบรรทัด */
         .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .metric-val { font-size: 14px; font-weight: 600; color: var(--text-main); }
         
+        .metric-val-pairs { font-size: 13px; font-weight: 500; color: #93c5fd; word-break: break-all; } /* สไตล์คู่เทรด */
+
         .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-bottom: 12px; gap: 4px; border: 1px solid rgba(255,255,255,0.03); }
         .c-hist-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
         .c-hist-item:last-child { border-right: none; }
@@ -431,7 +447,6 @@
 
         function startWeatherEffect() {
             setInterval(() => {
-                // [ปรับปรุง] ป้องกัน Memory Leak ไม่สร้าง Effect ตอนผู้ใช้เปลี่ยนไปเปิดแท็บอื่น
                 if (document.hidden) return; 
 
                 const particle = document.createElement('div'); particle.className = 'weather-particle';
@@ -525,7 +540,7 @@
                 analyticsDetails.innerHTML = `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
                         <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
-                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}%</b> ($${drawdownVal.toFixed(2)})</div>
+                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}%</b> (${drawdownVal.toFixed(2)} ${d.currency})</div>
                         <div>• สถานะความเสี่ยง: <b style="color:${riskColor};">${riskStatus}</b></div>
                         <div>• โมเมนตัม: <b>${momentum}</b></div>
                     </div>
@@ -534,9 +549,9 @@
                         • ออเดอร์กำลังทำงาน: <b>${d.open_positions || 0} ไม้</b>
                     </div>
                     <div style="margin-bottom: 10px; line-height: 1.5;">
-                        <b>เปรียบเทียบกำไร:</b> วันนี้ <span class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today)}</span>
-                        | สัปดาห์นี้ <span class="${d.profit_week >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_week)}</span>
-                        | เดือนนี้ <span class="${d.profit_month >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_month)}</span>
+                        <b>เปรียบเทียบกำไร:</b> วันนี้ <span class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today, '', ' ' + d.currency)}</span>
+                        | สัปดาห์นี้ <span class="${d.profit_week >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_week, '', ' ' + d.currency)}</span>
+                        | เดือนนี้ <span class="${d.profit_month >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_month, '', ' ' + d.currency)}</span>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid ${riskColor}; font-size: 11px;">
                         <b>AI Strategic Summary:</b><br><span style="color: #cbd5e1;">${recommendation}</span>
@@ -551,7 +566,6 @@
 
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
-            // หมายเหตุ: การตรวจรหัสแบบนี้ทำเพื่อป้องกันคนกดพลาด แต่ในอนาคตควรส่งไปตรวจสอบความปลอดภัยที่ Backend แทน
             if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             try {
                 await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
@@ -588,7 +602,11 @@
                 card.setAttribute('data-login', login); card.onclick = (e) => handleCardClick(e, login);
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="stars" id="stars-${login}"></span></div>
+                        <div class="plot-title">
+                            <span id="plot-icon-${login}">🌱</span> แปลง #${login} 
+                            <span class="currency-badge" id="badge-${login}">USD</span>
+                            <span class="stars" id="stars-${login}"></span>
+                        </div>
                         <button class="btn-delete" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
                     <div class="showcase" id="showcase-${login}">
@@ -597,15 +615,19 @@
                         <div class="level-badge" id="tier-${login}">เตรียมแปลง...</div>
                     </div>
                     <div class="card-metrics">
-                        <div class="metric-item"><div class="metric-label">INITIAL BALANCE</div><div class="metric-val" id="bal-${login}">$0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">CURRENT EQUITY</div><div class="metric-val" id="eq-${login}">$0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">$0.00</div></div>
+                        <div class="metric-item"><div class="metric-label">INITIAL BALANCE</div><div class="metric-val" id="bal-${login}">0.00</div></div>
+                        <div class="metric-item"><div class="metric-label">CURRENT EQUITY</div><div class="metric-val" id="eq-${login}">0.00</div></div>
+                        <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">ORDERS (แยกไม้)</div><div class="metric-val" id="ord-${login}">-</div></div>
+                        <div class="metric-item metric-item-wide">
+                            <div class="metric-label">ACTIVE PAIRS (คู่เทรดที่เปิดอยู่)</div>
+                            <div class="metric-val-pairs" id="pairs-${login}">-</div>
+                        </div>
                     </div>
                     <div class="card-history">
-                        <div class="c-hist-item"><div class="c-hist-label">วันนี้</div><div class="c-hist-val" id="today-${login}">$0.00</div></div>
-                        <div class="c-hist-item"><div class="c-hist-label">สัปดาห์นี้</div><div class="c-hist-val" id="week-${login}">$0.00</div></div>
-                        <div class="c-hist-item"><div class="c-hist-label">เดือนนี้</div><div class="c-hist-val" id="month-${login}">$0.00</div></div>
+                        <div class="c-hist-item"><div class="c-hist-label">วันนี้</div><div class="c-hist-val" id="today-${login}">0.00</div></div>
+                        <div class="c-hist-item"><div class="c-hist-label">สัปดาห์นี้</div><div class="c-hist-val" id="week-${login}">0.00</div></div>
+                        <div class="c-hist-item"><div class="c-hist-label">เดือนนี้</div><div class="c-hist-val" id="month-${login}">0.00</div></div>
                     </div>
                     <div class="card-footer">
                         <span id="status-${login}" style="color:var(--accent-emerald);">● ออนไลน์</span>
@@ -636,6 +658,8 @@
                         profit_today: parseFloat(latest.profit_today || 0), 
                         profit_week: parseFloat(latest.profit_week || 0), 
                         profit_month: parseFloat(latest.profit_month || 0),
+                        currency: latest.currency || 'USD',
+                        open_pairs: latest.open_pairs || '-',
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
@@ -646,7 +670,11 @@
             }
         }
 
-        const formatMoney = (val) => { const absVal = Math.abs(val).toFixed(2); return val > 0 ? `+$${absVal}` : (val < 0 ? `-$${absVal}` : `$${absVal}`); };
+        // ปรับฟังก์ชัน formatMoney ให้รองรับ prefix และ suffix (เช่น สกุลเงิน)
+        const formatMoney = (val, prefix = '$', suffix = '') => { 
+            const absVal = Math.abs(val).toFixed(2); 
+            return val > 0 ? `+${prefix}${absVal}${suffix}` : (val < 0 ? `-${prefix}${absVal}${suffix}` : `${prefix}${absVal}${suffix}`); 
+        };
         const formatPercent = (val) => { const absVal = Math.abs(val).toFixed(2); return val > 0 ? `(+${absVal}%)` : (val < 0 ? `(-${absVal}%)` : `(0.00%)`); };
         const getColorClass = (val) => val > 0 ? 'positive' : (val < 0 ? 'negative' : '');
 
@@ -677,14 +705,24 @@
             else { emoji = '⚡🌪️'; txt = 'มรสุมและพายุทอร์นาโด'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
 
             wpill.innerHTML = `${emoji} ${txt}`;
-            document.getElementById(`bal-${login}`).innerText = `$${data.balance.toFixed(2)}`; document.getElementById(`eq-${login}`).innerText = `$${data.equity.toFixed(2)}`;
+            
+            // อัปเดตข้อมูลใหม่: สกุลเงิน และ คู่เทรด
+            const badgeDiv = document.getElementById(`badge-${login}`);
+            if (badgeDiv) badgeDiv.innerText = data.currency;
+            const pairsDiv = document.getElementById(`pairs-${login}`);
+            if (pairsDiv) pairsDiv.innerText = data.open_pairs;
+
+            document.getElementById(`bal-${login}`).innerText = `${data.balance.toFixed(2)} ${data.currency}`; 
+            document.getElementById(`eq-${login}`).innerText = `${data.equity.toFixed(2)} ${data.currency}`;
             const plDiv = document.getElementById(`pl-${login}`);
-            plDiv.className = `metric-val ${getColorClass(data.profit)}`; plDiv.innerText = `${formatMoney(data.profit)} ${formatPercent(pct)}`;
+            plDiv.className = `metric-val ${getColorClass(data.profit)}`; 
+            plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(pct)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
             ['today', 'week', 'month'].forEach(t => {
                 const val = data[`profit_${t}`]; const div = document.getElementById(`${t}-${login}`);
-                div.innerText = formatMoney(val); div.className = `c-hist-val ${getColorClass(val)}`;
+                div.innerText = formatMoney(val, '', ' ' + data.currency); 
+                div.className = `c-hist-val ${getColorClass(val)}`;
             });
             
             let timeStr = '--:--';
@@ -748,17 +786,12 @@
                         showcaseDiv.classList.remove('danger-zone');
                     }
                 } else if (data.open_positions === 0) {
-                    /* โหมดแคมป์ปิ้งพักแปลง (Idle) - เต็นท์ใหญ่เด่นตรงกลาง พร้อมไฟลุกสว่างด้านซ้าย */
                     activeEmoji = '🏕️';
                     let stateKey = 'idle-camp-pro';
                     if (clusterDiv.getAttribute('data-state') !== stateKey) {
                         clusterDiv.innerHTML = `
                             <div class="terrain-base" style="color:var(--accent-gold); text-shadow:0 0 8px rgba(251,191,36,0.5); letter-spacing: 4px; opacity: 0.85;">✨ ⛺ ✨</div>
-                            
-                            <!-- กองไฟลุกสว่างด้านซ้าย -->
                             <div class="tree-extra" style="left: 30%; bottom: 2px; font-size: 38px; z-index: 12; animation: fireFlicker 1.5s ease-in-out infinite;">🔥</div>
-                            
-                            <!-- เต็นท์ขนาดใหญ่เด่นชัดจัดกึ่งกลางค่อนขวาเล็กน้อยให้สมดุล -->
                             <div class="tree-extra" style="left: 48%; bottom: -4px; font-size: 64px; z-index: 10; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6));">🏕️</div>
                         `;
                         clusterDiv.setAttribute('data-state', stateKey);
@@ -879,7 +912,7 @@
 
         function updatePortfolioSummary() {
             let tb = 0, te = 0, tp = 0, tTrees = 0, tToday = 0, tWeek = 0, tMonth = 0;
-            let syncedCount = 0; // เพิ่มตัวแปรนับจำนวนที่ซิงก์สำเร็จ
+            let syncedCount = 0;
             
             const allFarms = getFarmsList();
             const totalFarmsCount = allFarms.length;
@@ -887,7 +920,7 @@
             allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
                 if (d && !d.error) { 
-                    syncedCount++; // นับเพิ่มเฉพาะพอร์ตที่ดึงข้อมูลได้และไม่ออฟไลน์
+                    syncedCount++; 
                     if (d.balance > 0) { 
                         tb += d.balance; te += d.equity; tp += d.profit; tTrees += d.open_positions; 
                         tToday += d.profit_today || 0; tWeek += d.profit_week || 0; tMonth += d.profit_month || 0;
@@ -895,6 +928,7 @@
                 }
             });
 
+            // หมายเหตุ: สรุปรวมด้านบนยังคงใช้สกุลเงิน $ เป็นตัวแทนของยอดรวมทั้งหมดอยู่ เพื่อไม่ให้เกิดปัญหาสกุลเงินผสมกัน
             document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; 
             document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
             const plElem = document.getElementById('sum-pl'); 
@@ -906,7 +940,6 @@
             percentElem.className = 'stat-value ' + getColorClass(totalPercent); 
             percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            // เปลี่ยนการแสดงผลเป็น จำนวนที่ซิงก์ / จำนวนทั้งหมด
             document.getElementById('sum-farms').innerText = `${syncedCount}/${totalFarmsCount} แปลง`; 
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
