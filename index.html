@@ -174,7 +174,7 @@
     <div class="container">
         <div class="top-nav">
             <div class="nav-badges">
-                <div class="badge" id="weather-location-badge">📍 กำลังดึงพิกัดเบราว์เซอร์...</div>
+                <div class="badge" id="weather-location-badge">📍 กำลังตรวจสอบพิกัด...</div>
                 <div class="badge" id="weather-temp-badge">🌡️ --°C | 💧 --%</div>
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
@@ -200,9 +200,9 @@
             </div>
             <div class="divider"></div>
             <div class="history-stats-grid">
-                <div class="history-box"><div class="history-label">กำไรรวมวันนี้ (Today - USD)</div><div class="history-value" id="sum-today">$0.00</div></div>
-                <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้ (This Week - USD)</div><div class="history-value" id="sum-week">$0.00</div></div>
-                <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้ (This Month - USD)</div><div class="history-value" id="sum-month">$0.00</div></div>
+                <div class="history-box"><div class="history-label">กำไรรวมวันนี้</div><div class="history-value" id="sum-today">$0.00</div></div>
+                <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้</div><div class="history-value" id="sum-week">$0.00</div></div>
+                <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้</div><div class="history-value" id="sum-month">$0.00</div></div>
             </div>
         </div>
 
@@ -272,33 +272,60 @@
             setInterval(() => { fetchRealWorldWeather(); }, 900000);
         };
 
+        // ระบบ GPS ประมวลผลและบันทึก/อ่าน จาก Google Sheets
         function fetchRealWorldWeather() {
-            // ดึงพิกัดโดยตรงจาก Browser Geolocation
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    try {
-                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
-                        const data = await res.json();
-                        if (data && data.current) {
-                            document.getElementById('weather-location-badge').innerHTML = `📍 พิกัดเบราว์เซอร์ (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
-                            document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
-                            isNightTime = data.current.is_day === 0;
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        // 1. ถ้าผู้ใช้กด Allow อนุญาต GPS
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        // ส่งไปบันทึกบน Google Sheet (Backend)
+                        try {
+                            await fetch(`${SCRIPT_URL}?action=updateGPS&lat=${lat}&lon=${lon}`);
+                        } catch(e) { console.log("กำลังพยายามบันทึกพิกัด..."); }
+
+                        // อัปเดตสภาพอากาศ
+                        fetchWeatherByCoords(lat, lon, "พิกัดล่าสุด (บันทึกแล้ว)");
+                    }, 
+                    async (error) => {
+                        // 2. ถ้าผู้ใช้กด Block หรือ GPS ไม่ทำงาน ให้ดึงข้อมูลเก่าที่เคยบันทึกไว้ในระบบมาใช้
+                        try {
+                            const res = await fetch(`${SCRIPT_URL}?action=getGPS`);
+                            const data = await res.json();
+                            if(data && data.lat && data.lon) {
+                                fetchWeatherByCoords(data.lat, data.lon, "พิกัดที่บันทึกไว้");
+                            } else {
+                                fallbackDefaultWeather(); // ถ้ายังไม่เคยบันทึกเลย ให้ใช้ค่ามาตรฐาน
+                            }
+                        } catch(e) {
+                            fallbackDefaultWeather();
                         }
-                    } catch(e) { fallbackDefaultWeather(); }
-                }, (error) => {
-                    fallbackDefaultWeather();
-                }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+                    }, 
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+                );
             } else {
                 fallbackDefaultWeather();
             }
         }
 
+        async function fetchWeatherByCoords(lat, lon, locationLabel) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
+                const data = await res.json();
+                if (data && data.current) {
+                    document.getElementById('weather-location-badge').innerHTML = `📍 ${locationLabel}`;
+                    document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
+                    isNightTime = data.current.is_day === 0;
+                }
+            } catch(e) { fallbackDefaultWeather(); }
+        }
+
         function fallbackDefaultWeather() {
             const hour = new Date().getHours();
             isNightTime = (hour >= 18 || hour < 6);
-            document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก`;
+            document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก (พิกัดพื้นฐาน)`;
             document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C | 💧 ความชื้น 65%`;
         }
 
@@ -441,10 +468,9 @@
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
                         
-                        <!-- ย่อขนาดความสูงและตัวอักษรของ ACTIVE PAIRS & MAX DRAWDOWN ให้เท่ากับช่องกำไรวันนี้ -->
                         <div class="metric-item-compact"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
                         <div class="metric-item-compact" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
-                            <div class="metric-label" style="color: var(--accent-rose);">MAX DRAWDOWN (DD / %DD)</div>
+                            <div class="metric-label" style="color: var(--accent-rose);">DRAWDOWN</div>
                             <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 11px;">0.00 (0.00%)</div>
                         </div>
                     </div>
