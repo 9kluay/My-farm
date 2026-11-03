@@ -65,14 +65,7 @@
         }
         @keyframes flowRiver { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
 
-        .weather-particle, .mist-particle, .firefly-particle, .tree-extra {
-            will-change: transform, opacity;
-        }
-
-        .weather-particle {
-            position: fixed; top: -40px; user-select: none; pointer-events: none;
-            z-index: 1; opacity: 0.7;
-        }
+        .weather-particle { position: fixed; top: -40px; user-select: none; pointer-events: none; z-index: 1; opacity: 0.7; }
         @keyframes fallParticle { 0% { transform: translate3d(0,0,0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translate3d(0, 105vh, 0) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translate3d(0,0,0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translate3d(0, 105vh, 0); opacity: 0; } }
 
@@ -82,11 +75,7 @@
             70% { opacity: 0.2; transform: translate3d(0, -35px, 0) scale(1.2); }
             100% { transform: translate3d(0, -50px, 0) scale(1.4); opacity: 0; }
         }
-        .mist-particle {
-            position: absolute; z-index: 15; pointer-events: none;
-            animation: mistFloat 4s ease-in-out infinite;
-            color: rgba(255, 255, 255, 0.4); font-size: 24px;
-        }
+        .mist-particle { position: absolute; z-index: 15; pointer-events: none; animation: mistFloat 4s ease-in-out infinite; color: rgba(255, 255, 255, 0.4); font-size: 24px; }
 
         @keyframes fireflyMove {
             0% { transform: translate3d(0, 0, 0) scale(0.8); opacity: 0; }
@@ -94,36 +83,26 @@
             50% { transform: translate3d(15px, -20px, 0) scale(1.2); }
             100% { transform: translate3d(-10px, -40px, 0) scale(0.5); opacity: 0; }
         }
-        .firefly-particle {
-            position: absolute; z-index: 20; pointer-events: none;
-            width: 4px; height: 4px; background: #d9f99d; border-radius: 50%;
-            animation: fireflyMove 3.5s ease-in-out infinite alternate;
-        }
+        .firefly-particle { position: absolute; z-index: 20; pointer-events: none; width: 4px; height: 4px; background: #d9f99d; border-radius: 50%; animation: fireflyMove 3.5s ease-in-out infinite alternate; }
 
-        /* เอฟเฟกต์กองไฟแคมป์ปิ้ง */
         @keyframes fireFlicker {
             0%, 100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.6)); }
             50% { transform: scale(1.15) translateY(-3px) rotate(2deg); filter: drop-shadow(0 0 22px rgba(249, 115, 22, 1)); }
         }
 
         .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.85)); }
-
         @keyframes glowTerrainPulse {
             0%, 100% { text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); transform: scale(1); }
             50% { text-shadow: 0 0 12px rgba(251, 191, 36, 0.8); transform: scale(1.02); }
         }
         .terrain-glow { animation: glowTerrainPulse 3s ease-in-out infinite; }
 
-        .container { 
-            max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; 
-            animation: fadeIn 0.5s var(--ease-out-smooth) forwards;
-        }
+        .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.5s var(--ease-out-smooth) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
 
         .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
         .nav-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-        .badge { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 14px; border-radius: 16px; font-size: 12px; color: var(--text-muted); backdrop-filter: blur(8px); transition: transform 0.2s var(--ease-out-smooth); }
-        .badge:hover { transform: translate3d(0, -2px, 0); background: rgba(255, 255, 255, 0.07); }
+        .badge { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 14px; border-radius: 16px; font-size: 12px; color: var(--text-muted); backdrop-filter: blur(8px); }
         
         .status-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; color: var(--accent-emerald); display: flex; align-items: center; gap: 6px; backdrop-filter: blur(8px); }
         .status-dot-pulse { width: 7px; height: 7px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 6px var(--accent-emerald); animation: pulse 2s ease-in-out infinite; }
@@ -131,11 +110,7 @@
 
         header { text-align: center; margin-bottom: 20px; }
         h1 { font-size: 38px; font-weight: 600; margin: 0 0 10px 0; background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .farm-eco-line {
-            display: flex; justify-content: center; align-items: center; gap: 12px;
-            font-size: 18px; margin-bottom: 20px; opacity: 0.9;
-        }
+        .farm-eco-line { display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 18px; margin-bottom: 20px; opacity: 0.9; }
 
         .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 24px; margin-bottom: 25px; box-shadow: var(--glass-shadow); }
         .main-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 20px; }
@@ -157,76 +132,53 @@
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 12px; }
         .toolbar-left, .toolbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         
-        .btn-sync { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 10px 20px; border-radius: var(--btn-radius); font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s var(--ease-out-smooth), background 0.2s; backdrop-filter: blur(8px); }
-        .btn-sync:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald); transform: translate3d(0, -2px, 0); }
+        .btn-sync { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 10px 20px; border-radius: var(--btn-radius); font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; backdrop-filter: blur(8px); }
+        .btn-sync:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald); }
         
-        .btn-delete-all { background: transparent; border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); padding: 8px 10px; border-radius: var(--btn-radius); font-size: 15px; cursor: pointer; transition: transform 0.2s, color 0.2s; }
-        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.3); color: var(--accent-rose); transform: translate3d(0, -2px, 0); }
+        .btn-delete-all { background: transparent; border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); padding: 8px 10px; border-radius: var(--btn-radius); font-size: 15px; cursor: pointer; }
+        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.3); color: var(--accent-rose); }
 
-        .search-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--btn-radius); padding: 8px 16px; width: 240px; display: flex; align-items: center; gap: 8px; transition: border-color 0.2s; }
-        .search-box:focus-within { border-color: var(--accent-emerald); background: rgba(0,0,0,0.5); }
+        .search-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--btn-radius); padding: 8px 16px; width: 240px; display: flex; align-items: center; gap: 8px; }
         .search-input { background: transparent; border: none; color: var(--text-main); font-size: 13px; font-family: inherit; width: 100%; outline: none; }
-        .search-input::placeholder { color: rgba(255,255,255,0.3); }
-
+        
         .sort-select {
             background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1);
             border-radius: var(--btn-radius); padding: 8px 14px; color: var(--text-main);
             font-size: 13px; font-family: inherit; outline: none; cursor: pointer;
-            backdrop-filter: blur(8px); transition: border-color 0.2s; appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2210%22%20viewBox%3D%220%200%2014%2010%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M7%2010L0%200h14z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat; background-position: right 12px center;
-            background-size: 9px; padding-right: 30px;
         }
-        .sort-select:focus, .sort-select:hover { border-color: var(--accent-emerald); }
         .sort-select option { background: var(--bg-dark); color: var(--text-main); }
 
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
         
-        .tree-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 20px; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.25s var(--ease-out-smooth), box-shadow 0.25s var(--ease-out-smooth), border-color 0.3s; box-shadow: 0 4px 18px rgba(0,0,0,0.2); position: relative; }
+        .tree-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 20px; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.25s, box-shadow 0.25s; box-shadow: 0 4px 18px rgba(0,0,0,0.2); position: relative; }
         .tree-card:hover { transform: translate3d(0, -4px, 0); border-color: var(--accent-emerald); box-shadow: 0 10px 25px rgba(0,0,0,0.35); z-index: 10; }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .plot-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
-        
-        /* สไตล์สำหรับป้ายสกุลเงิน */
-        .currency-badge {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--accent-gold);
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            font-weight: 600;
-            margin-left: 6px;
-        }
-
+        .currency-badge { background: rgba(251, 191, 36, 0.15); color: var(--accent-gold); font-size: 11px; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3); font-weight: 600; }
         .stars { color: var(--accent-gold); font-size: 13px; }
-        .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 16px; cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 4px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
-        .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); transform: rotate(90deg); }
+        .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 16px; cursor: pointer; padding: 4px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
         .showcase { position: relative; height: 155px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 60%); border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; padding-bottom: 8px; }
         .showcase.danger-zone { background: radial-gradient(circle at center, rgba(244, 63, 94, 0.12) 0%, transparent 70%) !important; border-color: rgba(244, 63, 94, 0.25) !important; }
 
         .weather-pill { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 4px; z-index: 10; }
-        
         .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 100px; width: 100%; margin-top: 8px; padding: 0 5px; }
-        
         .terrain-base { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 13px; z-index: 1; opacity: 0.85; letter-spacing: 2px; user-select: none; pointer-events: none; }
 
-        .tree-extra { position: absolute; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); line-height: 1; transition: transform 0.2s var(--ease-out-smooth); animation: floatTree 4s ease-in-out infinite; }
-        .tree-extra:hover { transform: scale(1.15) translate3d(0, -4px, 0); z-index: 30 !important; }
-        .tree-extra.withered { filter: grayscale(1) brightness(0.45) drop-shadow(0 3px 5px rgba(0,0,0,0.5)); animation: none !important; }
+        .tree-extra { position: absolute; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); line-height: 1; animation: floatTree 4s ease-in-out infinite; }
         @keyframes floatTree { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-3px,0); } }
+        .tree-extra.withered { filter: grayscale(1) brightness(0.45) drop-shadow(0 3px 5px rgba(0,0,0,0.5)); animation: none !important; }
 
         .level-badge { margin-top: 6px; font-size: 10px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); padding: 2px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.18); z-index: 30; }
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
-        .metric-item-wide { grid-column: 1 / -1; } /* ทำให้การ์ดคู่เทรดกว้างเต็มบรรทัด */
+        .metric-item-wide { grid-column: 1 / -1; }
         .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .metric-val { font-size: 14px; font-weight: 600; color: var(--text-main); }
-        
-        .metric-val-pairs { font-size: 13px; font-weight: 500; color: #93c5fd; word-break: break-all; } /* สไตล์คู่เทรด */
+        .metric-val-pairs { font-size: 13px; font-weight: 500; color: #93c5fd; word-break: break-all; }
 
         .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-bottom: 12px; gap: 4px; border: 1px solid rgba(255,255,255,0.03); }
         .c-hist-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
@@ -238,25 +190,19 @@
 
         #popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 10, 7, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.25s ease; padding: 15px; }
         #popup-overlay.show { display: flex; opacity: 1; }
-        .popup-content { background: rgba(12, 20, 16, 0.95); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); transform: scale(0.96); transition: transform 0.25s var(--ease-out-smooth); position: relative; max-height: 88vh; overflow-y: auto; }
-        #popup-overlay.show .popup-content { transform: scale(1); }
-        .popup-close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; justify-content: center; align-items: center; transition: background 0.2s, color 0.2s; }
-        .popup-close-btn:hover { background: rgba(244, 63, 94, 0.2); color: var(--accent-rose); }
-        
+        .popup-content { background: rgba(12, 20, 16, 0.95); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); position: relative; max-height: 88vh; overflow-y: auto; }
+        .popup-close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; justify-content: center; align-items: center; }
         .popup-analytics-box { margin-top: 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; }
         .analytics-title { font-size: 13px; font-weight: 600; color: var(--accent-emerald); margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; }
 
         .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); grid-column: 1 / -1; }
-        .empty-state span { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.5; }
-
-        #syncing-overlay { position: fixed; top: 15px; left: 50%; transform: translate3d(-50%, -15px, 0); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 500; backdrop-filter: blur(10px); opacity: 0; pointer-events: none; transition: all 0.3s var(--ease-out-smooth); z-index: 10000; }
+        #syncing-overlay { position: fixed; top: 15px; left: 50%; transform: translate3d(-50%, -15px, 0); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 500; backdrop-filter: blur(10px); opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 10000; }
         #syncing-overlay.show { opacity: 1; transform: translate3d(-50%, 0, 0); }
     </style>
 </head>
 <body>
 
     <div class="landscape-bg"></div>
-
     <div id="syncing-overlay">ซิงค์ข้อมูล Real-time...</div>
     
     <div id="popup-overlay" onclick="closePopup(event)">
@@ -275,7 +221,8 @@
     <div class="container">
         <div class="top-nav">
             <div class="nav-badges">
-                <div class="badge" id="time-badge">⏳ ตรวจสอบเวลา...</div>
+                <div class="badge" id="weather-location-badge">📍 กำลังโหลดพิกัด...</div>
+                <div class="badge" id="weather-temp-badge">🌡️ --°C | 💧 --%</div>
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
                 <div class="status-badge"><div class="status-dot-pulse"></div> ระบบ Real-time Active</div>
@@ -291,18 +238,18 @@
 
         <div class="glass-panel">
             <div class="main-stats-grid">
-                <div class="stat-box"><div class="stat-label">💰 Total Balance</div><div class="stat-value" id="sum-balance">$0.00</div></div>
-                <div class="stat-box"><div class="stat-label">💎 Total Equity</div><div class="stat-value" id="sum-equity">$0.00</div></div>
-                <div class="stat-box"><div class="stat-label">📈 Floating P/L</div><div class="stat-value" id="sum-pl">$0.00</div></div>
+                <div class="stat-box"><div class="stat-label">💰 Total Balance (USD)</div><div class="stat-value" id="sum-balance">$0.00</div></div>
+                <div class="stat-box"><div class="stat-label">💎 Total Equity (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
+                <div class="stat-box"><div class="stat-label">📈 Floating P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📊 Profit %</div><div class="stat-value" id="sum-percent">0.00%</div></div>
                 <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms" style="color: var(--accent-emerald);">0 แปลง</div></div>
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
             <div class="history-stats-grid">
-                <div class="history-box"><div class="history-label">กำไรรวมวันนี้ (Today)</div><div class="history-value" id="sum-today">$0.00</div></div>
-                <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้ (This Week)</div><div class="history-value" id="sum-week">$0.00</div></div>
-                <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้ (This Month)</div><div class="history-value" id="sum-month">$0.00</div></div>
+                <div class="history-box"><div class="history-label">กำไรรวมวันนี้ (Today - USD)</div><div class="history-value" id="sum-today">$0.00</div></div>
+                <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้ (This Week - USD)</div><div class="history-value" id="sum-week">$0.00</div></div>
+                <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้ (This Month - USD)</div><div class="history-value" id="sum-month">$0.00</div></div>
             </div>
         </div>
 
@@ -331,10 +278,30 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytS0pOy1Vhaf7ZKAooZvDVkoJTVcFK4W4nsImNhqlODyKSQbLAu4ej9Ninr9WPs2JO/exec';
         
         let globalPortfolioData = {};
-        let currentSeason = {};
         let currentSortMode = 'balance';
         let isNightTime = false; 
         window.weatherParticles = ['✨', '🍃', '🌟']; 
+
+        // ฟังก์ชันแปลงสกุลเงินทุกสกุลให้เป็น USD ก่อนนำไปคำนวณรวม (รองรับ USC, GBP, THB และอื่นๆ)
+        function convertToUSD(amount, currency) {
+            const curr = (currency || 'USD').toUpperCase();
+            if (curr === 'USC' || curr === 'CENT') {
+                return Number(amount) / 100; // แปลง Cent/USC เป็น USD
+            }
+            const rates = {
+                'USD': 1.0,
+                'USDT': 1.0,
+                'EUR': 1.08,
+                'GBP': 1.27,
+                'JPY': 0.0067,
+                'THB': 0.029,
+                'AUD': 0.65,
+                'CAD': 0.73,
+                'SGD': 0.75
+            };
+            const rate = rates[curr] || 1.0;
+            return Number(amount) * rate;
+        }
 
         function getSeasonInfo() {
             const m = new Date().getMonth();
@@ -343,29 +310,65 @@
             return { name: 'ฤดูฝน', icon: '🌧️' };
         }
 
-        function updateTimeCycle() {
-            const hour = new Date().getHours();
-            isNightTime = (hour >= 18 || hour < 6); 
-            document.getElementById('time-badge').innerHTML = isNightTime ? '🌙 โหมดกลางคืน (Night)' : '☀️ โหมดกลางวัน (Day)';
-        }
-
         window.onload = async () => {
             initRiver();
-            currentSeason = getSeasonInfo();
-            document.getElementById('season-badge').innerHTML = `${currentSeason.icon} ${currentSeason.name}`;
-            updateTimeCycle();
-            updateGlobalWeather(0); 
+            const season = getSeasonInfo();
+            document.getElementById('season-badge').innerHTML = `${season.icon} ${season.name}`;
+            
+            fetchRealWorldWeather(); 
             startWeatherEffect();
             
             renderForest(); 
             await syncAndRefreshAll(); 
 
-            // ปรับระยะเวลาซิงค์ข้อมูลเรียลไทม์เป็นทุกๆ 60 วินาที
             setInterval(() => {
-                updateTimeCycle();
                 syncAndRefreshAll();
             }, 60000);
+
+            setInterval(() => {
+                fetchRealWorldWeather();
+            }, 900000);
         };
+
+        function fetchRealWorldWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    try {
+                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
+                        const data = await res.json();
+                        if (data && data.current) {
+                            const temp = data.current.temperature_2m;
+                            const humidity = data.current.relative_humidity_2m;
+                            isNightTime = data.current.is_day === 0;
+
+                            document.getElementById('weather-location-badge').innerHTML = `📍 พิกัดปัจจุบัน`;
+                            document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${temp}°C | 💧 ความชื้น ${humidity}%`;
+                        }
+                    } catch(e) { fallbackDefaultWeather(); }
+                }, () => { fetchWeatherByCoords(13.7563, 100.5018); });
+            } else { fetchWeatherByCoords(13.7563, 100.5018); }
+        }
+
+        async function fetchWeatherByCoords(lat, lon) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day`);
+                const data = await res.json();
+                if (data && data.current) {
+                    document.getElementById('weather-location-badge').innerHTML = `📍 ประเทศไทย`;
+                    document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
+                    isNightTime = data.current.is_day === 0;
+                }
+            } catch(e) { fallbackDefaultWeather(); }
+        }
+
+        function fallbackDefaultWeather() {
+            const hour = new Date().getHours();
+            isNightTime = (hour >= 18 || hour < 6);
+            document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก`;
+            document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C | 💧 ความชื้น 65%`;
+        }
 
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
@@ -374,36 +377,15 @@
             if (totalPercent >= 15) {
                 themeName = 'ผลผลิตงอกงามรุ้งงามวิ้งค์ 🌈💎'; window.weatherParticles = ['✨', '🌟', '🌈', '💎'];
                 bgDark = isNightTime ? '#030805' : '#06140a'; glowTop = 'rgba(16, 185, 129, 0.25)'; glowBottom = 'rgba(251, 191, 36, 0.2)'; themeBorder = 'rgba(16, 185, 129, 0.35)';
-            } else if (totalPercent >= 10) {
+            } else if (totalPercent >= 5) {
                 themeName = 'แดดจ้าประกายทอง 🌟✨'; window.weatherParticles = ['☀️', '✨', '🌟'];
                 bgDark = isNightTime ? '#030805' : '#06140a'; glowTop = 'rgba(16, 185, 129, 0.2)'; glowBottom = 'rgba(251, 191, 36, 0.15)'; themeBorder = 'rgba(16, 185, 129, 0.25)';
-            } else if (totalPercent >= 6) {
-                themeName = 'แสงเช้าอบอุ่น ☀️🌿'; window.weatherParticles = ['☀️', '🍃', '✨'];
-                bgDark = isNightTime ? '#040a06' : '#071209'; glowTop = 'rgba(16, 185, 129, 0.15)'; glowBottom = 'rgba(251, 191, 36, 0.1)'; themeBorder = 'rgba(16, 185, 129, 0.2)';
-            } else if (totalPercent >= 3) {
+            } else if (totalPercent >= 0) {
                 themeName = 'อากาศดีสดใส ⛅✨'; window.weatherParticles = ['🍃', '☀️'];
                 bgDark = isNightTime ? '#040805' : '#070f0a'; glowTop = 'rgba(16, 185, 129, 0.1)'; glowBottom = 'rgba(251, 191, 36, 0.07)'; themeBorder = 'rgba(255, 255, 255, 0.1)';
-            } else if (totalPercent > 0) {
-                themeName = 'ลมโชยอ่อนๆ 🍃'; window.weatherParticles = ['🍃', '✨'];
-                bgDark = isNightTime ? '#030605' : '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.08)';
-            } else if (totalPercent === 0) {
-                themeName = 'หมอกบางเบา 🌫️'; window.weatherParticles = ['✨'];
-                bgDark = isNightTime ? '#030605' : '#070c0a'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.08)';
-            } else if (totalPercent >= -1) {
-                themeName = 'หมอกบางเบา 🌫️'; window.weatherParticles = ['✨'];
-                bgDark = isNightTime ? '#040608' : '#080c10'; glowTop = 'rgba(56, 189, 248, 0.08)'; glowBottom = 'rgba(14, 116, 144, 0.05)'; themeBorder = 'rgba(56, 189, 248, 0.12)';
-            } else if (totalPercent >= -3) {
-                themeName = 'ฝนตกปรอยๆ 💧'; window.weatherParticles = ['💧', '🌧️'];
-                bgDark = isNightTime ? '#02070a' : '#050f14'; glowTop = 'rgba(56, 189, 248, 0.12)'; glowBottom = 'rgba(14, 116, 144, 0.08)'; themeBorder = 'rgba(56, 189, 248, 0.18)';
-            } else if (totalPercent >= -6) {
-                themeName = 'ฝนตกชุ่มฉ่ำหนาแน่น 🌧️'; window.weatherParticles = ['💧', '🌧️', '✨'];
-                bgDark = isNightTime ? '#02070a' : '#050f14'; glowTop = 'rgba(56, 189, 248, 0.15)'; glowBottom = 'rgba(14, 116, 144, 0.1)'; themeBorder = 'rgba(56, 189, 248, 0.22)';
-            } else if (totalPercent >= -10) {
+            } else {
                 themeName = 'พายุฝนฟ้าคะนอง ⛈️'; window.weatherParticles = ['💧', '🌧️', '⚡'];
                 bgDark = isNightTime ? '#0a0405' : '#14080a'; glowTop = 'rgba(244, 63, 94, 0.1)'; glowBottom = 'rgba(159, 18, 57, 0.07)'; themeBorder = 'rgba(244, 63, 94, 0.18)';
-            } else {
-                themeName = 'มรสุมและพายุทอร์นาโด ⚡🌪️'; window.weatherParticles = ['💧', '🌧️', '⚡', '🌪️'];
-                bgDark = isNightTime ? '#0d0202' : '#1a0505'; glowTop = 'rgba(244, 63, 94, 0.2)'; glowBottom = 'rgba(159, 18, 57, 0.12)'; themeBorder = 'rgba(244, 63, 94, 0.3)';
             }
 
             const root = document.documentElement;
@@ -415,14 +397,11 @@
         async function syncAndRefreshAll() {
             const syncIcon = document.getElementById('syncing-overlay');
             syncIcon.classList.add('show');
-            
             await syncFarmsFromCloud();
             const farms = getFarmsList();
             if (farms.length > 0) {
-                const promises = farms.map(login => fetchNodeData(login));
-                await Promise.all(promises);
+                await Promise.all(farms.map(login => fetchNodeData(login)));
             }
-            
             setTimeout(() => { syncIcon.classList.remove('show'); }, 400);
         }
 
@@ -433,14 +412,11 @@
                 if(Array.isArray(cloudFarms)) {
                     let oldFarms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
                     let mergedFarms = [...new Set([...oldFarms, ...cloudFarms])];
-                    
                     if (oldFarms.length !== mergedFarms.length) {
                         saveFarmsList(mergedFarms); renderForest();
                     }
                 }
-            } catch(e) {
-                console.error("เกิดข้อผิดพลาดในการเชื่อมต่อดึงข้อมูลแปลงฟาร์ม:", e);
-            }
+            } catch(e) { console.error("Sync error", e); }
         }
 
         function initRiver() { document.getElementById('riverTrack').innerHTML = '<div class="river-wave-item">ระบบชลประทานอัจฉริยะหล่อเลี้ยงฟาร์มการลงทุน เปล่งประกายรุ่งเรือง</div>'.repeat(8); }
@@ -448,7 +424,6 @@
         function startWeatherEffect() {
             setInterval(() => {
                 if (document.hidden) return; 
-
                 const particle = document.createElement('div'); particle.className = 'weather-particle';
                 const icon = window.weatherParticles[Math.floor(Math.random() * window.weatherParticles.length)];
                 particle.innerText = icon; particle.style.left = Math.random() * window.innerWidth + 'px';
@@ -459,43 +434,27 @@
             }, 1200);
         }
 
-        function changeSortMode() {
-            currentSortMode = document.getElementById('sortSelect').value;
-            applySortOrder();
-        }
+        function changeSortMode() { currentSortMode = document.getElementById('sortSelect').value; applySortOrder(); }
 
         function getFarmsList() { 
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]');
             return farms.sort((a, b) => {
                 const dataA = globalPortfolioData[a] || { balance: 0, percent: 0 };
                 const dataB = globalPortfolioData[b] || { balance: 0, percent: 0 };
-                const balA = dataA.balance || 0;
-                const balB = dataB.balance || 0;
-
+                const balA = dataA.balance || 0; const balB = dataB.balance || 0;
                 if (balA === 0 && balB !== 0) return 1;
                 if (balB === 0 && balA !== 0) return -1;
-                if (balA === 0 && balB === 0) return a.localeCompare(b);
-
-                if (currentSortMode === 'login') {
-                    const numA = parseInt(a), numB = parseInt(b);
-                    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-                    return a.localeCompare(b);
-                } else if (currentSortMode === 'balance') {
-                    return balB - balA;
-                } else if (currentSortMode === 'percent') {
-                    return (dataB.percent || 0) - (dataA.percent || 0);
-                }
-                return 0;
+                if (currentSortMode === 'login') return a.localeCompare(b);
+                if (currentSortMode === 'balance') return balB - balA;
+                return (dataB.percent || 0) - (dataA.percent || 0);
             });
         }
         
         function saveFarmsList(farms) { localStorage.setItem('my_forest_farms', JSON.stringify(farms)); }
-
         function applySortOrder() {
-            const sortedFarms = getFarmsList();
-            sortedFarms.forEach((login, index) => {
+            getFarmsList().forEach((login, index) => {
                 const card = document.querySelector(`.tree-card[data-login="${login}"]`);
-                if (card) { card.style.order = index; }
+                if (card) card.style.order = index;
             });
         }
 
@@ -503,61 +462,19 @@
             if (event.target.classList.contains('btn-delete') || event.target.closest('.btn-delete')) return;
             const cardElement = document.querySelector(`.tree-card[data-login="${login}"]`);
             if (!cardElement) return;
-            
-            const popupBody = document.getElementById('popup-body-html');
-            let rawHTML = cardElement.outerHTML;
-            let cleanHTML = rawHTML.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
-            popupBody.innerHTML = cleanHTML;
-            
-            const innerDelete = popupBody.querySelector('.btn-delete');
+            document.getElementById('popup-body-html').innerHTML = cardElement.outerHTML.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+            const innerDelete = document.getElementById('popup-body-html').querySelector('.btn-delete');
             if (innerDelete) innerDelete.remove();
 
             const d = globalPortfolioData[login];
             const analyticsDetails = document.getElementById('popup-analytics-details');
-            
             if (d && !d.error) {
-                const winOrders = d.profit_orders || 0;
-                const lossOrders = d.loss_orders || 0;
-                const totalOrders = winOrders + lossOrders;
+                const winOrders = d.profit_orders || 0; const lossOrders = d.loss_orders || 0; const totalOrders = winOrders + lossOrders;
                 const winRate = totalOrders > 0 ? ((winOrders / totalOrders) * 100).toFixed(1) : '0.0';
-                
-                const drawdownVal = d.balance > 0 ? Math.max(0, d.balance - d.equity) : 0;
-                const drawdownPct = d.balance > 0 ? ((drawdownVal / d.balance) * 100).toFixed(2) : '0.00';
-                
-                let riskStatus = 'ต่ำ (Safe)'; let riskColor = 'var(--accent-emerald)';
-                if (drawdownPct > 15) { riskStatus = 'สูงมาก (Critical)'; riskColor = 'var(--accent-rose)'; } 
-                else if (drawdownPct > 6) { riskStatus = 'ปานกลาง (Moderate)'; riskColor = 'var(--accent-gold)'; }
-
-                let momentum = 'ทรงตัว (Neutral)';
-                if (d.profit_today > 0 && d.profit_week > 0) momentum = 'เชิงบวกแข็งแกร่ง (Strong Uptrend)';
-                else if (d.profit_today < 0 || d.profit_week < 0) momentum = 'ชะลอตัวลง (Downtrend)';
-
-                let recommendation = 'พอร์ตมีเสถียรภาพอยู่ในเกณฑ์ดี สามารถดำเนินการตามแผนการจัดการความเสี่ยงมาตรฐานได้';
-                if (drawdownPct > 12) recommendation = 'เตือนภัย: Floating Drawdown เริ่มสูงขึ้น ควรพิจารณาลด Lot หรือชะลอการออกออเดอร์เพิ่ม';
-                else if (winRate < 45 && totalOrders >= 5) recommendation = 'Win Rate ค่อนข้างต่ำ ควรทบทวนเงื่อนไขการเข้าเทรด หรือปรับระดับ Risk Ratio';
-                else if (d.profit_today > 0 && winRate >= 60) recommendation = 'พอร์ตมีประสิทธิภาพยอดเยี่ยม โมเมนตัมเป็นบวกต่อเนื่อง แผนการเทรดสมบูรณ์';
-
                 analyticsDetails.innerHTML = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
-                        <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
-                        <div>• Drawdown: <b style="color:${riskColor};">${drawdownPct}%</b> (${drawdownVal.toFixed(2)} ${d.currency})</div>
-                        <div>• สถานะความเสี่ยง: <b style="color:${riskColor};">${riskStatus}</b></div>
-                        <div>• โมเมนตัม: <b>${momentum}</b></div>
-                    </div>
-                    <div style="margin-bottom: 10px; line-height: 1.5;">
-                        <b>สถิติออเดอร์:</b> ชนะ <span style="color:var(--accent-emerald); font-weight:600;">${winOrders}</span> ไม้ | แพ้ <span style="color:var(--accent-rose); font-weight:600;">${lossOrders}</span> ไม้ (รวม ${totalOrders} ไม้)<br>
-                        • ออเดอร์กำลังทำงาน: <b>${d.open_positions || 0} ไม้</b>
-                    </div>
-                    <div style="margin-bottom: 10px; line-height: 1.5;">
-                        <b>เปรียบเทียบกำไร:</b> วันนี้ <span class="${d.profit_today >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_today, '', ' ' + d.currency)}</span>
-                        | สัปดาห์นี้ <span class="${d.profit_week >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_week, '', ' ' + d.currency)}</span>
-                        | เดือนนี้ <span class="${d.profit_month >= 0 ? 'positive':'negative'}">${formatMoney(d.profit_month, '', ' ' + d.currency)}</span>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid ${riskColor}; font-size: 11px;">
-                        <b>AI Strategic Summary:</b><br><span style="color: #cbd5e1;">${recommendation}</span>
-                    </div>`;
-            } else {
-                analyticsDetails.innerHTML = 'ไม่มีข้อมูลสถิติเชิงลึกเนื่องจากขาดการเชื่อมต่อ';
+                    <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
+                    <div>• สกุลเงินพอร์ต: <b>${d.currency}</b> (แปลงเป็น USD: $${convertToUSD(d.balance, d.currency).toFixed(2)})</div>
+                    <div>• ออเดอร์กำลังทำงาน: <b>${d.open_positions || 0} ไม้</b></div>`;
             }
             document.getElementById('popup-overlay').classList.add('show');
         }
@@ -566,28 +483,18 @@
 
         window.removeFarm = async function(login) {
             const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการลบแปลงพอร์ต ${login}:`);
-            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
-            try {
-                await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
-                let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
-                saveFarmsList(farms); delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); closePopup();
-            } catch(e) { 
-                console.error("เกิดข้อผิดพลาดในการลบพอร์ต", e);
-                alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); 
-            }
+            if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
+            await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
+            let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
+            saveFarmsList(farms); delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); closePopup();
         };
 
         window.deleteAllFarms = async function() {
-            const confirmCode = prompt(`คำเตือน: กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์มทั้งหมดออกจากระบบ:`);
-            if (confirmCode === null || confirmCode.trim() !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
-            try {
-                await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
-                localStorage.setItem('my_forest_farms', '[]'); globalPortfolioData = {}; 
-                updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลฟาร์มทั้งหมดเรียบร้อยแล้ว');
-            } catch(e) { 
-                console.error("เกิดข้อผิดพลาดในการล้างระบบ", e);
-                alert('ข้อผิดพลาดการเชื่อมต่ออินเทอร์เน็ต'); 
-            }
+            const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์มทั้งหมด:`);
+            if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
+            await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
+            localStorage.setItem('my_forest_farms', '[]'); globalPortfolioData = {}; 
+            updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลเรียบร้อยแล้ว');
         };
 
         function renderForest() {
@@ -602,11 +509,7 @@
                 card.setAttribute('data-login', login); card.onclick = (e) => handleCardClick(e, login);
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="plot-title">
-                            <span id="plot-icon-${login}">🌱</span> แปลง #${login} 
-                            <span class="currency-badge" id="badge-${login}">USD</span>
-                            <span class="stars" id="stars-${login}"></span>
-                        </div>
+                        <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="currency-badge" id="badge-${login}">USD</span><span class="stars" id="stars-${login}"></span></div>
                         <button class="btn-delete" onclick="window.removeFarm('${login}')">✕</button>
                     </div>
                     <div class="showcase" id="showcase-${login}">
@@ -618,25 +521,18 @@
                         <div class="metric-item"><div class="metric-label">INITIAL BALANCE</div><div class="metric-val" id="bal-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">CURRENT EQUITY</div><div class="metric-val" id="eq-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
-                        <div class="metric-item"><div class="metric-label">ORDERS (แยกไม้)</div><div class="metric-val" id="ord-${login}">-</div></div>
-                        <div class="metric-item metric-item-wide">
-                            <div class="metric-label">ACTIVE PAIRS (คู่เทรดที่เปิดอยู่)</div>
-                            <div class="metric-val-pairs" id="pairs-${login}">-</div>
-                        </div>
+                        <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
+                        <div class="metric-item metric-item-wide"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
                     </div>
                     <div class="card-history">
                         <div class="c-hist-item"><div class="c-hist-label">วันนี้</div><div class="c-hist-val" id="today-${login}">0.00</div></div>
                         <div class="c-hist-item"><div class="c-hist-label">สัปดาห์นี้</div><div class="c-hist-val" id="week-${login}">0.00</div></div>
                         <div class="c-hist-item"><div class="c-hist-label">เดือนนี้</div><div class="c-hist-val" id="month-${login}">0.00</div></div>
                     </div>
-                    <div class="card-footer">
-                        <span id="status-${login}" style="color:var(--accent-emerald);">● ออนไลน์</span>
-                        <span id="time-${login}">--:--</span>
-                    </div>`;
+                    <div class="card-footer"><span id="status-${login}" style="color:var(--accent-emerald);">● ออนไลน์</span><span id="time-${login}">--:--</span></div>`;
                 grid.appendChild(card);
             });
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
-            scheduleTreeRanksUpdate();
         }
 
         async function fetchNodeData(login) {
@@ -663,14 +559,10 @@
                         lastUpdated: latest.lastUpdated, error: false 
                     };
                 }
-                updatePortfolioSummary(); updateUICard(login); scheduleTreeRanksUpdate();
-            } catch (err) { 
-                console.error(`เกิดข้อผิดพลาดในการดึงข้อมูลของแปลง ${login}`, err);
-                globalPortfolioData[login] = { error: true }; updateUICard(login); 
-            }
+                updatePortfolioSummary(); updateUICard(login);
+            } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); }
         }
 
-        // ปรับฟังก์ชัน formatMoney ให้รองรับ prefix และ suffix (เช่น สกุลเงิน)
         const formatMoney = (val, prefix = '$', suffix = '') => { 
             const absVal = Math.abs(val).toFixed(2); 
             return val > 0 ? `+${prefix}${absVal}${suffix}` : (val < 0 ? `-${prefix}${absVal}${suffix}` : `${prefix}${absVal}${suffix}`); 
@@ -680,267 +572,70 @@
 
         function updateUICard(login) {
             const data = globalPortfolioData[login]; if (!data) return;
-            const statusDiv = document.getElementById(`status-${login}`); const wpill = document.getElementById(`wpill-${login}`);
+            const statusDiv = document.getElementById(`status-${login}`);
             if (!statusDiv) return;
-            if (data.error) {
-                statusDiv.innerHTML = '<span style="color:var(--accent-rose)">● ขาดการติดต่อ</span>';
-                wpill.innerHTML = '⚠️ ขาดหาย'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; return;
-            }
+            if (data.error) { statusDiv.innerHTML = '<span style="color:var(--accent-rose)">● ขาดการติดต่อ</span>'; return; }
             statusDiv.innerHTML = '<span style="color:var(--accent-emerald)">● สมบูรณ์</span>';
-            wpill.style.color = 'var(--accent-emerald)'; wpill.style.borderColor = 'rgba(16,185,129,0.3)';
 
-            let emoji = '', txt = ''; const pct = data.percent;
-            if (data.balance <= 0) { emoji = '🪨'; txt = 'รกร้าง'; wpill.style.color = 'var(--text-muted)'; wpill.style.borderColor = 'rgba(255,255,255,0.1)'; }
-            else if (data.open_positions === 0) { emoji = '🏕️'; txt = 'แคมป์ปิ้งพักแปลง'; wpill.style.color = 'var(--accent-gold)'; wpill.style.borderColor = 'rgba(251,191,36,0.3)'; }
-            else if (pct >= 15) { emoji = '🌈💎'; txt = 'ผลผลิตงอกงามรุ้งงามวิ้งค์'; }
-            else if (pct >= 10) { emoji = '🌟✨'; txt = 'แดดจ้าประกายทอง'; }
-            else if (pct >= 6) { emoji = '☀️🌿'; txt = 'แสงเช้าอบอุ่น'; }
-            else if (pct >= 3) { emoji = '⛅✨'; txt = 'อากาศดีสดใส'; }
-            else if (pct > 0) { emoji = '🍃'; txt = 'ลมโชยอ่อนๆ'; }
-            else if (pct === 0) { emoji = '🌫️'; txt = 'หมอกบางเบา'; }
-            else if (pct >= -1) { emoji = '🌫️'; txt = 'หมอกบางเบา'; }
-            else if (pct >= -3) { emoji = '💧'; txt = 'ฝนตกปรอยๆ'; }
-            else if (pct >= -6) { emoji = '🌧️'; txt = 'ฝนตกชุ่มฉ่ำหนาแน่น'; }
-            else if (pct >= -10) { emoji = '⛈️'; txt = 'พายุฝนฟ้าคะนอง'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
-            else { emoji = '⚡🌪️'; txt = 'มรสุมและพายุทอร์นาโด'; wpill.style.color = 'var(--accent-rose)'; wpill.style.borderColor = 'rgba(244,63,94,0.3)'; }
-
-            wpill.innerHTML = `${emoji} ${txt}`;
-            
-            // อัปเดตข้อมูลใหม่: สกุลเงิน และ คู่เทรด
-            const badgeDiv = document.getElementById(`badge-${login}`);
-            if (badgeDiv) badgeDiv.innerText = data.currency;
-            const pairsDiv = document.getElementById(`pairs-${login}`);
-            if (pairsDiv) pairsDiv.innerText = data.open_pairs;
-
+            document.getElementById(`badge-${login}`).innerText = data.currency;
+            document.getElementById(`pairs-${login}`).innerText = data.open_pairs;
             document.getElementById(`bal-${login}`).innerText = `${data.balance.toFixed(2)} ${data.currency}`; 
             document.getElementById(`eq-${login}`).innerText = `${data.equity.toFixed(2)} ${data.currency}`;
+            
             const plDiv = document.getElementById(`pl-${login}`);
             plDiv.className = `metric-val ${getColorClass(data.profit)}`; 
-            plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(pct)}`;
+            plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(data.percent)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
             ['today', 'week', 'month'].forEach(t => {
-                const val = data[`profit_${t}`]; const div = document.getElementById(`${t}-${login}`);
+                const val = data[`profit_${t}`]; 
+                const div = document.getElementById(`${t}-${login}`);
                 div.innerText = formatMoney(val, '', ' ' + data.currency); 
                 div.className = `c-hist-val ${getColorClass(val)}`;
             });
             
-            let timeStr = '--:--';
             if (data.lastUpdated) {
                 const date = new Date(data.lastUpdated);
-                if (!isNaN(date)) { timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`; }
+                if (!isNaN(date)) { 
+                    document.getElementById(`time-${login}`).innerText = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`; 
+                }
             }
-            document.getElementById(`time-${login}`).innerText = timeStr;
-        }
-
-        let treeRanksTimeout = null;
-        function scheduleTreeRanksUpdate() {
-            if (treeRanksTimeout) clearTimeout(treeRanksTimeout);
-            treeRanksTimeout = setTimeout(() => { updateTreeRanks(); }, 200);
-        }
-
-        function updateTreeRanks() {
-            const farms = Object.keys(globalPortfolioData).filter(f => !globalPortfolioData[f].error);
-            if (farms.length === 0) { applySortOrder(); return; }
-            
-            let maxBal = 0; let totalPortfolioOrders = 0;
-            let maxNegativePL = 0;
-            farms.forEach(f => {
-                const d = globalPortfolioData[f];
-                if (d.balance > maxBal) { maxBal = d.balance; }
-                if (d && d.balance > 0) { totalPortfolioOrders += (d.open_positions || 0); }
-                if (d.profit < 0 && Math.abs(d.profit) > maxNegativePL) {
-                    maxNegativePL = Math.abs(d.profit);
-                }
-            });
-
-            const stepPL = maxNegativePL > 0 ? maxNegativePL / 5 : 1;
-
-            let rankableFarms = farms.filter(f => globalPortfolioData[f].balance > 0);
-            rankableFarms.sort((a, b) => {
-                let scoreA = (globalPortfolioData[a].profit || 0) + (globalPortfolioData[a].profit_today || 0);
-                let scoreB = (globalPortfolioData[b].profit || 0) + (globalPortfolioData[b].profit_today || 0);
-                return scoreB - scoreA; 
-            });
-            
-            let starMap = {}; rankableFarms.forEach((f, index) => { starMap[f] = (index < 5) ? (5 - index) : 0; });
-
-            farms.forEach(f => {
-                const data = globalPortfolioData[f]; 
-                const showcaseDiv = document.getElementById(`showcase-${f}`);
-                const clusterDiv = document.getElementById(`cluster-${f}`);
-                const tierDiv = document.getElementById(`tier-${f}`);
-                const starsSpan = document.getElementById(`stars-${f}`); 
-                const plotIconSpan = document.getElementById(`plot-icon-${f}`);
-                if (!clusterDiv || !tierDiv || !showcaseDiv) return;
-                
-                let activeEmoji = '🌱';
-                
-                if (data.balance <= 0) {
-                    activeEmoji = '🪨';
-                    let stateKey = 'empty';
-                    if (clusterDiv.getAttribute('data-state') !== stateKey) {
-                        clusterDiv.innerHTML = `<div class="terrain-base" style="color:var(--text-muted)">รกร้างว่างเปล่า</div><div class="tree-extra" style="filter: grayscale(1) opacity(0.5); animation: none; font-size: 32px; left: 50%; transform: translate3d(-50%,0,0);">🪨</div>`;
-                        clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = 'แปลงรกร้าง'; tierDiv.style.cssText = 'color:var(--text-muted); border-color:rgba(255,255,255,0.1); background:rgba(255,255,255,0.05)';
-                        showcaseDiv.classList.remove('danger-zone');
-                    }
-                } else if (data.open_positions === 0) {
-                    activeEmoji = '🏕️';
-                    let stateKey = 'idle-camp-pro';
-                    if (clusterDiv.getAttribute('data-state') !== stateKey) {
-                        clusterDiv.innerHTML = `
-                            <div class="terrain-base" style="color:var(--accent-gold); text-shadow:0 0 8px rgba(251,191,36,0.5); letter-spacing: 4px; opacity: 0.85;">✨ ⛺ ✨</div>
-                            <div class="tree-extra" style="left: 30%; bottom: 2px; font-size: 38px; z-index: 12; animation: fireFlicker 1.5s ease-in-out infinite;">🔥</div>
-                            <div class="tree-extra" style="left: 48%; bottom: -4px; font-size: 64px; z-index: 10; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6));">🏕️</div>
-                        `;
-                        clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = '🏕️ โหมดแคมป์ปิ้งพักแปลง (Standby)';
-                        tierDiv.style.cssText = 'color: var(--accent-gold); border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15); font-weight: 600; box-shadow: 0 0 12px rgba(251, 191, 36, 0.25); letter-spacing: 0.5px;';
-                        showcaseDiv.classList.remove('danger-zone');
-                    }
-                } else {
-                    let level = Math.ceil(data.balance / (maxBal / 12));
-                    level = Math.max(1, Math.min(12, level));
-                    
-                    const names = [
-                        'ต้นอ่อนเพิ่งงอก / มีใบแรกเกิด', 'ต้นอ่อนเพิ่งงอกซ้อนกัน 2 ต้น', 'แตกกิ่งก้านและใบพุ่มเล็ก', 'แตกกิ่งก้านและใบพุ่มคู่', 
-                        'พุ่มใบหนาแน่นแตกกอสมบูรณ์', 'พุ่มใบหนาแน่นแตกกอคู่', 'ต้นปาล์ม / ต้นไม้ลำต้นเดี่ยวสูงสง่า', 'ต้นปาล์มคู่สูงสง่า', 
-                        'ไม้ใหญ่ทรงสูง / ลำต้นหนาแน่นแข็งแกร่ง', 'ไม้ใหญ่ทรงสูงคู่หนาแน่น', 'มหาพฤกษาใหญ่โตเต็มวัย', 'มหาพฤกษาคู่บารมีสมบูรณ์สูงสุด'
-                    ];
-                    const emojis = ['🌱', '🌱🌱', '🌿', '🌿🌿', '☘️', '☘️☘️', '🌴', '🌴🌴', '🌲', '🌲🌲', '🌳', '🌳🌳'];
-                    activeEmoji = emojis[level - 1]; let treeEmoji = activeEmoji; 
-                    
-                    let farmSharePercent = totalPortfolioOrders > 0 ? (data.open_positions / totalPortfolioOrders) : 0;
-                    let totalTreesCount = Math.max(1, Math.min(10, Math.round(farmSharePercent * 10)));
-                    let totalOrders = data.profit_orders + data.loss_orders;
-                    
-                    let healthyCount = totalTreesCount; let witheredCount = 0;
-                    if (totalOrders > 0) {
-                        healthyCount = Math.max(1, Math.round(totalTreesCount * (data.profit_orders / totalOrders)));
-                        witheredCount = totalTreesCount - healthyCount;
-                    }
-                    
-                    let isWorking = data.open_positions > 0;
-                    let isProfiting = data.profit > 0;
-                    
-                    let terrainEmoji = '';
-                    let terrainType = '';
-                    
-                    if (data.profit > 0) {
-                        terrainType = 'glow';
-                        terrainEmoji = '✨ 🌿 💎 🌿 ✨';
-                        showcaseDiv.classList.remove('danger-zone');
-                    } else {
-                        let absLoss = Math.abs(data.profit);
-                        let terrainLevel = data.profit === 0 ? 3 : Math.ceil(absLoss / stepPL);
-                        terrainLevel = Math.max(1, Math.min(5, terrainLevel));
-                        
-                        terrainType = 'lv' + terrainLevel;
-
-                        if (terrainLevel === 1) {
-                            terrainEmoji = '⚪ 🪨 ⚪';
-                            showcaseDiv.classList.remove('danger-zone');
-                        } else if (terrainLevel === 2) {
-                            terrainEmoji = '🪨 🌾 🪨 🌾 🪨';
-                            showcaseDiv.classList.remove('danger-zone');
-                        } else if (terrainLevel === 3) {
-                            terrainEmoji = '🌱 🌾 🌱 🌾 🌱';
-                            showcaseDiv.classList.remove('danger-zone');
-                        } else if (terrainLevel === 4) {
-                            terrainEmoji = '🪵 🌾 🪵 🌾 🪵';
-                            showcaseDiv.classList.remove('danger-zone');
-                        } else if (terrainLevel === 5) {
-                            terrainEmoji = '🪵 🔥 🪵 🔥 🪵';
-                            showcaseDiv.classList.add('danger-zone');
-                        }
-                    }
-
-                    let stateKey = `${level}-${healthyCount}-${witheredCount}-${isProfiting}-${isWorking}-${isNightTime}-${terrainType}`;
-                    
-                    if (clusterDiv.getAttribute('data-state') !== stateKey) {
-                        const forestCoords = [
-                            {x: 44, y: -2, size: 44, z: 6}, {x: 28, y: -6, size: 38, z: 5}, {x: 62, y: -4, size: 40, z: 5}, {x: 15, y: -10, size: 34, z: 4}, 
-                            {x: 75, y: -8, size: 36, z: 4}, {x: 36, y: -14, size: 30, z: 3}, {x: 54, y: -12, size: 32, z: 3}, {x: 22, y: -18, size: 26, z: 2}, 
-                            {x: 69, y: -16, size: 28, z: 2}, {x: 46, y: -20, size: 24, z: 1}  
-                        ];
-
-                        let clusterHTML = `<div class="terrain-base ${terrainType === 'glow' ? 'terrain-glow' : (terrainType === 'lv5' ? 'lv5-crit' : '')}">${terrainEmoji}</div>`;
-
-                        for(let i = 0; i < healthyCount; i++) {
-                            let pos = forestCoords[i % forestCoords.length];
-                            let extraClass = isProfiting ? 'glow-profit' : '';
-                            clusterHTML += `<div class="tree-extra ${extraClass}" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 10}; animation-delay: ${i * 0.1}s;">${treeEmoji}</div>`;
-                        }
-                        for(let i = 0; i < witheredCount; i++) {
-                            let pos = forestCoords[(healthyCount + i) % forestCoords.length];
-                            clusterHTML += `<div class="tree-extra withered" style="left: ${pos.x}%; bottom: ${pos.y}px; font-size: ${pos.size}px; z-index: ${pos.z + 5};">${treeEmoji}</div>`;
-                        }
-
-                        if (isWorking) {
-                            let numMist = Math.min(3, data.open_positions); 
-                            for(let c = 0; c < numMist; c++) {
-                                let left = 20 + (Math.random() * 60); let delay = Math.random() * 2; 
-                                if (isNightTime) {
-                                    clusterHTML += `<div class="firefly-particle" style="left: ${left}%; bottom: 15px; animation-delay: ${delay}s;"></div>`;
-                                } else {
-                                    clusterHTML += `<div class="mist-particle" style="left: ${left}%; bottom: 20px; animation-delay: ${delay}s;">☁️</div>`;
-                                }
-                            }
-                        }
-
-                        clusterDiv.innerHTML = clusterHTML;
-                        clusterDiv.setAttribute('data-state', stateKey);
-                        tierDiv.innerHTML = `Level ${level} : ${names[level - 1]}`; tierDiv.removeAttribute('style'); 
-                    }
-                }
-
-                if (plotIconSpan) plotIconSpan.innerText = activeEmoji;
-                if (starsSpan) starsSpan.innerText = '★'.repeat(starMap[f] || 0);
-            });
-
-            applySortOrder();
-        }
-
-        function filterForestCards() {
-            const query = document.getElementById('farmSearchInput').value.toLowerCase().trim();
-            Array.from(document.getElementsByClassName('tree-card')).forEach(c => {
-                const login = c.getAttribute('data-login').toLowerCase();
-                c.style.display = login.includes(query) ? 'flex' : 'none';
-            });
         }
 
         function updatePortfolioSummary() {
-            let tb = 0, te = 0, tp = 0, tTrees = 0, tToday = 0, tWeek = 0, tMonth = 0;
+            let totalUsdBalance = 0, totalUsdEquity = 0, totalUsdProfit = 0, tTrees = 0;
+            let totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0;
             let syncedCount = 0;
             
             const allFarms = getFarmsList();
-            const totalFarmsCount = allFarms.length;
-
             allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
-                if (d && !d.error) { 
-                    syncedCount++; 
-                    if (d.balance > 0) { 
-                        tb += d.balance; te += d.equity; tp += d.profit; tTrees += d.open_positions; 
-                        tToday += d.profit_today || 0; tWeek += d.profit_week || 0; tMonth += d.profit_month || 0;
-                    }
+                if (d && !d.error && d.balance > 0) { 
+                    syncedCount++;
+                    // ทำการแปลงสกุลเงินทุกสกุล (เช่น USC, GBP, THB ฯลฯ) ให้เป็น USD ก่อนนำมาบวกรวมกัน
+                    totalUsdBalance += convertToUSD(d.balance, d.currency);
+                    totalUsdEquity += convertToUSD(d.equity, d.currency);
+                    totalUsdProfit += convertToUSD(d.profit, d.currency);
+                    tTrees += d.open_positions; 
+                    totalUsdToday += convertToUSD(d.profit_today || 0, d.currency);
+                    totalUsdWeek += convertToUSD(d.profit_week || 0, d.currency);
+                    totalUsdMonth += convertToUSD(d.profit_month || 0, d.currency);
                 }
             });
 
-            // หมายเหตุ: สรุปรวมด้านบนยังคงใช้สกุลเงิน $ เป็นตัวแทนของยอดรวมทั้งหมดอยู่ เพื่อไม่ให้เกิดปัญหาสกุลเงินผสมกัน
-            document.getElementById('sum-balance').innerText = `$${tb.toFixed(2)}`; 
-            document.getElementById('sum-equity').innerText = `$${te.toFixed(2)}`;
-            const plElem = document.getElementById('sum-pl'); 
-            plElem.className = 'stat-value ' + getColorClass(tp); 
-            plElem.innerText = formatMoney(tp);
+            document.getElementById('sum-balance').innerText = `$${totalUsdBalance.toFixed(2)}`; 
+            document.getElementById('sum-equity').innerText = `$${totalUsdEquity.toFixed(2)}`;
             
-            const totalPercent = (tb > 0) ? (tp / tb) * 100 : 0;
+            const plElem = document.getElementById('sum-pl'); 
+            plElem.className = 'stat-value ' + getColorClass(totalUsdProfit); 
+            plElem.innerText = formatMoney(totalUsdProfit);
+            
+            const totalPercent = (totalUsdBalance > 0) ? (totalUsdProfit / totalUsdBalance) * 100 : 0;
             const percentElem = document.getElementById('sum-percent'); 
             percentElem.className = 'stat-value ' + getColorClass(totalPercent); 
             percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            document.getElementById('sum-farms').innerText = `${syncedCount}/${totalFarmsCount} แปลง`; 
+            document.getElementById('sum-farms').innerText = `${syncedCount}/${allFarms.length} แปลง`; 
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
             const updateSum = (id, val) => { 
@@ -948,11 +643,12 @@
                 el.innerText = formatMoney(val); 
                 el.className = 'history-value ' + getColorClass(val); 
             };
-            updateSum('sum-today', tToday); updateSum('sum-week', tWeek); updateSum('sum-month', tMonth);
+            updateSum('sum-today', totalUsdToday); 
+            updateSum('sum-week', totalUsdWeek); 
+            updateSum('sum-month', totalUsdMonth);
 
             updateGlobalWeather(totalPercent);
         }
-
     </script>
 </body>
 </html>
