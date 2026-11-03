@@ -26,7 +26,6 @@
         }
 
         * { box-sizing: border-box; }
-
         html { scroll-behavior: smooth; }
 
         body {
@@ -68,34 +67,6 @@
         .weather-particle { position: fixed; top: -40px; user-select: none; pointer-events: none; z-index: 1; opacity: 0.7; }
         @keyframes fallParticle { 0% { transform: translate3d(0,0,0) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translate3d(0, 105vh, 0) rotate(360deg); opacity: 0; } }
         @keyframes fallRain { 0% { transform: translate3d(0,0,0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translate3d(0, 105vh, 0); opacity: 0; } }
-
-        @keyframes mistFloat {
-            0% { transform: translate3d(0,0,0) scale(0.8); opacity: 0; }
-            30% { opacity: 0.5; transform: translate3d(0, -15px, 0) scale(1.1); }
-            70% { opacity: 0.2; transform: translate3d(0, -35px, 0) scale(1.2); }
-            100% { transform: translate3d(0, -50px, 0) scale(1.4); opacity: 0; }
-        }
-        .mist-particle { position: absolute; z-index: 15; pointer-events: none; animation: mistFloat 4s ease-in-out infinite; color: rgba(255, 255, 255, 0.4); font-size: 24px; }
-
-        @keyframes fireflyMove {
-            0% { transform: translate3d(0, 0, 0) scale(0.8); opacity: 0; }
-            20% { opacity: 1; }
-            50% { transform: translate3d(15px, -20px, 0) scale(1.2); }
-            100% { transform: translate3d(-10px, -40px, 0) scale(0.5); opacity: 0; }
-        }
-        .firefly-particle { position: absolute; z-index: 20; pointer-events: none; width: 4px; height: 4px; background: #d9f99d; border-radius: 50%; animation: fireflyMove 3.5s ease-in-out infinite alternate; }
-
-        @keyframes fireFlicker {
-            0%, 100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.6)); }
-            50% { transform: scale(1.15) translateY(-3px) rotate(2deg); filter: drop-shadow(0 0 22px rgba(249, 115, 22, 1)); }
-        }
-
-        .glow-profit { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.85)); }
-        @keyframes glowTerrainPulse {
-            0%, 100% { text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); transform: scale(1); }
-            50% { text-shadow: 0 0 12px rgba(251, 191, 36, 0.8); transform: scale(1.02); }
-        }
-        .terrain-glow { animation: glowTerrainPulse 3s ease-in-out infinite; }
 
         .container { max-width: 1440px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.5s var(--ease-out-smooth) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
@@ -282,22 +253,17 @@
         let isNightTime = false; 
         window.weatherParticles = ['✨', '🍃', '🌟']; 
 
-        // ฟังก์ชันแปลงสกุลเงินทุกสกุลให้เป็น USD ก่อนนำไปคำนวณรวม (รองรับ USC, GBP, THB และอื่นๆ)
+        // ฟังก์ชันแปลงสกุลเงินทุกสกุลให้เป็น USD สำหรับการรวมภาพรวม
         function convertToUSD(amount, currency) {
             const curr = (currency || 'USD').toUpperCase();
             if (curr === 'USC' || curr === 'CENT') {
-                return Number(amount) / 100; // แปลง Cent/USC เป็น USD
+                return Number(amount) / 100;
             }
             const rates = {
-                'USD': 1.0,
-                'USDT': 1.0,
-                'EUR': 1.08,
-                'GBP': 1.27,
-                'JPY': 0.0067,
-                'THB': 0.029,
-                'AUD': 0.65,
-                'CAD': 0.73,
-                'SGD': 0.75
+                'USD': 1.0, 'USDT': 1.0,
+                'EUR': 1.08, 'GBP': 1.27,
+                'JPY': 0.0067, 'THB': 0.029,
+                'AUD': 0.65, 'CAD': 0.73, 'SGD': 0.75
             };
             const rate = rates[curr] || 1.0;
             return Number(amount) * rate;
@@ -321,13 +287,8 @@
             renderForest(); 
             await syncAndRefreshAll(); 
 
-            setInterval(() => {
-                syncAndRefreshAll();
-            }, 60000);
-
-            setInterval(() => {
-                fetchRealWorldWeather();
-            }, 900000);
+            setInterval(() => { syncAndRefreshAll(); }, 60000);
+            setInterval(() => { fetchRealWorldWeather(); }, 900000);
         };
 
         function fetchRealWorldWeather() {
@@ -339,12 +300,9 @@
                         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
                         const data = await res.json();
                         if (data && data.current) {
-                            const temp = data.current.temperature_2m;
-                            const humidity = data.current.relative_humidity_2m;
-                            isNightTime = data.current.is_day === 0;
-
                             document.getElementById('weather-location-badge').innerHTML = `📍 พิกัดปัจจุบัน`;
-                            document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${temp}°C | 💧 ความชื้น ${humidity}%`;
+                            document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
+                            isNightTime = data.current.is_day === 0;
                         }
                     } catch(e) { fallbackDefaultWeather(); }
                 }, () => { fetchWeatherByCoords(13.7563, 100.5018); });
@@ -441,7 +399,8 @@
             return farms.sort((a, b) => {
                 const dataA = globalPortfolioData[a] || { balance: 0, percent: 0 };
                 const dataB = globalPortfolioData[b] || { balance: 0, percent: 0 };
-                const balA = dataA.balance || 0; const balB = dataB.balance || 0;
+                const balA = convertToUSD(dataA.balance, dataA.currency) || 0; 
+                const balB = convertToUSD(dataB.balance, dataB.currency) || 0;
                 if (balA === 0 && balB !== 0) return 1;
                 if (balB === 0 && balA !== 0) return -1;
                 if (currentSortMode === 'login') return a.localeCompare(b);
@@ -593,6 +552,49 @@
                 div.innerText = formatMoney(val, '', ' ' + data.currency); 
                 div.className = `c-hist-val ${getColorClass(val)}`;
             });
+
+            // คืนชีพการวาดต้นไม้และสถานะแปลงตามมูลค่า USD ของพอร์ต
+            const usdBalance = convertToUSD(data.balance, data.currency);
+            const showcase = document.getElementById(`showcase-${login}`);
+            const cluster = document.getElementById(`cluster-${login}`);
+            const tier = document.getElementById(`tier-${login}`);
+            const plotIcon = document.getElementById(`plot-icon-${login}`);
+            const wpill = document.getElementById(`wpill-${login}`);
+            const stars = document.getElementById(`stars-${login}`);
+
+            let treeHtml = ''; let tierText = ''; let plotEmoji = '🌱'; let weatherText = 'อากาศดี'; let starCount = '';
+
+            if (data.profit < 0) {
+                showcase.classList.add('danger-zone');
+                cluster.setAttribute('data-state', 'danger');
+                treeHtml = `<div class="tree-extra withered" style="font-size:38px; bottom:20px;">🥀</div>`;
+                tierText = '⚠️ พื้นที่เฝ้าระวังพิเศษ'; plotEmoji = '🌵'; weatherText = 'พายุฝนฟ้าคะนอง ⛈️';
+            } else {
+                showcase.classList.remove('danger-zone');
+                if (usdBalance >= 10000) {
+                    cluster.setAttribute('data-state', 'legendary');
+                    treeHtml = `<div class="tree-extra" style="font-size:52px; bottom:12px; filter:drop-shadow(0 0 14px rgba(251,191,36,0.9));">🌲</div><div class="tree-extra" style="font-size:36px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:36px; bottom:8px; right:18px;">🌴</div>`;
+                    tierText = '🌟 ป่าดงดิบมหาเศรษฐี (Legendary)'; plotEmoji = '🌲'; weatherText = 'ทองคำเปล่งประกาย ✨'; starCount = '⭐⭐⭐⭐⭐';
+                } else if (usdBalance >= 5000) {
+                    cluster.setAttribute('data-state', 'epic');
+                    treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:32px; bottom:8px; right:22px;">🌳</div>`;
+                    tierText = '💎 ป่าสนอุดมสมบูรณ์ (Epic)'; plotEmoji = '🌳'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
+                } else if (usdBalance >= 1000) {
+                    cluster.setAttribute('data-state', 'rare');
+                    treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div>`;
+                    tierText = '🌿 สวนป่าเติบโต (Rare)'; plotEmoji = '🌿'; weatherText = 'ลมโชยอ่อนๆ 🍃'; starCount = '⭐⭐⭐';
+                } else {
+                    cluster.setAttribute('data-state', 'seedling');
+                    treeHtml = `<div class="tree-extra" style="font-size:32px; bottom:14px;">🌱</div>`;
+                    tierText = '🌱 แปลงเพาะกล้า (Seedling)'; plotEmoji = '🌱'; weatherText = 'รดน้ำพรวนดิน 💧'; starCount = '⭐';
+                }
+            }
+
+            cluster.innerHTML = treeHtml + `<div class="terrain-base terrain-glow">⛰️ ⛰️ 🌾 ⛰️ ⛰️</div>`;
+            tier.innerText = tierText;
+            plotIcon.innerText = plotEmoji;
+            wpill.innerHTML = `<span>${weatherText}</span>`;
+            stars.innerText = starCount;
             
             if (data.lastUpdated) {
                 const date = new Date(data.lastUpdated);
@@ -612,7 +614,7 @@
                 const d = globalPortfolioData[login]; 
                 if (d && !d.error && d.balance > 0) { 
                     syncedCount++;
-                    // ทำการแปลงสกุลเงินทุกสกุล (เช่น USC, GBP, THB ฯลฯ) ให้เป็น USD ก่อนนำมาบวกรวมกัน
+                    // แปลงสกุลเงินทุกพอร์ตเป็น USD ก่อนนำมาบวกรวมกันในภาพรวม
                     totalUsdBalance += convertToUSD(d.balance, d.currency);
                     totalUsdEquity += convertToUSD(d.equity, d.currency);
                     totalUsdProfit += convertToUSD(d.profit, d.currency);
