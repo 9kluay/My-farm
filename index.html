@@ -253,7 +253,7 @@
         let isNightTime = false; 
         window.weatherParticles = ['✨', '🍃', '🌟']; 
 
-        // ฟังก์ชันแปลงสกุลเงินทุกสกุลให้เป็น USD สำหรับการรวมภาพรวม
+        // ฟังก์ชันแปลงสกุลเงินทุกสกุลให้เป็น USD สำหรับภาพรวม
         function convertToUSD(amount, currency) {
             const curr = (currency || 'USD').toUpperCase();
             if (curr === 'USC' || curr === 'CENT') {
@@ -494,6 +494,28 @@
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
         }
 
+        // ฟังก์ชันจัดการบันทึก/อัปเดตสถิติ DD แยกตามแนวคิด (ถ้าพอร์ตติดลบมากขึ้นค่อยเก็บทับ, ถ้า Balance เป็น 0 ให้ล้างออก)
+        function checkAndStoreDrawdownLog(login, balance, profit, percent, currency) {
+            let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
+            
+            if (balance === 0) {
+                delete ddLogs[login]; // ถ้าบาลานซ์เป็น 0 ล้างประวัติออก
+            } else if (profit < 0) {
+                // เช็คว่าเคยมีประวัติไหม หรือค่า P/L แย่ลงกว่าเดิม (ติดลบมากกว่าเดิม)
+                if (!ddLogs[login] || profit < ddLogs[login].max_dd_amount) {
+                    ddLogs[login] = {
+                        login: login,
+                        currency: currency,
+                        balance: balance,
+                        max_dd_amount: profit,
+                        max_dd_percent: percent,
+                        timestamp: new Date().toISOString()
+                    };
+                }
+            }
+            localStorage.setItem('my_farm_dd_logs', JSON.stringify(ddLogs));
+        }
+
         async function fetchNodeData(login) {
             try {
                 const response = await fetch(`${SCRIPT_URL}?login=${login}`); 
@@ -504,9 +526,11 @@
                     const latest = data.at(-1); 
                     const balance = parseFloat(latest.balance); 
                     const profitLoss = parseFloat(latest.floating_pl);
+                    const percentVal = (balance > 0) ? (profitLoss / balance) * 100 : 0;
+
                     globalPortfolioData[login] = { 
                         balance: balance, equity: parseFloat(latest.equity), profit: profitLoss,
-                        percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, 
+                        percent: percentVal, 
                         open_positions: parseInt(latest.open_positions || 0), 
                         profit_orders: parseInt(latest.profit_orders || 0), 
                         loss_orders: parseInt(latest.loss_orders || 0),
@@ -517,6 +541,9 @@
                         open_pairs: latest.open_pairs || '-',
                         lastUpdated: latest.lastUpdated, error: false 
                     };
+
+                    // เรียกใช้ฟังก์ชันบันทึกสถิติ DD แยกเฉพาะตอนติดลบมากขึ้น
+                    checkAndStoreDrawdownLog(login, balance, profitLoss, percentVal, latest.currency || 'USD');
                 }
                 updatePortfolioSummary(); updateUICard(login);
             } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); }
@@ -553,7 +580,6 @@
                 div.className = `c-hist-val ${getColorClass(val)}`;
             });
 
-            // คืนชีพการวาดต้นไม้และสถานะแปลงตามมูลค่า USD ของพอร์ต
             const usdBalance = convertToUSD(data.balance, data.currency);
             const showcase = document.getElementById(`showcase-${login}`);
             const cluster = document.getElementById(`cluster-${login}`);
@@ -614,7 +640,6 @@
                 const d = globalPortfolioData[login]; 
                 if (d && !d.error && d.balance > 0) { 
                     syncedCount++;
-                    // แปลงสกุลเงินทุกพอร์ตเป็น USD ก่อนนำมาบวกรวมกันในภาพรวม
                     totalUsdBalance += convertToUSD(d.balance, d.currency);
                     totalUsdEquity += convertToUSD(d.equity, d.currency);
                     totalUsdProfit += convertToUSD(d.profit, d.currency);
