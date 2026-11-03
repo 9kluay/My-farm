@@ -435,7 +435,9 @@
                 
                 let ddText = 'ยังไม่มีสถิติ DD ติดลบ';
                 if (portDD) {
-                    ddText = `${portDD.max_dd_amount.toFixed(2)} ${portDD.currency} (${portDD.max_dd_percent.toFixed(2)}%)`;
+                    const absAmount = Math.abs(portDD.max_dd_amount).toFixed(2);
+                    const absPercent = Math.abs(portDD.max_dd_percent).toFixed(2);
+                    ddText = `-${absAmount} ${portDD.currency} (-${absPercent}%)`;
                 }
 
                 analyticsDetails.innerHTML = `
@@ -515,7 +517,6 @@
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
         }
 
-        // ฟังก์ชันเก็บและอัปเดต DD แยกชีท (เก็บทับเฉพาะเมื่อติดลบแย่ลงกว่าเดิม และลบออกเมื่อบาลานซ์เป็น 0)
         function checkAndStoreDrawdownLog(login, balance, profit, percent, currency) {
             let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
             
@@ -592,12 +593,14 @@
             plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(data.percent)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
-            // ดึงค่า DD ที่บันทึกไว้มาแสดงผลบนการ์ด
+            // แสดงผล Max Drawdown ด้วยเครื่องหมายลบเดี่ยว
             let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
             let portDD = ddLogs[login];
             const ddElem = document.getElementById(`dd-${login}`);
             if (portDD) {
-                ddElem.innerText = `${portDD.max_dd_amount.toFixed(2)} ${portDD.currency} (-${portDD.max_dd_percent.toFixed(2)}%)`;
+                const absAmount = Math.abs(portDD.max_dd_amount).toFixed(2);
+                const absPercent = Math.abs(portDD.max_dd_percent).toFixed(2);
+                ddElem.innerText = `-${absAmount} ${portDD.currency} (-${absPercent}%)`;
             } else {
                 ddElem.innerText = `0.00 ${data.currency} (0.00%)`;
             }
