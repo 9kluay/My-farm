@@ -253,7 +253,6 @@
         let isNightTime = false; 
         window.weatherParticles = ['✨', '🍃', '🌟']; 
 
-        // ฟังก์ชันแปลงสกุลเงินทุกสกุลให้เป็น USD สำหรับภาพรวม
         function convertToUSD(amount, currency) {
             const curr = (currency || 'USD').toUpperCase();
             if (curr === 'USC' || curr === 'CENT') {
@@ -426,13 +425,23 @@
             if (innerDelete) innerDelete.remove();
 
             const d = globalPortfolioData[login];
+            const ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
+            const portDD = ddLogs[login];
+
             const analyticsDetails = document.getElementById('popup-analytics-details');
             if (d && !d.error) {
                 const winOrders = d.profit_orders || 0; const lossOrders = d.loss_orders || 0; const totalOrders = winOrders + lossOrders;
                 const winRate = totalOrders > 0 ? ((winOrders / totalOrders) * 100).toFixed(1) : '0.0';
+                
+                let ddText = 'ยังไม่มีสถิติ DD ติดลบ';
+                if (portDD) {
+                    ddText = `${portDD.max_dd_amount.toFixed(2)} ${portDD.currency} (${portDD.max_dd_percent.toFixed(2)}%)`;
+                }
+
                 analyticsDetails.innerHTML = `
                     <div>• Win Rate: <b style="color:var(--accent-emerald);">${winRate}%</b></div>
                     <div>• สกุลเงินพอร์ต: <b>${d.currency}</b> (แปลงเป็น USD: $${convertToUSD(d.balance, d.currency).toFixed(2)})</div>
+                    <div>• Max Drawdown บันทึกสูงสุด: <b style="color:var(--accent-rose);">${ddText}</b></div>
                     <div>• ออเดอร์กำลังทำงาน: <b>${d.open_positions || 0} ไม้</b></div>`;
             }
             document.getElementById('popup-overlay').classList.add('show');
@@ -445,14 +454,22 @@
             if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
-            saveFarmsList(farms); delete globalPortfolioData[login]; updatePortfolioSummary(); renderForest(); closePopup();
+            saveFarmsList(farms); delete globalPortfolioData[login]; 
+            
+            let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
+            delete ddLogs[login];
+            localStorage.setItem('my_farm_dd_logs', JSON.stringify(ddLogs));
+
+            updatePortfolioSummary(); renderForest(); closePopup();
         };
 
         window.deleteAllFarms = async function() {
             const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์มทั้งหมด:`);
             if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
-            localStorage.setItem('my_forest_farms', '[]'); globalPortfolioData = {}; 
+            localStorage.setItem('my_forest_farms', '[]'); 
+            localStorage.removeItem('my_farm_dd_logs');
+            globalPortfolioData = {}; 
             updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลเรียบร้อยแล้ว');
         };
 
@@ -482,6 +499,10 @@
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
                         <div class="metric-item metric-item-wide"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
+                        <div class="metric-item metric-item-wide" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
+                            <div class="metric-label" style="color: var(--accent-rose);">MAX DRAWDOWN (DD / %DD)</div>
+                            <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 13px;">0.00 (0.00%)</div>
+                        </div>
                     </div>
                     <div class="card-history">
                         <div class="c-hist-item"><div class="c-hist-label">วันนี้</div><div class="c-hist-val" id="today-${login}">0.00</div></div>
@@ -494,14 +515,13 @@
             farms.forEach(login => { if (globalPortfolioData[login]) updateUICard(login); });
         }
 
-        // ฟังก์ชันจัดการบันทึก/อัปเดตสถิติ DD แยกตามแนวคิด (ถ้าพอร์ตติดลบมากขึ้นค่อยเก็บทับ, ถ้า Balance เป็น 0 ให้ล้างออก)
+        // ฟังก์ชันเก็บและอัปเดต DD แยกชีท (เก็บทับเฉพาะเมื่อติดลบแย่ลงกว่าเดิม และลบออกเมื่อบาลานซ์เป็น 0)
         function checkAndStoreDrawdownLog(login, balance, profit, percent, currency) {
             let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
             
             if (balance === 0) {
-                delete ddLogs[login]; // ถ้าบาลานซ์เป็น 0 ล้างประวัติออก
+                delete ddLogs[login];
             } else if (profit < 0) {
-                // เช็คว่าเคยมีประวัติไหม หรือค่า P/L แย่ลงกว่าเดิม (ติดลบมากกว่าเดิม)
                 if (!ddLogs[login] || profit < ddLogs[login].max_dd_amount) {
                     ddLogs[login] = {
                         login: login,
@@ -526,11 +546,11 @@
                     const latest = data.at(-1); 
                     const balance = parseFloat(latest.balance); 
                     const profitLoss = parseFloat(latest.floating_pl);
-                    const percentVal = (balance > 0) ? (profitLoss / balance) * 100 : 0;
+                    const percentVal = (balance > 0) ? (Math.abs(profitLoss) / balance) * 100 : 0;
 
                     globalPortfolioData[login] = { 
                         balance: balance, equity: parseFloat(latest.equity), profit: profitLoss,
-                        percent: percentVal, 
+                        percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, 
                         open_positions: parseInt(latest.open_positions || 0), 
                         profit_orders: parseInt(latest.profit_orders || 0), 
                         loss_orders: parseInt(latest.loss_orders || 0),
@@ -542,7 +562,6 @@
                         lastUpdated: latest.lastUpdated, error: false 
                     };
 
-                    // เรียกใช้ฟังก์ชันบันทึกสถิติ DD แยกเฉพาะตอนติดลบมากขึ้น
                     checkAndStoreDrawdownLog(login, balance, profitLoss, percentVal, latest.currency || 'USD');
                 }
                 updatePortfolioSummary(); updateUICard(login);
@@ -573,6 +592,16 @@
             plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(data.percent)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
+            // ดึงค่า DD ที่บันทึกไว้มาแสดงผลบนการ์ด
+            let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
+            let portDD = ddLogs[login];
+            const ddElem = document.getElementById(`dd-${login}`);
+            if (portDD) {
+                ddElem.innerText = `${portDD.max_dd_amount.toFixed(2)} ${portDD.currency} (-${portDD.max_dd_percent.toFixed(2)}%)`;
+            } else {
+                ddElem.innerText = `0.00 ${data.currency} (0.00%)`;
+            }
+
             ['today', 'week', 'month'].forEach(t => {
                 const val = data[`profit_${t}`]; 
                 const div = document.getElementById(`${t}-${login}`);
