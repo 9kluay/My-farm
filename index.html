@@ -292,6 +292,7 @@
 
         function fetchRealWorldWeather() {
             if (navigator.geolocation) {
+                // บังคับดึงข้อมูล GPS ล่าสุดที่แม่นยำที่สุด โดยไม่ใช้ Cache
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
@@ -304,7 +305,8 @@
                             isNightTime = data.current.is_day === 0;
                         }
                     } catch(e) { fallbackDefaultWeather(); }
-                }, () => { fetchWeatherByCoords(13.7563, 100.5018); });
+                }, () => { fetchWeatherByCoords(13.7563, 100.5018); }, 
+                { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
             } else { fetchWeatherByCoords(13.7563, 100.5018); }
         }
 
@@ -501,6 +503,8 @@
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
                         <div class="metric-item metric-item-wide"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
+                        
+                        <!-- ย้ายบล็อค DD มาต่อหลังคู่เงินทันที -->
                         <div class="metric-item metric-item-wide" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
                             <div class="metric-label" style="color: var(--accent-rose);">MAX DRAWDOWN (DD / %DD)</div>
                             <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 13px;">0.00 (0.00%)</div>
@@ -593,7 +597,7 @@
             plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(data.percent)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
-            // แสดงผล Max Drawdown ด้วยเครื่องหมายลบเดี่ยว
+            // อัปเดตการแสดงผล Max Drawdown ลบตัวเดียวต่อหน้า
             let ddLogs = JSON.parse(localStorage.getItem('my_farm_dd_logs') || '{}');
             let portDD = ddLogs[login];
             const ddElem = document.getElementById(`dd-${login}`);
