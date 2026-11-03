@@ -146,9 +146,10 @@
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
+        .metric-item-compact { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
         .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .metric-val { font-size: 14px; font-weight: 600; color: var(--text-main); }
-        .metric-val-pairs { font-size: 13px; font-weight: 500; color: #93c5fd; word-break: break-all; }
+        .metric-val-pairs { font-size: 11px; font-weight: 500; color: #93c5fd; word-break: break-all; line-height: 1.3; }
 
         .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-bottom: 12px; gap: 4px; border: 1px solid rgba(255,255,255,0.03); }
         .c-hist-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
@@ -173,7 +174,7 @@
     <div class="container">
         <div class="top-nav">
             <div class="nav-badges">
-                <div class="badge" id="weather-location-badge">📍 กำลังโหลดพิกัด...</div>
+                <div class="badge" id="weather-location-badge">📍 กำลังดึงพิกัดเบราว์เซอร์...</div>
                 <div class="badge" id="weather-temp-badge">🌡️ --°C | 💧 --%</div>
                 <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
                 <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
@@ -272,6 +273,7 @@
         };
 
         function fetchRealWorldWeather() {
+            // ดึงพิกัดโดยตรงจาก Browser Geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     const lat = position.coords.latitude;
@@ -280,26 +282,17 @@
                         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
                         const data = await res.json();
                         if (data && data.current) {
-                            document.getElementById('weather-location-badge').innerHTML = `📍 พิกัดปัจจุบัน`;
+                            document.getElementById('weather-location-badge').innerHTML = `📍 พิกัดเบราว์เซอร์ (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
                             document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
                             isNightTime = data.current.is_day === 0;
                         }
                     } catch(e) { fallbackDefaultWeather(); }
-                }, () => { fetchWeatherByCoords(13.7563, 100.5018); }, 
-                { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
-            } else { fetchWeatherByCoords(13.7563, 100.5018); }
-        }
-
-        async function fetchWeatherByCoords(lat, lon) {
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day`);
-                const data = await res.json();
-                if (data && data.current) {
-                    document.getElementById('weather-location-badge').innerHTML = `📍 ประเทศไทย`;
-                    document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
-                    isNightTime = data.current.is_day === 0;
-                }
-            } catch(e) { fallbackDefaultWeather(); }
+                }, (error) => {
+                    fallbackDefaultWeather();
+                }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+            } else {
+                fallbackDefaultWeather();
+            }
         }
 
         function fallbackDefaultWeather() {
@@ -448,11 +441,11 @@
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
                         
-                        <!-- ACTIVE PAIRS และ MAX DRAWDOWN ต่อกันในรูปแบบ 2 คอลัมน์ -->
-                        <div class="metric-item"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
-                        <div class="metric-item" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
+                        <!-- ย่อขนาดความสูงและตัวอักษรของ ACTIVE PAIRS & MAX DRAWDOWN ให้เท่ากับช่องกำไรวันนี้ -->
+                        <div class="metric-item-compact"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
+                        <div class="metric-item-compact" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
                             <div class="metric-label" style="color: var(--accent-rose);">MAX DRAWDOWN (DD / %DD)</div>
-                            <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 13px;">0.00 (0.00%)</div>
+                            <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 11px;">0.00 (0.00%)</div>
                         </div>
                     </div>
                     <div class="card-history">
