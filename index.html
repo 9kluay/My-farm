@@ -195,8 +195,7 @@
                 <div class="stat-box"><div class="stat-label">💎 Total Equity (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📈 Floating P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📊 Profit %</div><div class="stat-value" id="sum-percent">0.00%</div></div>
-                <!-- เปลี่ยนสีเริ่มต้นเป็นสีขาว (ตัวแปรจะเปลี่ยนสีทีหลังถ้าซิงค์ครบ) -->
-                <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms">0/0 แปลง</div></div>
+                <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms" style="color: var(--accent-emerald);">0 แปลง</div></div>
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
@@ -649,7 +648,6 @@
             const allFarms = getFarmsList();
             allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
-                // นับจำนวนเฉพาะฟาร์มที่มีเงิน (balance > 0)
                 if (d && !d.error && d.balance > 0) { 
                     syncedCount++;
                     totalUsdBalance += convertToUSD(d.balance, d.currency);
@@ -674,21 +672,7 @@
             percentElem.className = 'stat-value ' + getColorClass(totalPercent); 
             percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            // -------------------------------------------------------------
-            // อัปเดตเงื่อนไขสีของ Total Farms
-            // -------------------------------------------------------------
-            const sumFarmsElem = document.getElementById('sum-farms');
-            sumFarmsElem.innerText = `${syncedCount}/${allFarms.length} แปลง`;
-            
-            // ถ้าซิงค์ครบ (พอร์ตที่มีเงิน เท่ากับ พอร์ตทั้งหมดในระบบ) ให้ตัวอักษรเป็นสีเขียว
-            if (syncedCount === allFarms.length && allFarms.length > 0) {
-                sumFarmsElem.style.color = 'var(--accent-emerald)';
-            } else {
-                // ถ้ายังไม่ครบ (หรือมีบางพอร์ตที่ยังไม่ส่งข้อมูลยอดเงินเข้ามา) ให้เป็นสีขาว
-                sumFarmsElem.style.color = 'var(--text-main)';
-            }
-            // -------------------------------------------------------------
-
+            document.getElementById('sum-farms').innerText = `${syncedCount}/${allFarms.length} แปลง`; 
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
             const updateSum = (id, val) => { 
