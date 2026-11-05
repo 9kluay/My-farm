@@ -251,6 +251,19 @@
             return Number(amount) * rate;
         }
 
+        // ฟังก์ชันหาว่าฟาร์มไหนมีมูลค่า(USD) สูงสุดในระบบปัจจุบัน
+        function getMaxFarmBalance() {
+            let max = 0;
+            for (const key in globalPortfolioData) {
+                const d = globalPortfolioData[key];
+                if (d && !d.error && d.balance > 0) {
+                    const usdBal = convertToUSD(d.balance, d.currency);
+                    if (usdBal > max) max = usdBal;
+                }
+            }
+            return max;
+        }
+
         function getSeasonInfo() {
             const m = new Date().getMonth();
             if (m === 10 || m === 11 || m === 0 || m === 1) return { name: 'ฤดูหนาว', icon: '❄️' };
@@ -354,6 +367,8 @@
             const farms = getFarmsList();
             if (farms.length > 0) {
                 await Promise.all(farms.map(login => fetchNodeData(login)));
+                // เรียกอัปเดต UI อีกรอบหลังจากข้อมูลครบแล้ว เพื่อให้ระดับต้นไม้คำนวณ % ได้ถูกต้อง
+                farms.forEach(login => updateUICard(login));
             }
             setTimeout(() => { syncIcon.classList.remove('show'); }, 400);
         }
@@ -548,7 +563,14 @@
                 div.className = `c-hist-val ${getColorClass(val)}`;
             });
 
+            // --------------------------------------------------------------------------
+            // แบ่งระดับต้นไม้ 10 ระดับ (โดยอิงจากสัดส่วนมูลค่าเทียบกับพอร์ตที่ใหญ่ที่สุด)
+            // โดยยังคงใช้กราฟิกต้นไม้เดิม (🌱 🌿 🌳 🌲 🌴) แต่ไล่สเกลความอลังการ 10 ลำดับ
+            // --------------------------------------------------------------------------
             const usdBalance = convertToUSD(data.balance, data.currency);
+            const maxBalance = Math.max(getMaxFarmBalance(), 1); 
+            const relativePercent = (usdBalance / maxBalance) * 100;
+
             const showcase = document.getElementById(`showcase-${login}`);
             const cluster = document.getElementById(`cluster-${login}`);
             const tier = document.getElementById(`tier-${login}`);
@@ -565,22 +587,47 @@
                 tierText = '⚠️ พื้นที่เฝ้าระวังพิเศษ'; plotEmoji = '🌵'; weatherText = 'พายุฝนฟ้าคะนอง ⛈️';
             } else {
                 showcase.classList.remove('danger-zone');
-                if (usdBalance >= 10000) {
+                
+                if (relativePercent >= 90) { // ระดับ 10
                     cluster.setAttribute('data-state', 'legendary');
                     treeHtml = `<div class="tree-extra" style="font-size:52px; bottom:12px; filter:drop-shadow(0 0 14px rgba(251,191,36,0.9));">🌲</div><div class="tree-extra" style="font-size:36px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:36px; bottom:8px; right:18px;">🌴</div>`;
-                    tierText = '🌟 ป่าดงดิบมหาเศรษฐี (Legendary)'; plotEmoji = '🌲'; weatherText = 'ทองคำเปล่งประกาย ✨'; starCount = '⭐⭐⭐⭐⭐';
-                } else if (usdBalance >= 5000) {
+                    tierText = '🌟 ป่าดงดิบมหาเศรษฐี (Lv.10)'; plotEmoji = '🌲'; weatherText = 'ทองคำเปล่งประกาย ✨'; starCount = '⭐⭐⭐⭐⭐';
+                } else if (relativePercent >= 80) { // ระดับ 9
+                    cluster.setAttribute('data-state', 'epic');
+                    treeHtml = `<div class="tree-extra" style="font-size:48px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:34px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:34px; bottom:8px; right:18px;">🌲</div>`;
+                    tierText = '👑 มหาพฤกษา (Lv.9)'; plotEmoji = '🌳'; weatherText = 'แสงออร่า 🌟'; starCount = '⭐⭐⭐⭐⭐';
+                } else if (relativePercent >= 70) { // ระดับ 8
                     cluster.setAttribute('data-state', 'epic');
                     treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:32px; bottom:8px; right:22px;">🌳</div>`;
-                    tierText = '💎 ป่าสนอุดมสมบูรณ์ (Epic)'; plotEmoji = '🌳'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
-                } else if (usdBalance >= 1000) {
+                    tierText = '💎 ป่าสนศักดิ์สิทธิ์ (Lv.8)'; plotEmoji = '🌲'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
+                } else if (relativePercent >= 60) { // ระดับ 7
+                    cluster.setAttribute('data-state', 'epic');
+                    treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div><div class="tree-extra" style="font-size:30px; bottom:8px; left:22px;">🌲</div>`;
+                    tierText = '🌳 ป่าอุดมสมบูรณ์ (Lv.7)'; plotEmoji = '🌳'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
+                } else if (relativePercent >= 50) { // ระดับ 6
+                    cluster.setAttribute('data-state', 'rare');
+                    treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div>`;
+                    tierText = '🌿 สวนป่าร่มรื่น (Lv.6)'; plotEmoji = '🌿'; weatherText = 'ลมโชย 🍃'; starCount = '⭐⭐⭐';
+                } else if (relativePercent >= 40) { // ระดับ 5
                     cluster.setAttribute('data-state', 'rare');
                     treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div>`;
-                    tierText = '🌿 สวนป่าเติบโต (Rare)'; plotEmoji = '🌿'; weatherText = 'ลมโชยอ่อนๆ 🍃'; starCount = '⭐⭐⭐';
-                } else {
+                    tierText = '🌲 ต้นไม้ใหญ่ (Lv.5)'; plotEmoji = '🌲'; weatherText = 'อากาศดี ⛅'; starCount = '⭐⭐⭐';
+                } else if (relativePercent >= 30) { // ระดับ 4
+                    cluster.setAttribute('data-state', 'rare');
+                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:14px;">🌳</div>`;
+                    tierText = '🌿 ต้นไม้กำลังโต (Lv.4)'; plotEmoji = '🌳'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
+                } else if (relativePercent >= 20) { // ระดับ 3
+                    cluster.setAttribute('data-state', 'seedling');
+                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:14px;">🌿</div>`;
+                    tierText = '🌿 ต้นไม้เล็ก (Lv.3)'; plotEmoji = '🌿'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
+                } else if (relativePercent >= 10) { // ระดับ 2
                     cluster.setAttribute('data-state', 'seedling');
                     treeHtml = `<div class="tree-extra" style="font-size:32px; bottom:14px;">🌱</div>`;
-                    tierText = '🌱 แปลงเพาะกล้า (Seedling)'; plotEmoji = '🌱'; weatherText = 'รดน้ำพรวนดิน 💧'; starCount = '⭐';
+                    tierText = '🌱 ต้นกล้า (Lv.2)'; plotEmoji = '🌱'; weatherText = 'รดน้ำพรวนดิน 💧'; starCount = '⭐';
+                } else { // ระดับ 1
+                    cluster.setAttribute('data-state', 'seedling');
+                    treeHtml = `<div class="tree-extra" style="font-size:24px; bottom:14px;">🌱</div>`;
+                    tierText = '🌱 เพาะเมล็ด (Lv.1)'; plotEmoji = '🌱'; weatherText = 'ลงดินเพาะปลูก 💧'; starCount = '⭐';
                 }
             }
 
