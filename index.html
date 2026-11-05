@@ -146,10 +146,14 @@
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
-        .metric-item-compact { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
+        
+        /* แก้ไขปรับขนาดกล่องบรรทัดล่างให้ Compact ขึ้น */
+        .metric-item-compact { background: rgba(0,0,0,0.2); padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); }
         .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .metric-val { font-size: 14px; font-weight: 600; color: var(--text-main); }
-        .metric-val-pairs { font-size: 11px; font-weight: 500; color: #93c5fd; word-break: break-all; line-height: 1.3; }
+        
+        /* ปรับขนาดตัวอักษรคู่เงินให้เล็กลง และเส้นบางลงเพื่อความสบายตา */
+        .metric-val-pairs { font-size: 9px; font-weight: 400; color: #93c5fd; word-break: break-all; line-height: 1.3; letter-spacing: 0.3px; }
 
         .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-bottom: 12px; gap: 4px; border: 1px solid rgba(255,255,255,0.03); }
         .c-hist-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
@@ -471,11 +475,11 @@
                         <div class="metric-item"><div class="metric-label">FLOATING P/L</div><div class="metric-val" id="pl-${login}">0.00</div></div>
                         <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
                         
-                        <div class="metric-item-compact"><div class="metric-label">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
-                        <div class="metric-item-compact" style="background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.15);">
-                            <!-- เปลี่ยนคำเป็น DRAWDOWN ตามที่ขอ -->
-                            <div class="metric-label" style="color: var(--accent-rose);">DRAWDOWN</div>
-                            <div class="metric-val" id="dd-${login}" style="color: var(--accent-rose); font-size: 11px;">0.00 (0.00%)</div>
+                        <div class="metric-item-compact"><div class="metric-label" style="font-size: 8px;">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
+                        <!-- เปลี่ยนเป็นสีส้มพีชสบายตา (Soft Orange/Peach) -->
+                        <div class="metric-item-compact" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
+                            <div class="metric-label" style="color: #fb923c; font-size: 8px;">DRAWDOWN</div>
+                            <div class="metric-val" id="dd-${login}" style="color: #fb923c; font-size: 10px;">0.00 (0.00%)</div>
                         </div>
                     </div>
                     <div class="card-history">
