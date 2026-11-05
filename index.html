@@ -146,13 +146,9 @@
 
         .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .metric-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
-        
-        /* แก้ไขปรับขนาดกล่องบรรทัดล่างให้ Compact ขึ้น */
         .metric-item-compact { background: rgba(0,0,0,0.2); padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); }
         .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .metric-val { font-size: 14px; font-weight: 600; color: var(--text-main); }
-        
-        /* ปรับขนาดตัวอักษรคู่เงินให้เล็กลง และเส้นบางลงเพื่อความสบายตา */
         .metric-val-pairs { font-size: 9px; font-weight: 400; color: #93c5fd; word-break: break-all; line-height: 1.3; letter-spacing: 0.3px; }
 
         .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-bottom: 12px; gap: 4px; border: 1px solid rgba(255,255,255,0.03); }
@@ -199,12 +195,12 @@
                 <div class="stat-box"><div class="stat-label">💎 Total Equity (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📈 Floating P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📊 Profit %</div><div class="stat-value" id="sum-percent">0.00%</div></div>
-                <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms" style="color: var(--accent-emerald);">0 แปลง</div></div>
+                <!-- เปลี่ยนสีเริ่มต้นเป็นสีขาว (ตัวแปรจะเปลี่ยนสีทีหลังถ้าซิงค์ครบ) -->
+                <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms">0/0 แปลง</div></div>
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
             <div class="history-stats-grid">
-                <!-- ลบภาษาอังกฤษออกแล้ว -->
                 <div class="history-box"><div class="history-label">กำไรรวมวันนี้</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้</div><div class="history-value" id="sum-week">$0.00</div></div>
                 <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้</div><div class="history-value" id="sum-month">$0.00</div></div>
@@ -476,7 +472,6 @@
                         <div class="metric-item"><div class="metric-label">ORDERS</div><div class="metric-val" id="ord-${login}">-</div></div>
                         
                         <div class="metric-item-compact"><div class="metric-label" style="font-size: 8px;">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
-                        <!-- เปลี่ยนเป็นสีส้มพีชสบายตา (Soft Orange/Peach) -->
                         <div class="metric-item-compact" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
                             <div class="metric-label" style="color: #fb923c; font-size: 8px;">DRAWDOWN</div>
                             <div class="metric-val" id="dd-${login}" style="color: #fb923c; font-size: 10px;">0.00 (0.00%)</div>
@@ -517,7 +512,6 @@
                         open_pairs: latest.open_pairs || '-',
                         lastUpdated: latest.lastUpdated, error: false,
                         
-                        // รับค่า DD จากฐานข้อมูล (Google Sheets) โดยตรง ไม่ใช้ Cache แล้ว
                         dd_amount: latest.max_dd_amount || 0,
                         dd_percent: latest.max_dd_percent || 0
                     };
@@ -550,7 +544,6 @@
             plDiv.innerText = `${formatMoney(data.profit, '', ' ' + data.currency)} ${formatPercent(data.percent)}`;
             document.getElementById(`ord-${login}`).innerHTML = `<span style="color:var(--accent-emerald)">🟢 ${data.profit_orders}</span> | <span style="color:var(--accent-rose)">🔴 ${data.loss_orders}</span>`;
             
-            // อ่านค่า DD จากตัวแปรที่รับมาจาก Google Sheets
             const ddElem = document.getElementById(`dd-${login}`);
             if (data.dd_amount < 0) {
                 const absAmount = Math.abs(data.dd_amount).toFixed(2);
@@ -569,7 +562,6 @@
 
             // --------------------------------------------------------------------------
             // แบ่งระดับต้นไม้ 10 ระดับ (โดยอิงจากสัดส่วนมูลค่าเทียบกับพอร์ตที่ใหญ่ที่สุด)
-            // โดยยังคงใช้กราฟิกต้นไม้เดิม (🌱 🌿 🌳 🌲 🌴) แต่ไล่สเกลความอลังการ 10 ลำดับ
             // --------------------------------------------------------------------------
             const usdBalance = convertToUSD(data.balance, data.currency);
             const maxBalance = Math.max(getMaxFarmBalance(), 1); 
@@ -657,6 +649,7 @@
             const allFarms = getFarmsList();
             allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
+                // นับจำนวนเฉพาะฟาร์มที่มีเงิน (balance > 0)
                 if (d && !d.error && d.balance > 0) { 
                     syncedCount++;
                     totalUsdBalance += convertToUSD(d.balance, d.currency);
@@ -681,7 +674,21 @@
             percentElem.className = 'stat-value ' + getColorClass(totalPercent); 
             percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            document.getElementById('sum-farms').innerText = `${syncedCount}/${allFarms.length} แปลง`; 
+            // -------------------------------------------------------------
+            // อัปเดตเงื่อนไขสีของ Total Farms
+            // -------------------------------------------------------------
+            const sumFarmsElem = document.getElementById('sum-farms');
+            sumFarmsElem.innerText = `${syncedCount}/${allFarms.length} แปลง`;
+            
+            // ถ้าซิงค์ครบ (พอร์ตที่มีเงิน เท่ากับ พอร์ตทั้งหมดในระบบ) ให้ตัวอักษรเป็นสีเขียว
+            if (syncedCount === allFarms.length && allFarms.length > 0) {
+                sumFarmsElem.style.color = 'var(--accent-emerald)';
+            } else {
+                // ถ้ายังไม่ครบ (หรือมีบางพอร์ตที่ยังไม่ส่งข้อมูลยอดเงินเข้ามา) ให้เป็นสีขาว
+                sumFarmsElem.style.color = 'var(--text-main)';
+            }
+            // -------------------------------------------------------------
+
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
             const updateSum = (id, val) => { 
