@@ -59,7 +59,7 @@
         .container { max-width: 1320px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.6s var(--ease-smooth) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* วงกลมสีเหลือง: จัดให้อยู่ในแถวเดียวกันแบบไม่ให้ล้นและไม่ต้องเลื่อน */
+        /* วงกลมสีเหลืองด้านบน: จัดแถวเดียวพอดีจอ ไม่ต้องเลื่อน */
         .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; width: 100%; }
         .nav-badges { 
             display: flex; gap: 6px; align-items: center; justify-content: center; 
@@ -133,20 +133,20 @@
         
         .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); margin: 24px 0; }
         
-        /* วงกลมสีแดง (Today, Week, Month, Drawdown): จัดเรียงเป็น 4 คอลัมน์แถวเดียวพอดีเป๊ะ ไม่ต้องเลื่อน */
+        /* สถิติย้อนหลัง (Today, Week, Month, Drawdown): จัดเรียงเป็น 4 คอลัมน์แถวเดียว ลดขนาดให้กะทัดรัด */
         .history-stats-grid { 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; 
         }
         @media (max-width: 768px) {
-            .history-stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .history-stats-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
         }
         
         .history-box { 
             background: rgba(0, 0, 0, 0.18); border: 1px solid rgba(255, 255, 255, 0.03); 
-            border-radius: 12px; padding: 14px 12px; text-align: center; 
+            border-radius: 10px; padding: 10px 6px; text-align: center; 
         }
-        .history-label { font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .history-value { font-size: 15px; font-weight: 600; }
+        .history-label { font-size: 8px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+        .history-value { font-size: 12px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
         /* แผงควบคุม ค้นหา และเรียงลำดับ */
@@ -242,7 +242,6 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- วงกลมสีเหลืองด้านบน: จัดแถวเดียวพอดีจอ ไม่ต้องเลื่อน -->
         <div class="top-nav">
             <div class="nav-badges">
                 <div class="badge" id="weather-location-badge">📍 กำลังตรวจสอบพิกัด...</div>
@@ -288,7 +287,7 @@
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
-            <!-- วงกลมสีแดงด้านล่าง (Today, Week, Month, Drawdown): จัดเรียง 4 ช่องแถวเดียวสวยๆ พอดีจอ ไม่ต้องเลื่อน -->
+            <!-- สถิติย้อนหลัง: ปรับลดขนาดและจัดเป็น 4 คอลัมน์แถวเดียวพอดีจอ -->
             <div class="history-stats-grid">
                 <div class="history-box"><div class="history-label">TODAY</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">WEEK</div><div class="history-value" id="sum-week">$0.00</div></div>
