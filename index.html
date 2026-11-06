@@ -84,20 +84,20 @@
         header { text-align: center; margin-bottom: 25px; }
         h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 12px 0; background: linear-gradient(135deg, #ffffff 30%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* สวนด้านบน */
+        /* สวนด้านบน: ใส่ต้นไม้ในฟาร์มครบทุกแบบตามที่คุณต้องการ */
         .farm-eco-header-box {
             position: relative; background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
             border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 16px; padding: 12px 20px;
-            max-width: 650px; margin: 0 auto 30px auto; overflow: hidden; backdrop-filter: blur(6px);
+            max-width: 750px; margin: 0 auto 30px auto; overflow: hidden; backdrop-filter: blur(6px);
         }
         .farm-eco-line { 
             position: relative; display: flex; justify-content: center; align-items: flex-end; 
-            gap: 14px; opacity: 0.95; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+            gap: 12px; opacity: 0.95; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
         }
         .farm-eco-line::-webkit-scrollbar { display: none; }
         .mountain-layer-back {
             position: absolute; top: -6px; left: 0; width: 100%; display: flex; justify-content: space-around;
-            font-size: 28px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
+            font-size: 26px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
         }
         .farm-eco-line span { 
             position: relative; z-index: 1; display: inline-block; transition: transform 0.3s; 
@@ -254,25 +254,22 @@
 
         <header>
             <h1>K sarakharm farm EA</h1>
+            <!-- สวนด้านบน: รวบรวมต้นไม้และพืชพรรณในฟาร์มครบทุกแบบตามที่คุณต้องการ -->
             <div class="farm-eco-header-box">
                 <div class="farm-eco-line">
                     <div class="mountain-layer-back">
-                        <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
+                        <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
                     </div>
-                    <span style="font-size: 24px;">🏔️</span>
+                    <span style="font-size: 20px;">🌴</span>
+                    <span style="font-size: 16px;">🌿</span>
+                    <span style="font-size: 16px;">☘️</span>
+                    <span style="font-size: 16px;">🌵</span>
+                    <span style="font-size: 22px;">🏔️</span>
                     <span class="glowing" style="font-size: 18px;">🌲</span>
                     <span style="font-size: 15px;">🌳</span>
-                    <span style="font-size: 22px;">🏔️</span>
-                    <span class="glowing" style="font-size: 20px;">🌴</span>
-                    <span style="font-size: 13px;">🌿</span>
-                    <span style="font-size: 14px;">☘️</span>
-                    <span style="font-size: 16px;">🌵</span>
-                    <span style="font-size: 26px;">🏔️</span>
-                    <span class="glowing" style="font-size: 19px;">🌲</span>
-                    <span style="font-size: 15px;">🌳</span>
                     <span style="font-size: 20px;">🌴</span>
-                    <span style="font-size: 13px;">🌿</span>
-                    <span class="glowing" style="font-size: 14px;">☘️</span>
+                    <span style="font-size: 14px;">🌿</span>
+                    <span class="glowing" style="font-size: 15px;">☘️</span>
                 </div>
             </div>
         </header>
@@ -287,7 +284,6 @@
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
-            <!-- สถิติย้อนหลัง: ปรับลดขนาดและจัดเป็น 4 คอลัมน์แถวเดียวพอดีจอ -->
             <div class="history-stats-grid">
                 <div class="history-box"><div class="history-label">TODAY</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">WEEK</div><div class="history-value" id="sum-week">$0.00</div></div>
