@@ -125,7 +125,7 @@
             filter: drop-shadow(0 3px 12px rgba(16, 185, 129, 0.4));
         }
         
-        /* สวนป่าด้านบน: ปรับขนาดต้นไม้เฉพาะจุด */
+        /* สวนป่าด้านบน: แบบจัดเรียงอัตโนมัติ (Dynamic Flex) */
         .farm-eco-header-box {
             position: relative; 
             background: transparent; 
@@ -137,12 +137,13 @@
             overflow: hidden; 
         }
         .farm-eco-line { 
-            position: relative; display: flex; justify-content: space-between; align-items: flex-end; 
-            width: 100%; opacity: 0.95; flex-wrap: nowrap;
+            position: relative; display: flex; justify-content: space-evenly; align-items: flex-end; 
+            width: 100%; opacity: 0.95; flex-wrap: wrap; row-gap: 6px;
+            min-height: 40px;
         }
         .mountain-layer-back {
-            position: absolute; top: 0px; left: 0; width: 100%; display: flex; justify-content: space-around;
-            font-size: 20px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
+            position: absolute; bottom: 12px; left: 0; width: 100%; display: flex; justify-content: space-around;
+            font-size: 38px; opacity: 0.25; filter: blur(1px); pointer-events: none; z-index: 0;
         }
         .farm-eco-line span { 
             position: relative; z-index: 1; display: inline-block; transition: transform 0.3s; 
@@ -299,23 +300,12 @@
         <header>
             <h1>K sarakharm Farm EA</h1>
             <div class="farm-eco-header-box">
-                <div class="farm-eco-line">
+                <!-- โซนนี้จะถูก Render ต้นไม้มาจากข้อมูลฟาร์มจริงอัตโนมัติ -->
+                <div class="farm-eco-line" id="global-forest-line">
                     <div class="mountain-layer-back">
                         <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
                     </div>
-                    <span style="font-size: 32px;">🌴</span>
-                    <span style="font-size: 14px;">🌿</span>
-                    <span style="font-size: 13px;">☘️</span>
-                    <span style="font-size: 16px;">🌵</span>
-                    <span style="font-size: 32px;">🌳</span>
-                    <span style="font-size: 18px;">🏔️</span>
-                    <span class="glowing" style="font-size: 36px;">🌲</span>
-                    <span style="font-size: 32px;">🌳</span>
-                    <span style="font-size: 32px;">🌴</span>
-                    <span style="font-size: 13px;">☘️</span>
-                    <span style="font-size: 14px;">🌿</span>
-                    <span class="glowing" style="font-size: 34px;">🌲</span>
-                    <span style="font-size: 32px;">🌴</span>
+                    <span style="font-size: 32px; opacity: 0.5;">กำลังเพาะปลูกป่า...</span>
                 </div>
             </div>
         </header>
@@ -487,6 +477,76 @@
             const root = document.documentElement;
             root.style.setProperty('--bg-dark', bgDark);
             document.getElementById('theme-badge').innerHTML = `${themeName}`;
+        }
+
+        // ฟังก์ชันสร้างสวนป่าด้านบนอัตโนมัติจากทุกฟาร์ม
+        function renderGlobalForest() {
+            const forestLine = document.getElementById('global-forest-line');
+            if (!forestLine) return;
+
+            const allFarms = getFarmsList();
+            const maxBalance = Math.max(getMaxFarmBalance(), 1);
+            
+            let treesHtml = `<div class="mountain-layer-back">
+                <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
+            </div>`;
+
+            let validFarms = [];
+            allFarms.forEach(login => {
+                const d = globalPortfolioData[login];
+                if (d && !d.error) validFarms.push({ login, data: d });
+            });
+
+            if (validFarms.length === 0) {
+                // กรณีไม่มีฟาร์ม ให้แสดงตัวอย่างตั้งต้น
+                treesHtml += `<span style="font-size: 32px;">🌳</span><span style="font-size: 14px;">🌿</span><span style="font-size: 36px;" class="glowing">🌲</span>`;
+            } else {
+                validFarms.forEach((item, index) => {
+                    const login = item.login;
+                    const d = item.data;
+                    const usdBalance = convertToUSD(d.balance, d.currency);
+                    const relativePercent = (usdBalance / maxBalance) * 100;
+                    
+                    let emoji = '🌱'; let size = '16px'; let glow = '';
+                    
+                    // Logic ต้องตรงกับระดับ Level ของการ์ดเป๊ะๆ
+                    if (d.profit < 0) {
+                        emoji = '🌵'; size = '24px';
+                    } else if (relativePercent >= 90) {
+                        emoji = '🌲'; size = '36px'; glow = 'glowing'; // Lv.10
+                    } else if (relativePercent >= 80) {
+                        emoji = '🌳'; size = '34px'; glow = 'glowing'; // Lv.9
+                    } else if (relativePercent >= 70) {
+                        emoji = '🌴'; size = '32px'; glow = 'glowing'; // Lv.8 (เพิ่มปาล์มให้หลากหลาย)
+                    } else if (relativePercent >= 60) {
+                        emoji = '🌲'; size = '32px'; // Lv.7
+                    } else if (relativePercent >= 50) {
+                        emoji = '🌳'; size = '30px'; // Lv.6
+                    } else if (relativePercent >= 40) {
+                        emoji = '🌴'; size = '28px'; // Lv.5
+                    } else if (relativePercent >= 30) {
+                        emoji = '🌿'; size = '24px'; // Lv.4
+                    } else if (relativePercent >= 20) {
+                        emoji = '🌿'; size = '22px'; // Lv.3
+                    } else if (relativePercent >= 10) {
+                        emoji = '🌱'; size = '20px'; // Lv.2
+                    } else {
+                        emoji = '🌱'; size = '18px'; // Lv.1
+                    }
+                    
+                    // ปลูกต้นไม้หลักของฟาร์มนี้
+                    treesHtml += `<span class="${glow}" style="font-size: ${size}; margin: 0 2px;" title="ต้นไม้จากแปลง #${login}">${emoji}</span>`;
+                    
+                    // แทรกรั้ว/ไม้ประดับเล็กๆ คั่นกลางถ้ายังไม่ถึงฟาร์มสุดท้าย
+                    if (index < validFarms.length - 1) {
+                        const decs = ['🌿', '☘️'];
+                        const sizes = ['14px', '12px'];
+                        treesHtml += `<span style="font-size: ${sizes[index % sizes.length]}; opacity: 0.75; margin: 0 2px; filter: drop-shadow(0 0 2px rgba(16,185,129,0.3));">${decs[index % decs.length]}</span>`;
+                    }
+                });
+            }
+
+            forestLine.innerHTML = treesHtml;
         }
 
         async function syncAndRefreshAll() {
@@ -731,6 +791,7 @@
 
             let treeHtml = ''; let tierText = ''; let plotEmoji = '🌱'; let weatherText = 'อากาศดี'; let starCount = '';
 
+            // อัปเดตไอคอนของการ์ดให้ตรงกับระบบของสวนป่า (มีเพิ่มต้นปาล์มเข้ามา)
             if (data.profit < 0) {
                 showcase.classList.add('danger-zone');
                 cluster.setAttribute('data-state', 'danger');
@@ -745,28 +806,28 @@
                     tierText = '🌟 ป่าดงดิบมหาเศรษฐี (Lv.10)'; plotEmoji = '🌲'; weatherText = 'ทองคำเปล่งประกาย ✨'; starCount = '⭐⭐⭐⭐⭐';
                 } else if (relativePercent >= 80) { 
                     cluster.setAttribute('data-state', 'epic');
-                    treeHtml = `<div class="tree-extra" style="font-size:40px; bottom:10px;">🌲</div><div class="tree-extra" style="font-size:28px; bottom:6px; left:16px;">🌳</div><div class="tree-extra" style="font-size:28px; bottom:6px; right:16px;">🌲</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:40px; bottom:10px;">🌳</div><div class="tree-extra" style="font-size:28px; bottom:6px; left:16px;">🌲</div><div class="tree-extra" style="font-size:28px; bottom:6px; right:16px;">🌴</div>`;
                     tierText = '👑 มหาพฤกษา (Lv.9)'; plotEmoji = '🌳'; weatherText = 'แสงออร่า 🌟'; starCount = '⭐⭐⭐⭐⭐';
                 } else if (relativePercent >= 70) { 
                     cluster.setAttribute('data-state', 'epic');
-                    treeHtml = `<div class="tree-extra" style="font-size:38px; bottom:10px;">🌲</div><div class="tree-extra" style="font-size:26px; bottom:6px; right:18px;">🌳</div>`;
-                    tierText = '💎 ป่าสนศักดิ์สิทธิ์ (Lv.8)'; plotEmoji = '🌲'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
+                    treeHtml = `<div class="tree-extra" style="font-size:38px; bottom:10px;">🌴</div><div class="tree-extra" style="font-size:26px; bottom:6px; right:18px;">🌳</div>`;
+                    tierText = '💎 ป่าสนศักดิ์สิทธิ์ (Lv.8)'; plotEmoji = '🌴'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
                 } else if (relativePercent >= 60) { 
                     cluster.setAttribute('data-state', 'epic');
-                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:10px;">🌳</div><div class="tree-extra" style="font-size:25px; bottom:6px; left:18px;">🌲</div>`;
-                    tierText = '🌳 ป่าอุดมสมบูรณ์ (Lv.7)'; plotEmoji = '🌳'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
+                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:10px;">🌲</div><div class="tree-extra" style="font-size:25px; bottom:6px; left:18px;">🌿</div>`;
+                    tierText = '🌳 ป่าอุดมสมบูรณ์ (Lv.7)'; plotEmoji = '🌲'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
                 } else if (relativePercent >= 50) { 
                     cluster.setAttribute('data-state', 'rare');
-                    treeHtml = `<div class="tree-extra" style="font-size:38px; bottom:10px;">🌲</div>`;
-                    tierText = '🌿 สวนป่าร่มรื่น (Lv.6)'; plotEmoji = '🌿'; weatherText = 'ลมโชย 🍃'; starCount = '⭐⭐⭐';
+                    treeHtml = `<div class="tree-extra" style="font-size:38px; bottom:10px;">🌳</div>`;
+                    tierText = '🌿 สวนป่าร่มรื่น (Lv.6)'; plotEmoji = '🌳'; weatherText = 'ลมโชย 🍃'; starCount = '⭐⭐⭐';
                 } else if (relativePercent >= 40) { 
                     cluster.setAttribute('data-state', 'rare');
-                    treeHtml = `<div class="tree-extra" style="font-size:34px; bottom:10px;">🌳</div>`;
-                    tierText = '🌲 ต้นไม้ใหญ่ (Lv.5)'; plotEmoji = '🌲'; weatherText = 'อากาศดี ⛅'; starCount = '⭐⭐⭐';
+                    treeHtml = `<div class="tree-extra" style="font-size:34px; bottom:10px;">🌴</div>`;
+                    tierText = '🌲 ต้นไม้ใหญ่ (Lv.5)'; plotEmoji = '🌴'; weatherText = 'อากาศดี ⛅'; starCount = '⭐⭐⭐';
                 } else if (relativePercent >= 30) { 
                     cluster.setAttribute('data-state', 'rare');
-                    treeHtml = `<div class="tree-extra" style="font-size:30px; bottom:10px;">🌳</div>`;
-                    tierText = '🌿 ต้นไม้กำลังโต (Lv.4)'; plotEmoji = '🌳'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
+                    treeHtml = `<div class="tree-extra" style="font-size:30px; bottom:10px;">🌿</div>`;
+                    tierText = '🌿 ต้นไม้กำลังโต (Lv.4)'; plotEmoji = '🌿'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
                 } else if (relativePercent >= 20) { 
                     cluster.setAttribute('data-state', 'seedling');
                     treeHtml = `<div class="tree-extra" style="font-size:30px; bottom:10px;">🌿</div>`;
@@ -867,7 +928,9 @@
                 sumDdElem.style.color = 'var(--text-main)'; 
             }
 
+            // เรียกอัปเดตสภาพอากาศ และ อัปเดตสวนป่ารวม!
             updateGlobalWeather(totalPercent);
+            renderGlobalForest(); 
         }
     </script>
 </body>
