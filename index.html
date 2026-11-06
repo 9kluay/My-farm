@@ -81,7 +81,14 @@
 
         header { text-align: center; margin-bottom: 20px; }
         h1 { font-size: 38px; font-weight: 600; margin: 0 0 10px 0; background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .farm-eco-line { display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 18px; margin-bottom: 20px; opacity: 0.9; }
+        
+        /* จัดสวนใหม่ให้สมจริงตามสัดส่วนไม้ (ไล่ระดับขนาดและระยะห่างอย่างเป็นธรรมชาติ) */
+        .farm-eco-line { 
+            display: flex; justify-content: center; align-items: flex-end; 
+            gap: 8px; margin-bottom: 20px; opacity: 0.95; padding: 0 10px; flex-wrap: nowrap; overflow-x: auto; 
+        }
+        .farm-eco-line span { display: inline-block; transition: transform 0.3s; }
+        .farm-eco-line span:hover { transform: translateY(-3px); }
 
         .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--theme-border); border-radius: var(--card-radius); padding: 24px; margin-bottom: 25px; box-shadow: var(--glass-shadow); }
         .main-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 20px; }
@@ -93,7 +100,6 @@
         .stat-value { font-size: 22px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
         .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--theme-border), transparent); margin: 20px 0; }
         
-        /* 4 คอลัมน์ด้านบน (Today, Week, Month, Drawdown) */
         .history-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
         .history-box { border-right: 1px solid rgba(255,255,255,0.05); padding: 0 2px; }
         .history-box:last-child { border-right: none; }
@@ -104,11 +110,9 @@
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 12px; }
         .toolbar-left, .toolbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         
-        .btn-sync { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 10px 20px; border-radius: var(--btn-radius); font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; backdrop-filter: blur(8px); }
-        .btn-sync:hover { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald); }
-        
-        .btn-delete-all { background: transparent; border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); padding: 8px 10px; border-radius: var(--btn-radius); font-size: 15px; cursor: pointer; }
-        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.3); color: var(--accent-rose); }
+        /* เอาปุ่มซิงค์ด่วนออกแล้ว คงเหลือปุ่มล้างข้อมูลทั้งหมด (ถังขยะ) ไว้ */
+        .btn-delete-all { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); padding: 8px 14px; border-radius: var(--btn-radius); font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; backdrop-filter: blur(8px); }
+        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: var(--accent-rose); }
 
         .search-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--btn-radius); padding: 8px 16px; width: 240px; display: flex; align-items: center; gap: 8px; }
         .search-input { background: transparent; border: none; color: var(--text-main); font-size: 13px; font-family: inherit; width: 100%; outline: none; }
@@ -185,8 +189,20 @@
 
         <header>
             <h1>K sarakharm farm EA</h1>
+            <!-- จัดสวนหัวข้อให้สมจริงตามขนาดไม้ (ไล่ระดับขนาดอิโมจิให้สมส่วน) -->
             <div class="farm-eco-line">
-                <span>🌲</span><span>🌳</span><span>🌴</span><span>🌿</span><span>☘️</span><span>🌵</span><span>🌾</span><span>🌲</span><span>🌳</span><span>🌴</span><span>🌿</span><span>☘️</span>
+                <span style="font-size: 20px;">🌲</span>
+                <span style="font-size: 16px;">🌳</span>
+                <span style="font-size: 22px;">🌴</span>
+                <span style="font-size: 14px;">🌿</span>
+                <span style="font-size: 15px;">☘️</span>
+                <span style="font-size: 18px;">🌵</span>
+                <span style="font-size: 13px;">🌾</span>
+                <span style="font-size: 21px;">🌲</span>
+                <span style="font-size: 16px;">🌳</span>
+                <span style="font-size: 22px;">🌴</span>
+                <span style="font-size: 14px;">🌿</span>
+                <span style="font-size: 15px;">☘️</span>
             </div>
         </header>
 
@@ -200,7 +216,6 @@
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
-            <!-- ส่วนที่ปรับแก้: TODAY, WEEK, MONTH, DRAWDOWN (ไม่มีคำว่า Profit และ Max) -->
             <div class="history-stats-grid">
                 <div class="history-box"><div class="history-label">TODAY</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">WEEK</div><div class="history-value" id="sum-week">$0.00</div></div>
@@ -222,8 +237,8 @@
                 </select>
             </div>
             <div class="toolbar-right">
-                <button class="btn-sync" onclick="syncAndRefreshAll()"><span>⚡ ซิงค์ด่วน (Sync Now)</span></button>
-                <button class="btn-delete-all" onclick="deleteAllFarms()" title="ล้างแปลงทั้งหมด">🗑️</button>
+                <!-- เอาปุ่มซิงค์ด่วนออกแล้ว คงเหลือปุ่มล้างข้อมูลทั้งหมด (ถังขยะ) -->
+                <button class="btn-delete-all" onclick="deleteAllFarms()" title="ล้างแปลงทั้งหมด">🗑️ ล้างข้อมูลทั้งหมด</button>
             </div>
         </div>
 
