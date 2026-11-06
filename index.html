@@ -93,11 +93,11 @@
         .stat-value { font-size: 22px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
         .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--theme-border), transparent); margin: 20px 0; }
         
-        /* ปรับเป็น 4 คอลัมน์ และลดขนาดฟอนต์ให้พอดีมือถือ */
+        /* 4 คอลัมน์ เป็นภาษาอังกฤษตามที่ขอ */
         .history-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
         .history-box { border-right: 1px solid rgba(255,255,255,0.05); padding: 0 2px; }
         .history-box:last-child { border-right: none; }
-        .history-label { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+        .history-label { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
         .history-value { font-size: 14px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
@@ -200,12 +200,12 @@
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
-            <!-- ปรับแก้เป็น 4 คอลัมน์ -->
+            <!-- แก้ไขข้อความในส่วนนี้เป็นภาษาอังกฤษทั้งหมด และเอาคำว่า Max ออก -->
             <div class="history-stats-grid">
-                <div class="history-box"><div class="history-label">กำไรรวมวันนี้</div><div class="history-value" id="sum-today">$0.00</div></div>
-                <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้</div><div class="history-value" id="sum-week">$0.00</div></div>
-                <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้</div><div class="history-value" id="sum-month">$0.00</div></div>
-                <div class="history-box"><div class="history-label">Max Drawdown</div><div class="history-value" id="sum-dd">$0.00</div></div>
+                <div class="history-box"><div class="history-label">TODAY PROFIT</div><div class="history-value" id="sum-today">$0.00</div></div>
+                <div class="history-box"><div class="history-label">WEEKLY PROFIT</div><div class="history-value" id="sum-week">$0.00</div></div>
+                <div class="history-box"><div class="history-label">MONTHLY PROFIT</div><div class="history-value" id="sum-month">$0.00</div></div>
+                <div class="history-box"><div class="history-label">DRAWDOWN</div><div class="history-value" id="sum-dd">$0.00</div></div>
             </div>
         </div>
 
@@ -467,6 +467,7 @@
             farms.forEach(login => {
                 const card = document.createElement('div'); card.className = 'tree-card'; 
                 card.setAttribute('data-login', login);
+                // กลับมาใช้ภาษาไทยในการ์ดย่อย
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="currency-badge" id="badge-${login}">USD</span><span class="stars" id="stars-${login}"></span></div>
@@ -664,7 +665,7 @@
         function updatePortfolioSummary() {
             let totalUsdBalance = 0, totalUsdProfit = 0, tTrees = 0;
             let totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0;
-            let totalUsdDD = 0; // ตัวแปรสำหรับคำนวณ Drawdown รวม
+            let totalUsdDD = 0; 
             let syncedCount = 0;
             
             let sumEquityFromSheet = 0; 
@@ -684,7 +685,6 @@
                     totalUsdWeek += convertToUSD(d.profit_week || 0, d.currency);
                     totalUsdMonth += convertToUSD(d.profit_month || 0, d.currency);
                     
-                    // นำ Drawdown แต่ละแปลง (ค่าติดลบ) มารวมกัน
                     totalUsdDD += convertToUSD(d.dd_amount || 0, d.currency);
                 }
             });
@@ -722,17 +722,15 @@
             updateSum('sum-week', totalUsdWeek); 
             updateSum('sum-month', totalUsdMonth);
 
-            // อัปเดตการแสดงผล Drawdown รวมในคอลัมน์ที่ 4
             const sumDdElem = document.getElementById('sum-dd');
             if (totalUsdDD < 0) {
                 const absDd = Math.abs(totalUsdDD);
                 const ddPct = (totalUsdBalance > 0) ? (absDd / totalUsdBalance) * 100 : 0;
-                // แสดงผลจำนวนเงินบรรทัดบน และเปอร์เซ็นต์ในวงเล็บบรรทัดล่าง
                 sumDdElem.innerHTML = `-$${absDd.toFixed(2)} <span style="font-size: 9px; font-weight: normal;">(-${ddPct.toFixed(2)}%)</span>`;
-                sumDdElem.style.color = '#fb923c'; // สีส้ม
+                sumDdElem.style.color = '#fb923c'; 
             } else {
                 sumDdElem.innerText = `$0.00`;
-                sumDdElem.style.color = 'var(--text-main)'; // สีขาวปกติถ้าไม่มี DD
+                sumDdElem.style.color = 'var(--text-main)'; 
             }
 
             updateGlobalWeather(totalPercent);
