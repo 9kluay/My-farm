@@ -93,11 +93,12 @@
         .stat-value { font-size: 22px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
         .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--theme-border), transparent); margin: 20px 0; }
         
-        .history-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
-        .history-box { border-right: 1px solid rgba(255,255,255,0.05); }
+        /* ปรับเป็น 4 คอลัมน์ และลดขนาดฟอนต์ให้พอดีมือถือ */
+        .history-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+        .history-box { border-right: 1px solid rgba(255,255,255,0.05); padding: 0 2px; }
         .history-box:last-child { border-right: none; }
-        .history-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-        .history-value { font-size: 17px; font-weight: 600; }
+        .history-label { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+        .history-value { font-size: 14px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 12px; }
@@ -199,10 +200,12 @@
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
+            <!-- ปรับแก้เป็น 4 คอลัมน์ -->
             <div class="history-stats-grid">
                 <div class="history-box"><div class="history-label">กำไรรวมวันนี้</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">กำไรรวมสัปดาห์นี้</div><div class="history-value" id="sum-week">$0.00</div></div>
                 <div class="history-box"><div class="history-label">กำไรรวมเดือนนี้</div><div class="history-value" id="sum-month">$0.00</div></div>
+                <div class="history-box"><div class="history-label">Max Drawdown</div><div class="history-value" id="sum-dd">$0.00</div></div>
             </div>
         </div>
 
@@ -250,7 +253,6 @@
             return Number(amount) * rate;
         }
 
-        // ฟังก์ชันหาว่าฟาร์มไหนมีมูลค่า(USD) สูงสุดในระบบปัจจุบัน
         function getMaxFarmBalance() {
             let max = 0;
             for (const key in globalPortfolioData) {
@@ -285,7 +287,6 @@
             setInterval(() => { fetchRealWorldWeather(); }, 900000);
         };
 
-        // --- ระบบดึงข้อมูลพิกัดและสภาพอากาศโลกจริง ---
         function fetchRealWorldWeather() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -293,13 +294,11 @@
                         const lat = position.coords.latitude;
                         const lon = position.coords.longitude;
                         try {
-                            // (ออปชันเสริม) ส่งพิกัดกลับไปอัปเดตที่ Backend Sheet หากต้องการ
                             await fetch(`${SCRIPT_URL}?action=updateGPS&lat=${lat}&lon=${lon}`);
                         } catch(e) {}
                         fetchWeatherByCoords(lat, lon, "พิกัดล่าสุด (บันทึกแล้ว)");
                     }, 
                     async (error) => {
-                        // หากผู้ใช้ไม่อนุญาต หรือดึงไม่ได้ ลองดึงค่าพิกัดล่าสุดที่เคยบันทึกไว้ใน Sheet
                         try {
                             const res = await fetch(`${SCRIPT_URL}?action=getGPS`);
                             const data = await res.json();
@@ -321,7 +320,6 @@
 
         async function fetchWeatherByCoords(lat, lon, locationLabel) {
             try {
-                // เรียกใช้ Open-Meteo API ฟรีเพื่อดึงอุณหภูมิและความชื้นปัจจุบัน
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
                 const data = await res.json();
                 if (data && data.current) {
@@ -338,7 +336,6 @@
             document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก (พิกัดพื้นฐาน)`;
             document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C | 💧 ความชื้น 65%`;
         }
-        // ---------------------------------------------
 
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
@@ -448,6 +445,18 @@
             updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลเรียบร้อยแล้ว');
         };
 
+        function filterForestCards() {
+            const query = document.getElementById('farmSearchInput').value.toLowerCase();
+            const farms = getFarmsList();
+            farms.forEach(login => {
+                const card = document.querySelector(`.tree-card[data-login="${login}"]`);
+                if (card) {
+                    if (login.toLowerCase().includes(query)) card.style.display = 'flex';
+                    else card.style.display = 'none';
+                }
+            });
+        }
+
         function renderForest() {
             const grid = document.getElementById('forest-grid'); grid.innerHTML = ''; 
             const farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]'); 
@@ -498,7 +507,7 @@
                 if (data.error || data.length === 0) { 
                     globalPortfolioData[login] = { error: true }; 
                 } else {
-                    const latest = data[0];
+                    const latest = data[0]; 
                     const balance = parseFloat(latest.balance); 
                     const profitLoss = parseFloat(latest.floating_pl);
 
@@ -655,6 +664,7 @@
         function updatePortfolioSummary() {
             let totalUsdBalance = 0, totalUsdProfit = 0, tTrees = 0;
             let totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0;
+            let totalUsdDD = 0; // ตัวแปรสำหรับคำนวณ Drawdown รวม
             let syncedCount = 0;
             
             let sumEquityFromSheet = 0; 
@@ -673,6 +683,9 @@
                     totalUsdToday += convertToUSD(d.profit_today || 0, d.currency);
                     totalUsdWeek += convertToUSD(d.profit_week || 0, d.currency);
                     totalUsdMonth += convertToUSD(d.profit_month || 0, d.currency);
+                    
+                    // นำ Drawdown แต่ละแปลง (ค่าติดลบ) มารวมกัน
+                    totalUsdDD += convertToUSD(d.dd_amount || 0, d.currency);
                 }
             });
 
@@ -708,6 +721,19 @@
             updateSum('sum-today', totalUsdToday); 
             updateSum('sum-week', totalUsdWeek); 
             updateSum('sum-month', totalUsdMonth);
+
+            // อัปเดตการแสดงผล Drawdown รวมในคอลัมน์ที่ 4
+            const sumDdElem = document.getElementById('sum-dd');
+            if (totalUsdDD < 0) {
+                const absDd = Math.abs(totalUsdDD);
+                const ddPct = (totalUsdBalance > 0) ? (absDd / totalUsdBalance) * 100 : 0;
+                // แสดงผลจำนวนเงินบรรทัดบน และเปอร์เซ็นต์ในวงเล็บบรรทัดล่าง
+                sumDdElem.innerHTML = `-$${absDd.toFixed(2)} <span style="font-size: 9px; font-weight: normal;">(-${ddPct.toFixed(2)}%)</span>`;
+                sumDdElem.style.color = '#fb923c'; // สีส้ม
+            } else {
+                sumDdElem.innerText = `$0.00`;
+                sumDdElem.style.color = 'var(--text-main)'; // สีขาวปกติถ้าไม่มี DD
+            }
 
             updateGlobalWeather(totalPercent);
         }
