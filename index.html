@@ -10,7 +10,7 @@
             --bg-dark: #050907;
             --glass-bg: rgba(14, 22, 19, 0.85);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+            --glass-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
             
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
@@ -18,8 +18,8 @@
             --accent-gold: #fbbf24;
             --accent-rose: #f43f5e;
             
-            --card-radius: 20px;
-            --btn-radius: 12px;
+            --card-radius: 16px;
+            --btn-radius: 10px;
             --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -33,34 +33,34 @@
                 radial-gradient(circle at 10% 5%, rgba(16, 185, 129, 0.07) 0%, transparent 45%),
                 radial-gradient(circle at 90% 95%, rgba(251, 191, 36, 0.04) 0%, transparent 45%);
             color: var(--text-main);
-            margin: 0; padding: 25px 15px 120px 15px;
+            margin: 0; padding: 15px 12px 100px 12px;
             min-height: 100vh; overflow-x: hidden;
             position: relative;
         }
 
         /* ภูเขาและแม่น้ำด้านหลัง */
         .landscape-bg {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 260px;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 200px;
             pointer-events: none; z-index: 0; opacity: 0.12;
             background-repeat: no-repeat; background-position: bottom center; background-size: cover;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2310b981' fill-opacity='0.4' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
         }
 
         .river-container {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 36px;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 30px;
             background: rgba(3, 10, 7, 0.95); backdrop-filter: blur(10px);
             border-top: 1px solid var(--glass-border); z-index: 99;
             display: flex; align-items: center; overflow: hidden;
         }
         .river-wave-track { display: flex; white-space: nowrap; animation: flowRiver 50s linear infinite; }
-        .river-wave-item { font-size: 12px; color: rgba(148, 163, 184, 0.7); padding-right: 50px; display: inline-flex; align-items: center; gap: 10px; }
+        .river-wave-item { font-size: 11px; color: rgba(148, 163, 184, 0.7); padding-right: 50px; display: inline-flex; align-items: center; gap: 8px; }
         @keyframes flowRiver { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
 
-        .container { max-width: 1320px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.6s var(--ease-smooth) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.5s var(--ease-smooth) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ปรับส่วนหัวด้านบนให้บีบอัดพอดีจอ ไม่ต้องเลื่อนดู */
-        .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; width: 100%; }
+        /* ส่วนหัวด้านบน (Compact & Fit) */
+        .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 15px; width: 100%; }
         .nav-badges { 
             display: flex; gap: 4px; align-items: center; justify-content: center; 
             flex-wrap: nowrap; width: 100%; max-width: 100%; padding: 0 2px;
@@ -68,195 +68,170 @@
         
         .badge { 
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); 
-            padding: 4px 6px; border-radius: 16px; font-size: 9px; color: var(--text-muted); 
+            padding: 4px 6px; border-radius: 14px; font-size: 9px; color: var(--text-muted); 
             backdrop-filter: blur(10px); white-space: nowrap; flex: 1; text-align: center;
             overflow: hidden; text-overflow: ellipsis;
         }
         
         .status-badge { 
             background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); 
-            padding: 4px 6px; border-radius: 16px; font-size: 9px; font-weight: 600; 
+            padding: 4px 6px; border-radius: 14px; font-size: 9px; font-weight: 600; 
             color: var(--accent-emerald); display: flex; align-items: center; justify-content: center; gap: 3px; 
             white-space: nowrap; flex: 1.1; text-align: center;
         }
         .status-dot-pulse { width: 5px; height: 5px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 6px var(--accent-emerald); animation: pulse 2s infinite; flex-shrink: 0; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
 
-        /* ลูกศรหมุนพร้อมเรืองแสง */
-        .sync-spin { 
-            display: inline-block; 
-            font-size: 11px;
-            animation: spinSync 1s linear infinite; 
-        }
-        .sync-glow {
-            text-shadow: 0 0 6px var(--accent-emerald), 0 0 10px var(--accent-emerald);
-            filter: drop-shadow(0 0 4px var(--accent-emerald));
-        }
-        @keyframes spinSync { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
-        }
+        .sync-spin { display: inline-block; font-size: 11px; animation: spinSync 1s linear infinite; }
+        .sync-glow { text-shadow: 0 0 6px var(--accent-emerald); filter: drop-shadow(0 0 4px var(--accent-emerald)); }
+        @keyframes spinSync { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        header { text-align: center; margin-bottom: 25px; }
-        h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 12px 0; background: linear-gradient(135deg, #ffffff 30%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header { text-align: center; margin-bottom: 16px; }
+        h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 8px 0; background: linear-gradient(135deg, #ffffff 30%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* สวนด้านบน */
+        /* สวนด้านบน (กระชับขึ้น) */
         .farm-eco-header-box {
             position: relative; background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
-            border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 16px; padding: 12px 20px;
-            max-width: 750px; margin: 0 auto 30px auto; overflow: hidden; backdrop-filter: blur(6px);
+            border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 8px 16px;
+            max-width: 650px; margin: 0 auto 16px auto; overflow: hidden; backdrop-filter: blur(6px);
         }
         .farm-eco-line { 
             position: relative; display: flex; justify-content: center; align-items: flex-end; 
-            gap: 12px; opacity: 0.95; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+            gap: 10px; opacity: 0.95; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
         }
         .farm-eco-line::-webkit-scrollbar { display: none; }
         .mountain-layer-back {
-            position: absolute; top: -6px; left: 0; width: 100%; display: flex; justify-content: space-around;
-            font-size: 26px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
+            position: absolute; top: -4px; left: 0; width: 100%; display: flex; justify-content: space-around;
+            font-size: 22px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
         }
         .farm-eco-line span { 
             position: relative; z-index: 1; display: inline-block; transition: transform 0.3s; 
             filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.25));
         }
         .farm-eco-line span.glowing {
-            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8)) drop-shadow(0 0 18px rgba(251, 191, 36, 0.5));
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8)) drop-shadow(0 0 14px rgba(251, 191, 36, 0.5));
             animation: treeGlow 3s ease-in-out infinite alternate;
         }
         @keyframes treeGlow {
-            0% { filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4)); transform: scale(1); }
-            100% { filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)); transform: scale(1.06); }
+            0% { filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.4)); transform: scale(1); }
+            100% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)); transform: scale(1.05); }
         }
 
-        /* กล่อง Dashboard หลักแบบ Professional Glassmorphism */
+        /* กล่อง Dashboard หลัก (ลด Padding และ Gap) */
         .glass-panel { 
             background: var(--glass-bg); backdrop-filter: blur(16px); 
             border: 1px solid var(--glass-border); border-radius: var(--card-radius); 
-            padding: 30px; margin-bottom: 30px; box-shadow: var(--glass-shadow); 
+            padding: 18px; margin-bottom: 16px; box-shadow: var(--glass-shadow); 
         }
-        .main-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 24px; }
+        .main-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 16px; }
         @media (max-width: 1100px) { .main-stats-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 650px) { .main-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 650px) { .main-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
         
         .stat-box { 
             background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; justify-content: center;
+            border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: center;
             transition: transform 0.2s, border-color 0.2s;
         }
-        .stat-box:hover { border-color: rgba(16, 185, 129, 0.25); transform: translateY(-2px); }
+        .stat-box:hover { border-color: rgba(16, 185, 129, 0.25); transform: translateY(-1px); }
         
         .stat-label { 
-            font-size: 9.5px; 
-            font-weight: 600; 
-            color: var(--text-muted); 
-            text-transform: uppercase; 
-            letter-spacing: 0.3px; 
-            margin-bottom: 6px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
+            font-size: 9px; font-weight: 600; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
-        .stat-value { font-size: 20px; font-weight: 600; color: var(--text-main); line-height: 1.2; letter-spacing: -0.3px; }
+        .stat-value { font-size: 18px; font-weight: 600; color: var(--text-main); line-height: 1.2; letter-spacing: -0.3px; }
         
-        .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); margin: 24px 0; }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); margin: 16px 0; }
         
-        /* สถิติย้อนหลัง (Today, Week, Month, Drawdown): จัดเรียงเป็น 4 คอลัมน์แถวเดียว */
-        .history-stats-grid { 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; 
-        }
-        @media (max-width: 768px) {
-            .history-stats-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        }
-        
+        /* สถิติย้อนหลัง */
+        .history-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; }
         .history-box { 
             background: rgba(0, 0, 0, 0.18); border: 1px solid rgba(255, 255, 255, 0.03); 
-            border-radius: 10px; padding: 10px 6px; text-align: center; 
+            border-radius: 8px; padding: 8px 4px; text-align: center; 
         }
-        .history-label { font-size: 8px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
-        .history-value { font-size: 12px; font-weight: 600; }
+        .history-label { font-size: 8px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; text-transform: uppercase; }
+        .history-value { font-size: 11px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
         /* แผงควบคุม ค้นหา และเรียงลำดับ */
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 16px; }
-        .toolbar-left, .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .toolbar-left, .toolbar-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
         .btn-delete-all { 
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); 
-            color: rgba(255, 255, 255, 0.5); width: 44px; height: 44px; border-radius: var(--btn-radius); 
-            font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; 
+            color: rgba(255, 255, 255, 0.5); width: 38px; height: 38px; border-radius: var(--btn-radius); 
+            font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; 
             backdrop-filter: blur(10px); transition: all 0.2s ease;
         }
-        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.35); color: var(--accent-rose); transform: translateY(-2px); }
+        .btn-delete-all:hover { background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.35); color: var(--accent-rose); }
 
         .search-box { 
             background: rgba(14, 22, 19, 0.7); border: 1px solid var(--glass-border); 
-            border-radius: var(--btn-radius); padding: 10px 18px; width: 260px; display: flex; align-items: center; gap: 10px;
-            backdrop-filter: blur(10px); transition: border-color 0.2s;
+            border-radius: var(--btn-radius); padding: 8px 14px; width: 220px; display: flex; align-items: center; gap: 8px;
+            backdrop-filter: blur(10px);
         }
-        .search-box:focus-within { border-color: rgba(16, 185, 129, 0.4); }
-        .search-input { background: transparent; border: none; color: var(--text-main); font-size: 13px; font-family: inherit; width: 100%; outline: none; }
+        .search-input { background: transparent; border: none; color: var(--text-main); font-size: 12px; font-family: inherit; width: 100%; outline: none; }
         
         .sort-select {
             background: rgba(14, 22, 19, 0.7); border: 1px solid var(--glass-border);
-            border-radius: var(--btn-radius); padding: 10px 16px; color: var(--text-main);
-            font-size: 13px; font-family: inherit; outline: none; cursor: pointer;
-            backdrop-filter: blur(10px); transition: border-color 0.2s;
+            border-radius: var(--btn-radius); padding: 8px 12px; color: var(--text-main);
+            font-size: 12px; font-family: inherit; outline: none; cursor: pointer;
+            backdrop-filter: blur(10px);
         }
-        .sort-select:focus { border-color: rgba(16, 185, 129, 0.4); }
         .sort-select option { background: var(--bg-dark); color: var(--text-main); }
 
         /* การ์ดแปลงเกษตร (Port Cards) */
-        #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
+        #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
         
         .tree-card { 
             background: var(--glass-bg); backdrop-filter: blur(14px); 
             border: 1px solid var(--glass-border); border-radius: var(--card-radius); 
-            padding: 22px; display: flex; flex-direction: column; 
-            transition: transform 0.25s var(--ease-smooth), box-shadow 0.25s var(--ease-smooth), border-color 0.25s; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3); position: relative; 
+            padding: 16px; display: flex; flex-direction: column; 
+            transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth), border-color 0.2s; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25); position: relative; 
         }
-        .tree-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 14px 32px rgba(0,0,0,0.45); z-index: 10; }
+        .tree-card:hover { transform: translateY(-3px); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 10; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .plot-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
-        .currency-badge { background: rgba(251, 191, 36, 0.12); color: var(--accent-gold); font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.25); font-weight: 600; letter-spacing: 0.5px; }
-        .stars { color: var(--accent-gold); font-size: 12px; }
-        .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.25); font-size: 16px; cursor: pointer; padding: 4px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .plot-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-main); }
+        .currency-badge { background: rgba(251, 191, 36, 0.12); color: var(--accent-gold); font-size: 9px; padding: 2px 6px; border-radius: 5px; border: 1px solid rgba(251, 191, 36, 0.25); font-weight: 600; }
+        .stars { color: var(--accent-gold); font-size: 11px; }
+        .btn-delete { background: transparent; border: none; color: rgba(255,255,255,0.25); font-size: 14px; cursor: pointer; padding: 2px; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
         .btn-delete:hover { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); }
 
         .showcase { 
-            position: relative; height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            margin-bottom: 16px; background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 70%); 
-            border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); overflow: hidden; padding-bottom: 8px; 
+            position: relative; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            margin-bottom: 12px; background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 70%); 
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); overflow: hidden; padding-bottom: 6px; 
         }
         .showcase.danger-zone { background: radial-gradient(circle at center, rgba(244, 63, 94, 0.1) 0%, transparent 70%) !important; border-color: rgba(244, 63, 94, 0.25) !important; }
 
-        .weather-pill { position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 500; background: rgba(0,0,0,0.45); padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 4px; z-index: 10; backdrop-filter: blur(6px); }
-        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 95px; width: 100%; margin-top: 8px; padding: 0 5px; }
-        .terrain-base { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 12px; z-index: 1; opacity: 0.8; letter-spacing: 2px; user-select: none; pointer-events: none; }
+        .weather-pill { position: absolute; top: 8px; right: 8px; font-size: 9px; font-weight: 500; background: rgba(0,0,0,0.45); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 3px; z-index: 10; backdrop-filter: blur(6px); }
+        .forest-cluster { position: relative; display: flex; justify-content: center; align-items: flex-end; height: 80px; width: 100%; margin-top: 6px; padding: 0 4px; }
+        .terrain-base { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 11px; z-index: 1; opacity: 0.8; letter-spacing: 2px; user-select: none; pointer-events: none; }
 
-        .tree-extra { position: absolute; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); line-height: 1; animation: floatTree 4s ease-in-out infinite; }
-        @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-        .tree-extra.withered { filter: grayscale(1) brightness(0.45) drop-shadow(0 3px 5px rgba(0,0,0,0.5)); animation: none !important; }
+        .tree-extra { position: absolute; z-index: 5; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); line-height: 1; animation: floatTree 4s ease-in-out infinite; }
+        @keyframes floatTree { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+        .tree-extra.withered { filter: grayscale(1) brightness(0.45) drop-shadow(0 2px 4px rgba(0,0,0,0.5)); animation: none !important; }
 
-        .level-badge { margin-top: 4px; font-size: 10px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); padding: 2px 9px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.18); z-index: 30; }
+        .level-badge { margin-top: 2px; font-size: 9px; font-weight: 500; color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.18); z-index: 30; }
 
-        .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .metric-item { background: rgba(0, 0, 0, 0.22); padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.02); }
-        .metric-item-compact { background: rgba(0, 0, 0, 0.22); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
-        .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 3px; font-weight: 600; letter-spacing: 0.3px; }
-        .metric-val { font-size: 13px; font-weight: 600; color: var(--text-main); }
-        .metric-val-pairs { font-size: 9px; font-weight: 400; color: #93c5fd; word-break: break-all; line-height: 1.3; }
+        .card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .metric-item { background: rgba(0, 0, 0, 0.22); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
+        .metric-item-compact { background: rgba(0, 0, 0, 0.22); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); }
+        .metric-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; font-weight: 600; letter-spacing: 0.3px; }
+        .metric-val { font-size: 12px; font-weight: 600; color: var(--text-main); }
+        .metric-val-pairs { font-size: 8.5px; font-weight: 400; color: #93c5fd; word-break: break-all; line-height: 1.2; }
 
-        .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0, 0, 0, 0.22); padding: 8px; border-radius: 10px; margin-bottom: 14px; gap: 4px; border: 1px solid rgba(255,255,255,0.02); }
+        .card-history { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0, 0, 0, 0.22); padding: 6px; border-radius: 8px; margin-bottom: 10px; gap: 4px; border: 1px solid rgba(255,255,255,0.02); }
         .c-hist-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.04); }
         .c-hist-item:last-child { border-right: none; }
-        .c-hist-label { font-size: 9px; color: var(--text-muted); font-weight: 600; }
-        .c-hist-val { font-size: 11px; font-weight: 600; }
+        .c-hist-label { font-size: 8px; color: var(--text-muted); font-weight: 600; }
+        .c-hist-val { font-size: 10px; font-weight: 600; }
 
-        .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.04); padding-top: 10px; margin-top: auto; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.04); padding-top: 8px; margin-top: auto; }
 
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
+        .empty-state { text-align: center; padding: 40px 15px; color: var(--text-muted); grid-column: 1 / -1; }
     </style>
 </head>
 <body>
@@ -266,7 +241,7 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- ส่วนหัวด้านบน: บีบอัดให้พอดีจอเดียว ไม่ต้องเลื่อนดู -->
+        <!-- ส่วนหัวด้านบน -->
         <div class="top-nav">
             <div class="nav-badges">
                 <div class="badge" id="weather-location-badge">📍 พิกัดล่าสุด</div>
@@ -288,16 +263,16 @@
                     <div class="mountain-layer-back">
                         <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
                     </div>
-                    <span style="font-size: 20px;">🌴</span>
-                    <span style="font-size: 16px;">🌿</span>
-                    <span style="font-size: 16px;">☘️</span>
-                    <span style="font-size: 16px;">🌵</span>
-                    <span style="font-size: 22px;">🏔️</span>
-                    <span class="glowing" style="font-size: 18px;">🌲</span>
-                    <span style="font-size: 15px;">🌳</span>
-                    <span style="font-size: 20px;">🌴</span>
+                    <span style="font-size: 18px;">🌴</span>
                     <span style="font-size: 14px;">🌿</span>
-                    <span class="glowing" style="font-size: 15px;">☘️</span>
+                    <span style="font-size: 14px;">☘️</span>
+                    <span style="font-size: 14px;">🌵</span>
+                    <span style="font-size: 20px;">🏔️</span>
+                    <span class="glowing" style="font-size: 16px;">🌲</span>
+                    <span style="font-size: 13px;">🌳</span>
+                    <span style="font-size: 18px;">🌴</span>
+                    <span style="font-size: 12px;">🌿</span>
+                    <span class="glowing" style="font-size: 13px;">☘️</span>
                 </div>
             </div>
         </header>
@@ -324,7 +299,7 @@
         <div class="toolbar">
             <div class="toolbar-left">
                 <div class="search-box">
-                    <span style="color: var(--text-muted); font-size: 13px;">🔍</span>
+                    <span style="color: var(--text-muted); font-size: 12px;">🔍</span>
                     <input type="text" id="farmSearchInput" class="search-input" placeholder="ค้นหาเลขพอร์ตแปลง..." oninput="filterForestCards()">
                 </div>
                 <select id="sortSelect" class="sort-select" onchange="changeSortMode()">
@@ -716,50 +691,50 @@
             if (data.profit < 0) {
                 showcase.classList.add('danger-zone');
                 cluster.setAttribute('data-state', 'danger');
-                treeHtml = `<div class="tree-extra withered" style="font-size:38px; bottom:20px;">🥀</div>`;
+                treeHtml = `<div class="tree-extra withered" style="font-size:32px; bottom:16px;">🥀</div>`;
                 tierText = '⚠️ พื้นที่เฝ้าระวังพิเศษ'; plotEmoji = '🌵'; weatherText = 'พายุฝนฟ้าคะนอง ⛈️';
             } else {
                 showcase.classList.remove('danger-zone');
                 
                 if (relativePercent >= 90) { 
                     cluster.setAttribute('data-state', 'legendary');
-                    treeHtml = `<div class="tree-extra" style="font-size:52px; bottom:12px; filter:drop-shadow(0 0 14px rgba(251,191,36,0.9));">🌲</div><div class="tree-extra" style="font-size:36px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:36px; bottom:8px; right:18px;">🌴</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:44px; bottom:10px; filter:drop-shadow(0 0 12px rgba(251,191,36,0.9));">🌲</div><div class="tree-extra" style="font-size:30px; bottom:6px; left:16px;">🌳</div><div class="tree-extra" style="font-size:30px; bottom:6px; right:16px;">🌴</div>`;
                     tierText = '🌟 ป่าดงดิบมหาเศรษฐี (Lv.10)'; plotEmoji = '🌲'; weatherText = 'ทองคำเปล่งประกาย ✨'; starCount = '⭐⭐⭐⭐⭐';
                 } else if (relativePercent >= 80) { 
                     cluster.setAttribute('data-state', 'epic');
-                    treeHtml = `<div class="tree-extra" style="font-size:48px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:34px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:34px; bottom:8px; right:18px;">🌲</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:40px; bottom:10px;">🌲</div><div class="tree-extra" style="font-size:28px; bottom:6px; left:16px;">🌳</div><div class="tree-extra" style="font-size:28px; bottom:6px; right:16px;">🌲</div>`;
                     tierText = '👑 มหาพฤกษา (Lv.9)'; plotEmoji = '🌳'; weatherText = 'แสงออร่า 🌟'; starCount = '⭐⭐⭐⭐⭐';
                 } else if (relativePercent >= 70) { 
                     cluster.setAttribute('data-state', 'epic');
-                    treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:32px; bottom:8px; right:22px;">🌳</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:38px; bottom:10px;">🌲</div><div class="tree-extra" style="font-size:26px; bottom:6px; right:18px;">🌳</div>`;
                     tierText = '💎 ป่าสนศักดิ์สิทธิ์ (Lv.8)'; plotEmoji = '🌲'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
                 } else if (relativePercent >= 60) { 
                     cluster.setAttribute('data-state', 'epic');
-                    treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div><div class="tree-extra" style="font-size:30px; bottom:8px; left:22px;">🌲</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:10px;">🌳</div><div class="tree-extra" style="font-size:25px; bottom:6px; left:18px;">🌲</div>`;
                     tierText = '🌳 ป่าอุดมสมบูรณ์ (Lv.7)'; plotEmoji = '🌳'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
                 } else if (relativePercent >= 50) { 
                     cluster.setAttribute('data-state', 'rare');
-                    treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:38px; bottom:10px;">🌲</div>`;
                     tierText = '🌿 สวนป่าร่มรื่น (Lv.6)'; plotEmoji = '🌿'; weatherText = 'ลมโชย 🍃'; starCount = '⭐⭐⭐';
                 } else if (relativePercent >= 40) { 
                     cluster.setAttribute('data-state', 'rare');
-                    treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:34px; bottom:10px;">🌳</div>`;
                     tierText = '🌲 ต้นไม้ใหญ่ (Lv.5)'; plotEmoji = '🌲'; weatherText = 'อากาศดี ⛅'; starCount = '⭐⭐⭐';
                 } else if (relativePercent >= 30) { 
                     cluster.setAttribute('data-state', 'rare');
-                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:14px;">🌳</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:30px; bottom:10px;">🌳</div>`;
                     tierText = '🌿 ต้นไม้กำลังโต (Lv.4)'; plotEmoji = '🌳'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
                 } else if (relativePercent >= 20) { 
                     cluster.setAttribute('data-state', 'seedling');
-                    treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:14px;">🌿</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:30px; bottom:10px;">🌿</div>`;
                     tierText = '🌿 ต้นไม้เล็ก (Lv.3)'; plotEmoji = '🌿'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
                 } else if (relativePercent >= 10) { 
                     cluster.setAttribute('data-state', 'seedling');
-                    treeHtml = `<div class="tree-extra" style="font-size:32px; bottom:14px;">🌱</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:26px; bottom:10px;">🌱</div>`;
                     tierText = '🌱 ต้นกล้า (Lv.2)'; plotEmoji = '🌱'; weatherText = 'รดน้ำพรวนดิน 💧'; starCount = '⭐';
                 } else { 
                     cluster.setAttribute('data-state', 'seedling');
-                    treeHtml = `<div class="tree-extra" style="font-size:24px; bottom:14px;">🌱</div>`;
+                    treeHtml = `<div class="tree-extra" style="font-size:22px; bottom:10px;">🌱</div>`;
                     tierText = '🌱 เพาะเมล็ด (Lv.1)'; plotEmoji = '🌱'; weatherText = 'ลงดินเพาะปลูก 💧'; starCount = '⭐';
                 }
             }
