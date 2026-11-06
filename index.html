@@ -33,7 +33,7 @@
                 radial-gradient(circle at 10% 5%, rgba(16, 185, 129, 0.07) 0%, transparent 45%),
                 radial-gradient(circle at 90% 95%, rgba(251, 191, 36, 0.04) 0%, transparent 45%);
             color: var(--text-main);
-            margin: 0; padding: 30px 20px 120px 20px;
+            margin: 0; padding: 25px 15px 120px 15px;
             min-height: 100vh; overflow-x: hidden;
             position: relative;
         }
@@ -59,39 +59,38 @@
         .container { max-width: 1320px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.6s var(--ease-smooth) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ส่วนหัวด้านบน */
-        .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; width: 100%; }
+        /* ปรับส่วนหัวด้านบนให้บีบอัดพอดีจอ ไม่ต้องเลื่อนดู */
+        .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; width: 100%; }
         .nav-badges { 
-            display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; 
-            overflow-x: auto; max-width: 100%; padding: 6px 4px;
-            scrollbar-width: none; -webkit-overflow-scrolling: touch; 
+            display: flex; gap: 4px; align-items: center; justify-content: center; 
+            flex-wrap: nowrap; width: 100%; max-width: 100%; padding: 0 2px;
         }
-        .nav-badges::-webkit-scrollbar { display: none; }
         
         .badge { 
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); 
-            padding: 6px 14px; border-radius: 20px; font-size: 11px; color: var(--text-muted); 
-            backdrop-filter: blur(10px); white-space: nowrap; flex-shrink: 0; 
+            padding: 4px 6px; border-radius: 16px; font-size: 9px; color: var(--text-muted); 
+            backdrop-filter: blur(10px); white-space: nowrap; flex: 1; text-align: center;
+            overflow: hidden; text-overflow: ellipsis;
         }
         
         .status-badge { 
             background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); 
-            padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; 
-            color: var(--accent-emerald); display: flex; align-items: center; gap: 6px; 
-            white-space: nowrap; flex-shrink: 0; 
+            padding: 4px 6px; border-radius: 16px; font-size: 9px; font-weight: 600; 
+            color: var(--accent-emerald); display: flex; align-items: center; justify-content: center; gap: 3px; 
+            white-space: nowrap; flex: 1.1; text-align: center;
         }
-        .status-dot-pulse { width: 6px; height: 6px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 8px var(--accent-emerald); animation: pulse 2s infinite; }
+        .status-dot-pulse { width: 5px; height: 5px; background-color: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 6px var(--accent-emerald); animation: pulse 2s infinite; flex-shrink: 0; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
 
         /* ลูกศรหมุนพร้อมเรืองแสง */
         .sync-spin { 
             display: inline-block; 
-            font-size: 14px;
+            font-size: 11px;
             animation: spinSync 1s linear infinite; 
         }
         .sync-glow {
-            text-shadow: 0 0 8px var(--accent-emerald), 0 0 14px var(--accent-emerald);
-            filter: drop-shadow(0 0 6px var(--accent-emerald));
+            text-shadow: 0 0 6px var(--accent-emerald), 0 0 10px var(--accent-emerald);
+            filter: drop-shadow(0 0 4px var(--accent-emerald));
         }
         @keyframes spinSync { 
             0% { transform: rotate(0deg); } 
@@ -146,7 +145,6 @@
         }
         .stat-box:hover { border-color: rgba(16, 185, 129, 0.25); transform: translateY(-2px); }
         
-        /* บังคับให้หัวข้อการ์ดแสดงผลในบรรทัดเดียวกันโดยไม่ขึ้นบรรทัดใหม่ และปรับขนาดฟอนต์ให้พอดีช่อง */
         .stat-label { 
             font-size: 9.5px; 
             font-weight: 600; 
@@ -268,15 +266,16 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
+        <!-- ส่วนหัวด้านบน: บีบอัดให้พอดีจอเดียว ไม่ต้องเลื่อนดู -->
         <div class="top-nav">
             <div class="nav-badges">
-                <div class="badge" id="weather-location-badge">📍 กำลังตรวจสอบพิกัด...</div>
-                <div class="badge" id="weather-temp-badge">🌡️ --°C | 💧 --%</div>
-                <div class="badge" id="season-badge">☀️ ฤดูกาล</div>
-                <div class="badge" id="theme-badge">⏳ สภาพอากาศ...</div>
+                <div class="badge" id="weather-location-badge">📍 พิกัดล่าสุด</div>
+                <div class="badge" id="weather-temp-badge">🌡️ --°C</div>
+                <div class="badge" id="season-badge">☀️ ฤดูหนาว</div>
+                <div class="badge" id="theme-badge">⏳ ปกติ</div>
                 <div class="status-badge">
                     <div class="status-dot-pulse"></div> 
-                    <span>Farm Online</span> 
+                    <span>Online</span> 
                     <span id="sync-icon" class="sync-spin" style="margin-left: 2px;">↻</span>
                 </div>
             </div>
@@ -305,7 +304,6 @@
 
         <div class="glass-panel">
             <div class="main-stats-grid">
-                <!-- คง (USD) ไว้และจัดให้อยู่ในบรรทัดเดียวกันโดยไม่ตกบรรทัด -->
                 <div class="stat-box"><div class="stat-label">💰 TOTAL BALANCE (USD)</div><div class="stat-value" id="sum-balance">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">💎 TOTAL EQUITY (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📈 FLOATING P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
@@ -409,14 +407,14 @@
                         try {
                             await fetch(`${SCRIPT_URL}?action=updateGPS&lat=${lat}&lon=${lon}`);
                         } catch(e) {}
-                        fetchWeatherByCoords(lat, lon, "พิกัดล่าสุด (บันทึกแล้ว)");
+                        fetchWeatherByCoords(lat, lon, "พิกัดล่าสุด");
                     }, 
                     async (error) => {
                         try {
                             const res = await fetch(`${SCRIPT_URL}?action=getGPS`);
                             const data = await res.json();
                             if(data && data.lat && data.lon) {
-                                fetchWeatherByCoords(data.lat, data.lon, "พิกัดที่บันทึกไว้");
+                                fetchWeatherByCoords(data.lat, data.lon, "พิกัดที่บันทึก");
                             } else {
                                 fallbackDefaultWeather(); 
                             }
@@ -437,7 +435,7 @@
                 const data = await res.json();
                 if (data && data.current) {
                     document.getElementById('weather-location-badge').innerHTML = `📍 ${locationLabel}`;
-                    document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C | 💧 ความชื้น ${data.current.relative_humidity_2m}%`;
+                    document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C`;
                     isNightTime = data.current.is_day === 0;
                 }
             } catch(e) { fallbackDefaultWeather(); }
@@ -446,31 +444,31 @@
         function fallbackDefaultWeather() {
             const hour = new Date().getHours();
             isNightTime = (hour >= 18 || hour < 6);
-            document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก (พิกัดพื้นฐาน)`;
-            document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C | 💧 ความชื้น 65%`;
+            document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก`;
+            document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C`;
         }
 
         function updateGlobalWeather(totalPercent) {
-            let themeName = 'หมอกบางเบา 🌫️';
-            let bgDark = '#050907'; let glowTop = 'rgba(16, 185, 129, 0.07)'; let glowBottom = 'rgba(251, 191, 36, 0.04)'; let themeBorder = 'rgba(255, 255, 255, 0.08)';
+            let themeName = 'ปกติ ⛅';
+            let bgDark = '#050907'; 
 
             if (totalPercent >= 15) {
-                themeName = 'ผลผลิตงอกงามรุ้งงามวิ้งค์ 🌈💎'; window.weatherParticles = ['✨', '🌟', '🌈', '💎'];
-                bgDark = isNightTime ? '#020604' : '#041007'; glowTop = 'rgba(16, 185, 129, 0.22)'; glowBottom = 'rgba(251, 191, 36, 0.18)'; themeBorder = 'rgba(16, 185, 129, 0.35)';
+                themeName = 'รุ้งงาม 🌈';
+                bgDark = isNightTime ? '#020604' : '#041007'; 
             } else if (totalPercent >= 5) {
-                themeName = 'แดดจ้าประกายทอง 🌟✨'; window.weatherParticles = ['☀️', '✨', '🌟'];
-                bgDark = isNightTime ? '#020604' : '#041007'; glowTop = 'rgba(16, 185, 129, 0.18)'; glowBottom = 'rgba(251, 191, 36, 0.12)'; themeBorder = 'rgba(16, 185, 129, 0.25)';
+                themeName = 'แดดจ้า ☀️';
+                bgDark = isNightTime ? '#020604' : '#041007'; 
             } else if (totalPercent >= 0) {
-                themeName = 'อากาศดีสดใส ⛅✨'; window.weatherParticles = ['🍃', '☀️'];
-                bgDark = isNightTime ? '#030704' : '#050907'; glowTop = 'rgba(16, 185, 129, 0.08)'; glowBottom = 'rgba(251, 191, 36, 0.05)'; themeBorder = 'rgba(255, 255, 255, 0.1)';
+                themeName = 'สดใส ⛅';
+                bgDark = isNightTime ? '#030704' : '#050907'; 
             } else {
-                themeName = 'พายุฝนฟ้าคะนอง ⛈️'; window.weatherParticles = ['💧', '🌧️', '⚡'];
-                bgDark = isNightTime ? '#080304' : '#100608'; glowTop = 'rgba(244, 63, 94, 0.08)'; glowBottom = 'rgba(159, 18, 57, 0.05)'; themeBorder = 'rgba(244, 63, 94, 0.18)';
+                themeName = 'พายุ ⛈️';
+                bgDark = isNightTime ? '#080304' : '#100608'; 
             }
 
             const root = document.documentElement;
             root.style.setProperty('--bg-dark', bgDark);
-            document.getElementById('theme-badge').innerHTML = `สภาพอากาศ: ${themeName}`;
+            document.getElementById('theme-badge').innerHTML = `${themeName}`;
         }
 
         async function syncAndRefreshAll() {
