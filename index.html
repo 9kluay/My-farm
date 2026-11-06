@@ -59,7 +59,7 @@
         .container { max-width: 1320px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.6s var(--ease-smooth) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ปรับส่วนหัวด้านบนให้เรียงแถวเดียวยาวออกข้าง เลื่อนแนวนอนได้สมูทไม่ตกบรรทัด */
+        /* ส่วนหัวด้านบน */
         .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; width: 100%; }
         .nav-badges { 
             display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; 
@@ -145,7 +145,19 @@
             transition: transform 0.2s, border-color 0.2s;
         }
         .stat-box:hover { border-color: rgba(16, 185, 129, 0.25); transform: translateY(-2px); }
-        .stat-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        
+        /* บังคับให้หัวข้อการ์ดแสดงผลในบรรทัดเดียวกันโดยไม่ขึ้นบรรทัดใหม่ และปรับขนาดฟอนต์ให้พอดีช่อง */
+        .stat-label { 
+            font-size: 9.5px; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3px; 
+            margin-bottom: 6px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
         .stat-value { font-size: 20px; font-weight: 600; color: var(--text-main); line-height: 1.2; letter-spacing: -0.3px; }
         
         .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); margin: 24px 0; }
@@ -256,7 +268,6 @@
     <div class="river-container"><div class="river-wave-track" id="riverTrack"></div></div>
 
     <div class="container">
-        <!-- แถวด้านบน จัดเรียงออกข้างแบบเลื่อนแนวนอนสมูท ไม่ตกบรรทัด -->
         <div class="top-nav">
             <div class="nav-badges">
                 <div class="badge" id="weather-location-badge">📍 กำลังตรวจสอบพิกัด...</div>
@@ -294,9 +305,11 @@
 
         <div class="glass-panel">
             <div class="main-stats-grid">
-                <div class="stat-box"><div class="stat-label">💰 Total Balance (USD)</div><div class="stat-value" id="sum-balance">$0.00</div></div>
-                <div class="stat-box"><div class="stat-label">💎 Total Equity (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
-                <div class="stat-box"><div class="stat-label">📈 Floating P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
+                <!-- คง (USD) ไว้และจัดให้อยู่ในบรรทัดเดียวกันโดยไม่ตกบรรทัด -->
+                <div class="stat-box"><div class="stat-label">💰 TOTAL BALANCE (USD)</div><div class="stat-value" id="sum-balance">$0.00</div></div>
+                <div class="stat-box"><div class="stat-label">💎 TOTAL EQUITY (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
+                <div class="stat-box"><div class="stat-label">📈 FLOATING P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
+                
                 <div class="stat-box"><div class="stat-label">📊 Profit %</div><div class="stat-value" id="sum-percent">0.00%</div></div>
                 <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms" style="color: var(--accent-emerald);">0 แปลง</div></div>
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
