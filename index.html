@@ -195,7 +195,7 @@
                 <div class="stat-box"><div class="stat-label">💎 Total Equity (USD)</div><div class="stat-value" id="sum-equity">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📈 Floating P/L (USD)</div><div class="stat-value" id="sum-pl">$0.00</div></div>
                 <div class="stat-box"><div class="stat-label">📊 Profit %</div><div class="stat-value" id="sum-percent">0.00%</div></div>
-                <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms">0/0 แปลง</div></div>
+                <div class="stat-box"><div class="stat-label">🌲 Total Farms</div><div class="stat-value" id="sum-farms" style="color: var(--accent-emerald);">0 แปลง</div></div>
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
@@ -250,6 +250,7 @@
             return Number(amount) * rate;
         }
 
+        // ฟังก์ชันหาว่าฟาร์มไหนมีมูลค่า(USD) สูงสุดในระบบปัจจุบัน
         function getMaxFarmBalance() {
             let max = 0;
             for (const key in globalPortfolioData) {
@@ -365,6 +366,7 @@
             const farms = getFarmsList();
             if (farms.length > 0) {
                 await Promise.all(farms.map(login => fetchNodeData(login)));
+                // เรียกอัปเดต UI อีกรอบหลังจากข้อมูลครบแล้ว เพื่อให้ระดับต้นไม้คำนวณ % ได้ถูกต้อง
                 farms.forEach(login => updateUICard(login));
             }
             setTimeout(() => { syncIcon.classList.remove('show'); }, 400);
@@ -492,16 +494,14 @@
                 if (data.error || data.length === 0) { 
                     globalPortfolioData[login] = { error: true }; 
                 } else {
-                    const latest = data[0]; 
+                    const latest = data[0]; // อ่านค่าที่ Backend ส่งมาให้
                     const balance = parseFloat(latest.balance); 
                     const profitLoss = parseFloat(latest.floating_pl);
-                    const credit = parseFloat(latest.credit || 0); // <--- ดึงค่า credit จาก Backend
 
                     globalPortfolioData[login] = { 
                         balance: balance, 
-                        equity: parseFloat(latest.equity), 
+                        equity_from_sheet: parseFloat(latest.equity), // เก็บค่า equity ดิบจาก sheet
                         profit: profitLoss,
-                        credit: credit, // <--- เพิ่มลงไปใน data ของพอร์ต
                         percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, 
                         open_positions: parseInt(latest.open_positions || 0), 
                         profit_orders: parseInt(latest.profit_orders || 0), 
@@ -539,14 +539,17 @@
             document.getElementById(`pairs-${login}`).innerText = data.open_pairs;
             document.getElementById(`bal-${login}`).innerText = `${data.balance.toFixed(2)} ${data.currency}`; 
             
-            // <--- ส่วนที่แยกตัวเลขโบนัส (Credit) ของแต่ละแปลงออกจาก Equity --->
+            // --- คำนวณ Equity บนแดชบอร์ด (Balance + P/L) และหา Credit ส่วนต่าง (สำหรับรายแปลง) ---
+            const dashboardEquity = data.balance + data.profit;
+            const calculatedCredit = data.equity_from_sheet - dashboardEquity;
+            
             const eqDiv = document.getElementById(`eq-${login}`);
-            if (data.credit > 0) {
-                const netEq = data.equity - data.credit; // หักเครดิตออกเพื่อให้เห็น Equity จริง
-                eqDiv.innerHTML = `${netEq.toFixed(2)} ${data.currency} <span style="font-size: 9px; color: var(--text-muted);">+${data.credit.toFixed(2)}</span>`;
+            if (calculatedCredit > 0.01) { // เผื่อความคลาดเคลื่อนจุดทศนิยมเล็กน้อย
+                eqDiv.innerHTML = `${dashboardEquity.toFixed(2)} ${data.currency} <span style="font-size: 6px; color: var(--text-muted);">+${calculatedCredit.toFixed(2)}</span>`;
             } else {
-                eqDiv.innerText = `${data.equity.toFixed(2)} ${data.currency}`;
+                eqDiv.innerText = `${dashboardEquity.toFixed(2)} ${data.currency}`;
             }
+            // ------------------------------------------------------------------------------------
             
             const plDiv = document.getElementById(`pl-${login}`);
             plDiv.className = `metric-val ${getColorClass(data.profit)}`; 
@@ -651,20 +654,23 @@
         }
 
         function updatePortfolioSummary() {
-            let totalUsdBalance = 0, totalUsdEquity = 0, totalUsdProfit = 0, tTrees = 0;
+            let totalUsdBalance = 0, totalUsdProfit = 0, tTrees = 0;
             let totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0;
             let syncedCount = 0;
-            let totalUsdCredit = 0; // <--- เพิ่มตัวแปรสำหรับรวมยอด Credit 
             
+            let sumEquityFromSheet = 0; // รวม Equity ดิบจากชีททั้งหมด
+
             const allFarms = getFarmsList();
             allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
                 if (d && !d.error && d.balance > 0) { 
                     syncedCount++;
                     totalUsdBalance += convertToUSD(d.balance, d.currency);
-                    totalUsdEquity += convertToUSD(d.equity, d.currency);
                     totalUsdProfit += convertToUSD(d.profit, d.currency);
-                    totalUsdCredit += convertToUSD(d.credit || 0, d.currency); // <--- บวกยอด credit เพิ่มเข้าไป
+                    
+                    // แปลง Equity จากชีทให้อยู่ในหน่วย USD ก่อนนำมารวม
+                    sumEquityFromSheet += convertToUSD(d.equity_from_sheet, d.currency); 
+                    
                     tTrees += d.open_positions; 
                     totalUsdToday += convertToUSD(d.profit_today || 0, d.currency);
                     totalUsdWeek += convertToUSD(d.profit_week || 0, d.currency);
@@ -674,14 +680,17 @@
 
             document.getElementById('sum-balance').innerText = `$${totalUsdBalance.toFixed(2)}`; 
             
-            // <--- ส่วนที่แยกตัวเลขโบนัส (Credit) ของ Total Equity ออกมา --->
-            const totalEqElem = document.getElementById('sum-equity');
-            if (totalUsdCredit > 0) {
-                const netTotalEquity = totalUsdEquity - totalUsdCredit; // หักเครดิตออก
-                totalEqElem.innerHTML = `$${netTotalEquity.toFixed(2)} <span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">+$${totalUsdCredit.toFixed(2)}</span>`;
+            // --- คำนวณ Equity บนแดชบอร์ดรวม และหา Credit ส่วนต่าง (สำหรับภาพรวมด้านบน) ---
+            const totalDashboardEquity = totalUsdBalance + totalUsdProfit;
+            const totalCalculatedCredit = sumEquityFromSheet - totalDashboardEquity;
+            
+            const sumEqElem = document.getElementById('sum-equity');
+            if (totalCalculatedCredit > 0.01) { // เผื่อจุดทศนิยม
+                sumEqElem.innerHTML = `$${totalDashboardEquity.toFixed(2)} <span style="font-size: 6px; color: var(--text-muted); font-weight: normal;">+$${totalCalculatedCredit.toFixed(2)}</span>`;
             } else {
-                totalEqElem.innerText = `$${totalUsdEquity.toFixed(2)}`;
+                sumEqElem.innerText = `$${totalDashboardEquity.toFixed(2)}`;
             }
+            // ---------------------------------------------------------------------------------
             
             const plElem = document.getElementById('sum-pl'); 
             plElem.className = 'stat-value ' + getColorClass(totalUsdProfit); 
