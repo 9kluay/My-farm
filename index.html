@@ -57,13 +57,8 @@
             80% { opacity: 0.8; }
             100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
         }
-        @keyframes fallRain {
-            0% { transform: translateY(-20px); opacity: 0; }
-            10% { opacity: 0.9; }
-            100% { transform: translateY(105vh); opacity: 0.2; }
-        }
 
-        /* หิ่งห้อย (โหมดกลางคืน - ลดลง 35%) */
+        /* หิ่งห้อย (โหมดกลางคืน) */
         .firefly {
             position: fixed; border-radius: 50%;
             background-color: #d9f99d; 
@@ -130,14 +125,12 @@
             font-size: 38px; opacity: 0.25; filter: blur(1px); pointer-events: none; z-index: 0;
         }
         
-        /* สไตล์ต้นไม้ปกติ (เลเยอร์หลัง) */
         .farm-eco-line span.forest-tree { 
             position: relative; display: inline-block; transition: transform 0.3s; 
             filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.15));
             margin: 0 -8px; z-index: 2; 
         }
         
-        /* สไตล์ต้นไม้บวกกำไร (แถวหน้า + เรืองแสง) */
         .farm-eco-line span.forest-tree.glowing {
             z-index: 10; 
             filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.9)) drop-shadow(0 0 16px rgba(251, 191, 36, 0.7));
@@ -164,13 +157,32 @@
         .history-value { font-size: 11px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-        .toolbar-left, .toolbar-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .btn-delete-all { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); color: rgba(255, 255, 255, 0.5); width: 38px; height: 38px; border-radius: var(--btn-radius); font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: all 0.2s ease; }
+        /* แถบเครื่องมือ: ลดขนาดครึ่งหนึ่งและวางแถวเดียว */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: nowrap; gap: 6px; width: 100%; }
+        .toolbar-left { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; width: 100%; }
+        .toolbar-right { display: flex; align-items: center; flex-shrink: 0; }
+        
+        .btn-delete-all { 
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); 
+            color: rgba(255, 255, 255, 0.5); width: 34px; height: 34px; border-radius: var(--btn-radius); 
+            font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; 
+            backdrop-filter: blur(10px); transition: all 0.2s ease; flex-shrink: 0;
+        }
         .btn-delete-all:hover { background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.35); color: var(--accent-rose); }
-        .search-box { background: rgba(14, 22, 19, 0.7); border: 1px solid var(--glass-border); border-radius: var(--btn-radius); padding: 8px 14px; width: 220px; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px); }
-        .search-input { background: transparent; border: none; color: var(--text-main); font-size: 12px; font-family: inherit; width: 100%; outline: none; }
-        .sort-select { background: rgba(14, 22, 19, 0.7); border: 1px solid var(--glass-border); border-radius: var(--btn-radius); padding: 8px 12px; color: var(--text-main); font-size: 12px; font-family: inherit; outline: none; cursor: pointer; backdrop-filter: blur(10px); }
+
+        .search-box { 
+            background: rgba(14, 22, 19, 0.7); border: 1px solid var(--glass-border); 
+            border-radius: var(--btn-radius); padding: 6px 10px; flex: 1; min-width: 0; 
+            display: flex; align-items: center; gap: 6px; backdrop-filter: blur(10px); height: 34px;
+        }
+        .search-input { background: transparent; border: none; color: var(--text-main); font-size: 11px; font-family: inherit; width: 100%; outline: none; }
+        
+        .sort-select {
+            background: rgba(14, 22, 19, 0.7); border: 1px solid var(--glass-border);
+            border-radius: var(--btn-radius); padding: 0 8px; color: var(--text-main);
+            font-size: 11px; font-family: inherit; outline: none; cursor: pointer;
+            backdrop-filter: blur(10px); height: 34px; flex: 1; min-width: 0; text-overflow: ellipsis;
+        }
         .sort-select option { background: var(--bg-dark); color: var(--text-main); }
 
         #forest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
@@ -232,7 +244,6 @@
         <header>
             <h1>K sarakharm Farm EA</h1>
             <div class="farm-eco-header-box">
-                <!-- โซนนี้จะถูก Render ต้นไม้มาจากข้อมูลฟาร์มจริงอัตโนมัติ -->
                 <div class="farm-eco-line" id="global-forest-line">
                     <div class="mountain-layer-back">
                         <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
@@ -261,16 +272,17 @@
             </div>
         </div>
 
+        <!-- แถบเครื่องมือขนาดครึ่งหนึ่งและวางแถวเดียว -->
         <div class="toolbar">
             <div class="toolbar-left">
                 <div class="search-box">
-                    <span style="color: var(--text-muted); font-size: 12px;">🔍</span>
-                    <input type="text" id="farmSearchInput" class="search-input" placeholder="ค้นหาเลขพอร์ตแปลง..." oninput="filterForestCards()">
+                    <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+                    <input type="text" id="farmSearchInput" class="search-input" placeholder="ค้นหาเลขพอร์ต..." oninput="filterForestCards()">
                 </div>
                 <select id="sortSelect" class="sort-select" onchange="changeSortMode()">
                     <option value="balance" selected>💰 เรียงตาม Balance</option>
                     <option value="login">📌 เรียงตามเลขพอร์ต</option>
-                    <option value="percent">📈 เรียงตาม % กำไร/ขาดทุน</option>
+                    <option value="percent">📈 เรียงตาม % กำไร</option>
                 </select>
             </div>
             <div class="toolbar-right">
@@ -320,7 +332,6 @@
             document.getElementById('season-badge').innerHTML = `${season.icon} ${season.name}`;
             
             fetchRealWorldWeather(); 
-            
             renderForest(); 
             await syncAndRefreshAll(); 
 
@@ -328,7 +339,6 @@
             setInterval(() => { fetchRealWorldWeather(); }, 900000);
         };
 
-        // ระบบจัดการบรรยากาศ (กลางวัน = ละอองดอกไม้ | กลางคืน = หิ่งห้อย ลดลง 35%)
         let activeEnvironmentInterval = null;
 
         function setupEnvironmentEffects() {
@@ -336,7 +346,6 @@
             document.querySelectorAll('.weather-particle, .firefly').forEach(el => el.remove());
 
             if (!isNightTime) {
-                // --- โหมดกลางวัน: ละอองดอกไม้และใบไม้ปลิว ---
                 const flowerParticles = ['🌸', '🍃', '✨', '🌼'];
                 activeEnvironmentInterval = setInterval(() => {
                     if (document.hidden) return; 
@@ -352,7 +361,6 @@
                     setTimeout(() => particle.remove(), 9000);
                 }, 1400);
             } else {
-                // --- โหมดกลางคืน: หิ่งห้อย (ลดจำนวนลง 35% เหลือประมาณ 26 ตัว) ---
                 const fireflyCount = 26; 
                 for (let i = 0; i < fireflyCount; i++) {
                     let firefly = document.createElement('div');
@@ -407,7 +415,7 @@
                     document.getElementById('weather-humidity-badge').innerHTML = `💧 ${data.current.relative_humidity_2m}%`;
                     document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C`;
                     isNightTime = data.current.is_day === 0;
-                    setupEnvironmentEffects(); // อัปเดตเอฟเฟกต์ตามช่วงเวลากลางวัน/กลางคืน
+                    setupEnvironmentEffects(); 
                 }
             } catch(e) { fallbackDefaultWeather(); }
         }
@@ -430,7 +438,6 @@
             document.getElementById('theme-badge').innerHTML = `${themeName}`;
         }
 
-        // ฟังก์ชันสร้างสวนป่าด้านบน ให้ต้นไม้ซ้อนกัน และดันต้นที่บวกกำไรมาแถวหน้า
         function renderGlobalForest() {
             const forestLine = document.getElementById('global-forest-line');
             if (!forestLine) return;
@@ -457,15 +464,12 @@
                     const usdBalance = convertToUSD(d.balance, d.currency);
                     const relativePercent = (usdBalance / maxBalance) * 100;
                     
-                    let emoji = '🌱'; let size = '16px'; 
-                    let glowClass = ''; 
+                    let emoji = '🌱'; let size = '16px'; let glowClass = ''; 
                     
                     if (d.profit < 0) {
                         emoji = '🌵'; size = '24px';
                     } else {
-                        if (d.profit > 0) {
-                            glowClass = 'glowing'; // ฟาร์มบวกกำไรอยู่แถวหน้าและเรืองแสง
-                        }
+                        if (d.profit > 0) glowClass = 'glowing'; 
                         
                         if (relativePercent >= 90) { emoji = '🌲'; size = '40px'; } 
                         else if (relativePercent >= 80) { emoji = '🌳'; size = '36px'; } 
@@ -478,7 +482,6 @@
                         else if (relativePercent >= 10) { emoji = '🌱'; size = '20px'; } 
                         else { emoji = '🌱'; size = '18px'; }
                     }
-                    
                     treesHtml += `<span class="forest-tree ${glowClass}" style="font-size: ${size};" title="แปลง #${login} (${d.profit > 0 ? '+' : ''}${d.profit})">${emoji}</span>`;
                 });
             }
