@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K sarakharm farm EA : Ultimate Ecosystem Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #050907;
@@ -88,18 +88,18 @@
 
         header { text-align: center; margin-bottom: 16px; }
         
-        /* ชื่อหัวข้อ K sarakharm Farm EA: ตัวใหญ่ เด่นชัด เต็มความกว้างชิดขอบ */
+        /* ชื่อหัวข้อ K sarakharm Farm EA: ตัวใหญ่สะดุดตา เต็มความกว้างชิดขอบ */
         h1 { 
-            font-size: clamp(26px, 6.5vw, 40px); 
+            font-size: clamp(30px, 7.5vw, 46px); 
             font-weight: 800; 
             letter-spacing: -0.5px; 
             margin: 0 0 8px 0; 
             width: 100%;
             text-align: center;
-            background: linear-gradient(135deg, #ffffff 20%, #34d399 80%, #fbbf24 100%); 
+            background: linear-gradient(135deg, #ffffff 15%, #34d399 75%, #fbbf24 100%); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
-            filter: drop-shadow(0 2px 10px rgba(16, 185, 129, 0.3));
+            filter: drop-shadow(0 3px 12px rgba(16, 185, 129, 0.4));
         }
         
         /* แถวต้นไม้ด้านบน: ขยายความกว้างเต็ม 100% ชิดเส้นขอบซ้ายขวาพอดี */
@@ -261,7 +261,7 @@
         <!-- ส่วนหัวด้านบน -->
         <div class="top-nav">
             <div class="nav-badges">
-                <div class="badge" id="weather-humidity-badge">💧 ความชื้น 87%</div>
+                <div class="badge" id="weather-humidity-badge">💧 87%</div>
                 <div class="badge" id="weather-temp-badge">🌡️ --°C</div>
                 <div class="badge" id="season-badge">☀️ ฤดูหนาว</div>
                 <div class="badge" id="theme-badge">⏳ ปกติ</div>
@@ -426,7 +426,7 @@
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
                 const data = await res.json();
                 if (data && data.current) {
-                    document.getElementById('weather-humidity-badge').innerHTML = `💧 ความชื้น ${data.current.relative_humidity_2m}%`;
+                    document.getElementById('weather-humidity-badge').innerHTML = `💧 ${data.current.relative_humidity_2m}%`;
                     document.getElementById('weather-temp-badge').innerHTML = `🌡️ ${data.current.temperature_2m}°C`;
                     isNightTime = data.current.is_day === 0;
                 }
@@ -436,7 +436,7 @@
         function fallbackDefaultWeather() {
             const hour = new Date().getHours();
             isNightTime = (hour >= 18 || hour < 6);
-            document.getElementById('weather-humidity-badge').innerHTML = `💧 ความชื้น 85%`;
+            document.getElementById('weather-humidity-badge').innerHTML = `💧 85%`;
             document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C`;
         }
 
