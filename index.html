@@ -545,7 +545,7 @@
             
             const eqDiv = document.getElementById(`eq-${login}`);
             if (calculatedCredit > 0.01) { // เผื่อความคลาดเคลื่อนจุดทศนิยมเล็กน้อย
-                eqDiv.innerHTML = `${dashboardEquity.toFixed(2)} ${data.currency} <span style="font-size: 6px; color: var(--text-muted);">+${calculatedCredit.toFixed(2)}</span>`;
+                eqDiv.innerHTML = `${dashboardEquity.toFixed(2)} ${data.currency} <span style="font-size: 9px; color: var(--accent-emerald);">+${calculatedCredit.toFixed(2)}</span>`;
             } else {
                 eqDiv.innerText = `${dashboardEquity.toFixed(2)} ${data.currency}`;
             }
@@ -686,7 +686,7 @@
             
             const sumEqElem = document.getElementById('sum-equity');
             if (totalCalculatedCredit > 0.01) { // เผื่อจุดทศนิยม
-                sumEqElem.innerHTML = `$${totalDashboardEquity.toFixed(2)} <span style="font-size: 6px; color: var(--text-muted); font-weight: normal;">+$${totalCalculatedCredit.toFixed(2)}</span>`;
+                sumEqElem.innerHTML = `$${totalDashboardEquity.toFixed(2)} <span style="font-size: 9px; color: var(--accent-emerald); font-weight: normal;">+$${totalCalculatedCredit.toFixed(2)}</span>`;
             } else {
                 sumEqElem.innerText = `$${totalDashboardEquity.toFixed(2)}`;
             }
