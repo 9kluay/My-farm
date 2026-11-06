@@ -88,33 +88,33 @@
 
         header { text-align: center; margin-bottom: 16px; }
         
-        /* หัวข้อหลัก K sarakharm Farm EA ปรับขนาดให้กว้างเท่ากับแถวต้นไม้ด้านล่างพอดีเป๊ะ */
+        /* ชื่อหัวข้อ K sarakharm Farm EA ขยายเต็มความกว้างขอบซ้ายขวา (ชิดเส้นแดง) */
         h1 { 
-            font-size: clamp(20px, 4.2vw, 27px); 
+            font-size: clamp(22px, 5vw, 32px); 
             font-weight: 700; 
             letter-spacing: -0.3px; 
-            margin: 0 auto 6px auto; 
-            max-width: 420px;
+            margin: 0 0 6px 0; 
             width: 100%;
+            text-align: center;
             background: linear-gradient(135deg, #ffffff 30%, #34d399 100%); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
         }
         
-        /* สวนด้านบน: เอาช่องกล่องจางๆ ด้านหลังออกแล้ว เหลือแค่แนวต้นไม้ที่เสมอพอดีกัน */
+        /* แถวต้นไม้ด้านบน: ขยายความกว้างเต็ม 100% ชิดเส้นแดงซ้ายขวาพอดี */
         .farm-eco-header-box {
             position: relative; 
             background: transparent; 
             border: none; 
             border-radius: 0; 
-            padding: 4px 10px;
-            max-width: 420px; 
+            padding: 4px 0;
+            width: 100%; 
             margin: 0 auto 16px auto; 
             overflow: hidden; 
         }
         .farm-eco-line { 
             position: relative; display: flex; justify-content: space-between; align-items: flex-end; 
-            gap: 4px; opacity: 0.95; flex-wrap: nowrap; width: 100%;
+            width: 100%; opacity: 0.95; flex-wrap: nowrap;
         }
         .mountain-layer-back {
             position: absolute; top: -4px; left: 0; width: 100%; display: flex; justify-content: space-around;
