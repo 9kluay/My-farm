@@ -285,6 +285,7 @@
             setInterval(() => { fetchRealWorldWeather(); }, 900000);
         };
 
+        // --- ระบบดึงข้อมูลพิกัดและสภาพอากาศโลกจริง ---
         function fetchRealWorldWeather() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -292,11 +293,13 @@
                         const lat = position.coords.latitude;
                         const lon = position.coords.longitude;
                         try {
+                            // (ออปชันเสริม) ส่งพิกัดกลับไปอัปเดตที่ Backend Sheet หากต้องการ
                             await fetch(`${SCRIPT_URL}?action=updateGPS&lat=${lat}&lon=${lon}`);
                         } catch(e) {}
                         fetchWeatherByCoords(lat, lon, "พิกัดล่าสุด (บันทึกแล้ว)");
                     }, 
                     async (error) => {
+                        // หากผู้ใช้ไม่อนุญาต หรือดึงไม่ได้ ลองดึงค่าพิกัดล่าสุดที่เคยบันทึกไว้ใน Sheet
                         try {
                             const res = await fetch(`${SCRIPT_URL}?action=getGPS`);
                             const data = await res.json();
@@ -318,6 +321,7 @@
 
         async function fetchWeatherByCoords(lat, lon, locationLabel) {
             try {
+                // เรียกใช้ Open-Meteo API ฟรีเพื่อดึงอุณหภูมิและความชื้นปัจจุบัน
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,is_day,weather_code`);
                 const data = await res.json();
                 if (data && data.current) {
@@ -334,6 +338,7 @@
             document.getElementById('weather-location-badge').innerHTML = `📍 ทั่วโลก (พิกัดพื้นฐาน)`;
             document.getElementById('weather-temp-badge').innerHTML = `🌡️ 28°C | 💧 ความชื้น 65%`;
         }
+        // ---------------------------------------------
 
         function updateGlobalWeather(totalPercent) {
             let themeName = 'หมอกบางเบา 🌫️';
@@ -366,7 +371,6 @@
             const farms = getFarmsList();
             if (farms.length > 0) {
                 await Promise.all(farms.map(login => fetchNodeData(login)));
-                // เรียกอัปเดต UI อีกรอบหลังจากข้อมูลครบแล้ว เพื่อให้ระดับต้นไม้คำนวณ % ได้ถูกต้อง
                 farms.forEach(login => updateUICard(login));
             }
             setTimeout(() => { syncIcon.classList.remove('show'); }, 400);
@@ -494,13 +498,13 @@
                 if (data.error || data.length === 0) { 
                     globalPortfolioData[login] = { error: true }; 
                 } else {
-                    const latest = data[0]; // อ่านค่าที่ Backend ส่งมาให้
+                    const latest = data[0];
                     const balance = parseFloat(latest.balance); 
                     const profitLoss = parseFloat(latest.floating_pl);
 
                     globalPortfolioData[login] = { 
                         balance: balance, 
-                        equity_from_sheet: parseFloat(latest.equity), // เก็บค่า equity ดิบจาก sheet
+                        equity_from_sheet: parseFloat(latest.equity), 
                         profit: profitLoss,
                         percent: (balance > 0) ? (profitLoss / balance) * 100 : 0, 
                         open_positions: parseInt(latest.open_positions || 0), 
@@ -539,17 +543,15 @@
             document.getElementById(`pairs-${login}`).innerText = data.open_pairs;
             document.getElementById(`bal-${login}`).innerText = `${data.balance.toFixed(2)} ${data.currency}`; 
             
-            // --- คำนวณ Equity บนแดชบอร์ด (Balance + P/L) และหา Credit ส่วนต่าง (สำหรับรายแปลง) ---
             const dashboardEquity = data.balance + data.profit;
             const calculatedCredit = data.equity_from_sheet - dashboardEquity;
             
             const eqDiv = document.getElementById(`eq-${login}`);
-            if (calculatedCredit > 0.01) { // เผื่อความคลาดเคลื่อนจุดทศนิยมเล็กน้อย
+            if (calculatedCredit > 0.01) { 
                 eqDiv.innerHTML = `${dashboardEquity.toFixed(2)} ${data.currency} <span style="font-size: 9px; color: var(--accent-emerald);">+${calculatedCredit.toFixed(2)}</span>`;
             } else {
                 eqDiv.innerText = `${dashboardEquity.toFixed(2)} ${data.currency}`;
             }
-            // ------------------------------------------------------------------------------------
             
             const plDiv = document.getElementById(`pl-${login}`);
             plDiv.className = `metric-val ${getColorClass(data.profit)}`; 
@@ -572,9 +574,6 @@
                 div.className = `c-hist-val ${getColorClass(val)}`;
             });
 
-            // --------------------------------------------------------------------------
-            // แบ่งระดับต้นไม้ 10 ระดับ (โดยอิงจากสัดส่วนมูลค่าเทียบกับพอร์ตที่ใหญ่ที่สุด)
-            // --------------------------------------------------------------------------
             const usdBalance = convertToUSD(data.balance, data.currency);
             const maxBalance = Math.max(getMaxFarmBalance(), 1); 
             const relativePercent = (usdBalance / maxBalance) * 100;
@@ -596,43 +595,43 @@
             } else {
                 showcase.classList.remove('danger-zone');
                 
-                if (relativePercent >= 90) { // ระดับ 10
+                if (relativePercent >= 90) { 
                     cluster.setAttribute('data-state', 'legendary');
                     treeHtml = `<div class="tree-extra" style="font-size:52px; bottom:12px; filter:drop-shadow(0 0 14px rgba(251,191,36,0.9));">🌲</div><div class="tree-extra" style="font-size:36px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:36px; bottom:8px; right:18px;">🌴</div>`;
                     tierText = '🌟 ป่าดงดิบมหาเศรษฐี (Lv.10)'; plotEmoji = '🌲'; weatherText = 'ทองคำเปล่งประกาย ✨'; starCount = '⭐⭐⭐⭐⭐';
-                } else if (relativePercent >= 80) { // ระดับ 9
+                } else if (relativePercent >= 80) { 
                     cluster.setAttribute('data-state', 'epic');
                     treeHtml = `<div class="tree-extra" style="font-size:48px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:34px; bottom:8px; left:18px;">🌳</div><div class="tree-extra" style="font-size:34px; bottom:8px; right:18px;">🌲</div>`;
                     tierText = '👑 มหาพฤกษา (Lv.9)'; plotEmoji = '🌳'; weatherText = 'แสงออร่า 🌟'; starCount = '⭐⭐⭐⭐⭐';
-                } else if (relativePercent >= 70) { // ระดับ 8
+                } else if (relativePercent >= 70) { 
                     cluster.setAttribute('data-state', 'epic');
                     treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div><div class="tree-extra" style="font-size:32px; bottom:8px; right:22px;">🌳</div>`;
                     tierText = '💎 ป่าสนศักดิ์สิทธิ์ (Lv.8)'; plotEmoji = '🌲'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
-                } else if (relativePercent >= 60) { // ระดับ 7
+                } else if (relativePercent >= 60) { 
                     cluster.setAttribute('data-state', 'epic');
                     treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div><div class="tree-extra" style="font-size:30px; bottom:8px; left:22px;">🌲</div>`;
                     tierText = '🌳 ป่าอุดมสมบูรณ์ (Lv.7)'; plotEmoji = '🌳'; weatherText = 'แดดจ้า ☀️'; starCount = '⭐⭐⭐⭐';
-                } else if (relativePercent >= 50) { // ระดับ 6
+                } else if (relativePercent >= 50) { 
                     cluster.setAttribute('data-state', 'rare');
                     treeHtml = `<div class="tree-extra" style="font-size:46px; bottom:12px;">🌲</div>`;
                     tierText = '🌿 สวนป่าร่มรื่น (Lv.6)'; plotEmoji = '🌿'; weatherText = 'ลมโชย 🍃'; starCount = '⭐⭐⭐';
-                } else if (relativePercent >= 40) { // ระดับ 5
+                } else if (relativePercent >= 40) { 
                     cluster.setAttribute('data-state', 'rare');
                     treeHtml = `<div class="tree-extra" style="font-size:42px; bottom:12px;">🌳</div>`;
                     tierText = '🌲 ต้นไม้ใหญ่ (Lv.5)'; plotEmoji = '🌲'; weatherText = 'อากาศดี ⛅'; starCount = '⭐⭐⭐';
-                } else if (relativePercent >= 30) { // ระดับ 4
+                } else if (relativePercent >= 30) { 
                     cluster.setAttribute('data-state', 'rare');
                     treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:14px;">🌳</div>`;
                     tierText = '🌿 ต้นไม้กำลังโต (Lv.4)'; plotEmoji = '🌳'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
-                } else if (relativePercent >= 20) { // ระดับ 3
+                } else if (relativePercent >= 20) { 
                     cluster.setAttribute('data-state', 'seedling');
                     treeHtml = `<div class="tree-extra" style="font-size:36px; bottom:14px;">🌿</div>`;
                     tierText = '🌿 ต้นไม้เล็ก (Lv.3)'; plotEmoji = '🌿'; weatherText = 'รดน้ำชุ่มชื้น 💧'; starCount = '⭐⭐';
-                } else if (relativePercent >= 10) { // ระดับ 2
+                } else if (relativePercent >= 10) { 
                     cluster.setAttribute('data-state', 'seedling');
                     treeHtml = `<div class="tree-extra" style="font-size:32px; bottom:14px;">🌱</div>`;
                     tierText = '🌱 ต้นกล้า (Lv.2)'; plotEmoji = '🌱'; weatherText = 'รดน้ำพรวนดิน 💧'; starCount = '⭐';
-                } else { // ระดับ 1
+                } else { 
                     cluster.setAttribute('data-state', 'seedling');
                     treeHtml = `<div class="tree-extra" style="font-size:24px; bottom:14px;">🌱</div>`;
                     tierText = '🌱 เพาะเมล็ด (Lv.1)'; plotEmoji = '🌱'; weatherText = 'ลงดินเพาะปลูก 💧'; starCount = '⭐';
@@ -658,7 +657,7 @@
             let totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0;
             let syncedCount = 0;
             
-            let sumEquityFromSheet = 0; // รวม Equity ดิบจากชีททั้งหมด
+            let sumEquityFromSheet = 0; 
 
             const allFarms = getFarmsList();
             allFarms.forEach(login => {
@@ -668,7 +667,6 @@
                     totalUsdBalance += convertToUSD(d.balance, d.currency);
                     totalUsdProfit += convertToUSD(d.profit, d.currency);
                     
-                    // แปลง Equity จากชีทให้อยู่ในหน่วย USD ก่อนนำมารวม
                     sumEquityFromSheet += convertToUSD(d.equity_from_sheet, d.currency); 
                     
                     tTrees += d.open_positions; 
@@ -680,17 +678,15 @@
 
             document.getElementById('sum-balance').innerText = `$${totalUsdBalance.toFixed(2)}`; 
             
-            // --- คำนวณ Equity บนแดชบอร์ดรวม และหา Credit ส่วนต่าง (สำหรับภาพรวมด้านบน) ---
             const totalDashboardEquity = totalUsdBalance + totalUsdProfit;
             const totalCalculatedCredit = sumEquityFromSheet - totalDashboardEquity;
             
             const sumEqElem = document.getElementById('sum-equity');
-            if (totalCalculatedCredit > 0.01) { // เผื่อจุดทศนิยม
+            if (totalCalculatedCredit > 0.01) { 
                 sumEqElem.innerHTML = `$${totalDashboardEquity.toFixed(2)} <span style="font-size: 9px; color: var(--accent-emerald); font-weight: normal;">+$${totalCalculatedCredit.toFixed(2)}</span>`;
             } else {
                 sumEqElem.innerText = `$${totalDashboardEquity.toFixed(2)}`;
             }
-            // ---------------------------------------------------------------------------------
             
             const plElem = document.getElementById('sum-pl'); 
             plElem.className = 'stat-value ' + getColorClass(totalUsdProfit); 
