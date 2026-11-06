@@ -59,7 +59,7 @@
         .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 10; animation: fadeIn 0.5s var(--ease-smooth) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ส่วนหัวด้านบน (Compact & Fit) */
+        /* ส่วนหัวด้านบน */
         .top-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 15px; width: 100%; }
         .nav-badges { 
             display: flex; gap: 4px; align-items: center; justify-content: center; 
@@ -87,22 +87,38 @@
         @keyframes spinSync { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         header { text-align: center; margin-bottom: 16px; }
-        h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 8px 0; background: linear-gradient(135deg, #ffffff 30%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* สวนด้านบน (กระชับขึ้น) */
+        /* หัวข้อหลัก K sarakharm Farm EA ปรับขนาดให้กว้างเท่ากับแถวต้นไม้ด้านล่างพอดีเป๊ะ */
+        h1 { 
+            font-size: clamp(20px, 4.2vw, 27px); 
+            font-weight: 700; 
+            letter-spacing: -0.3px; 
+            margin: 0 auto 6px auto; 
+            max-width: 420px;
+            width: 100%;
+            background: linear-gradient(135deg, #ffffff 30%, #34d399 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        /* สวนด้านบน: เอาช่องกล่องจางๆ ด้านหลังออกแล้ว เหลือแค่แนวต้นไม้ที่เสมอพอดีกัน */
         .farm-eco-header-box {
-            position: relative; background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
-            border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 8px 16px;
-            max-width: 650px; margin: 0 auto 16px auto; overflow: hidden; backdrop-filter: blur(6px);
+            position: relative; 
+            background: transparent; 
+            border: none; 
+            border-radius: 0; 
+            padding: 4px 10px;
+            max-width: 420px; 
+            margin: 0 auto 16px auto; 
+            overflow: hidden; 
         }
         .farm-eco-line { 
-            position: relative; display: flex; justify-content: center; align-items: flex-end; 
-            gap: 10px; opacity: 0.95; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+            position: relative; display: flex; justify-content: space-between; align-items: flex-end; 
+            gap: 4px; opacity: 0.95; flex-wrap: nowrap; width: 100%;
         }
-        .farm-eco-line::-webkit-scrollbar { display: none; }
         .mountain-layer-back {
             position: absolute; top: -4px; left: 0; width: 100%; display: flex; justify-content: space-around;
-            font-size: 22px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
+            font-size: 20px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
         }
         .farm-eco-line span { 
             position: relative; z-index: 1; display: inline-block; transition: transform 0.3s; 
@@ -117,7 +133,7 @@
             100% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)); transform: scale(1.05); }
         }
 
-        /* กล่อง Dashboard หลัก (ลด Padding และ Gap) */
+        /* กล่อง Dashboard หลัก */
         .glass-panel { 
             background: var(--glass-bg); backdrop-filter: blur(16px); 
             border: 1px solid var(--glass-border); border-radius: var(--card-radius); 
@@ -257,22 +273,22 @@
         </div>
 
         <header>
-            <h1>K sarakharm farm EA</h1>
+            <h1>K sarakharm Farm EA</h1>
             <div class="farm-eco-header-box">
                 <div class="farm-eco-line">
                     <div class="mountain-layer-back">
                         <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
                     </div>
-                    <span style="font-size: 18px;">🌴</span>
-                    <span style="font-size: 14px;">🌿</span>
-                    <span style="font-size: 14px;">☘️</span>
-                    <span style="font-size: 14px;">🌵</span>
-                    <span style="font-size: 20px;">🏔️</span>
-                    <span class="glowing" style="font-size: 16px;">🌲</span>
-                    <span style="font-size: 13px;">🌳</span>
-                    <span style="font-size: 18px;">🌴</span>
-                    <span style="font-size: 12px;">🌿</span>
-                    <span class="glowing" style="font-size: 13px;">☘️</span>
+                    <span style="font-size: 16px;">🌴</span>
+                    <span style="font-size: 13px;">🌿</span>
+                    <span style="font-size: 13px;">☘️</span>
+                    <span style="font-size: 13px;">🌵</span>
+                    <span style="font-size: 18px;">🏔️</span>
+                    <span class="glowing" style="font-size: 15px;">🌲</span>
+                    <span style="font-size: 12px;">🌳</span>
+                    <span style="font-size: 16px;">🌴</span>
+                    <span style="font-size: 11px;">🌿</span>
+                    <span class="glowing" style="font-size: 12px;">☘️</span>
                 </div>
             </div>
         </header>
