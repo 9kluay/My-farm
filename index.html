@@ -93,7 +93,7 @@
         .stat-value { font-size: 22px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
         .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--theme-border), transparent); margin: 20px 0; }
         
-        /* 4 คอลัมน์ เป็นภาษาอังกฤษตามที่ขอ */
+        /* 4 คอลัมน์ด้านบน (ภาษาอังกฤษ ไม่มีคำว่า Max) */
         .history-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
         .history-box { border-right: 1px solid rgba(255,255,255,0.05); padding: 0 2px; }
         .history-box:last-child { border-right: none; }
@@ -200,7 +200,7 @@
                 <div class="stat-box"><div class="stat-label">🌱 Active Trees</div><div class="stat-value" id="sum-trees" style="color: var(--accent-gold);">0 ต้น</div></div>
             </div>
             <div class="divider"></div>
-            <!-- แก้ไขข้อความในส่วนนี้เป็นภาษาอังกฤษทั้งหมด และเอาคำว่า Max ออก -->
+            <!-- ส่วนที่ปรับแก้: TODAY PROFIT, WEEKLY PROFIT, MONTHLY PROFIT, DRAWDOWN (ไม่มีคำว่า Max) -->
             <div class="history-stats-grid">
                 <div class="history-box"><div class="history-label">TODAY PROFIT</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">WEEKLY PROFIT</div><div class="history-value" id="sum-week">$0.00</div></div>
@@ -467,7 +467,6 @@
             farms.forEach(login => {
                 const card = document.createElement('div'); card.className = 'tree-card'; 
                 card.setAttribute('data-login', login);
-                // กลับมาใช้ภาษาไทยในการ์ดย่อย
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="plot-title"><span id="plot-icon-${login}">🌱</span> แปลง #${login} <span class="currency-badge" id="badge-${login}">USD</span><span class="stars" id="stars-${login}"></span></div>
