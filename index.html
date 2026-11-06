@@ -82,7 +82,6 @@
         header { text-align: center; margin-bottom: 20px; }
         h1 { font-size: 38px; font-weight: 600; margin: 0 0 10px 0; background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* สวนด้านบน: จัดเรียงภูเขา 🏔️ และต้นไม้เรืองแสง 🌲✨ */
         .farm-eco-line { 
             display: flex; justify-content: center; align-items: flex-end; 
             gap: 10px; margin-bottom: 20px; opacity: 0.95; padding: 0 10px; flex-wrap: nowrap; overflow-x: auto; 
@@ -120,7 +119,6 @@
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 12px; }
         .toolbar-left, .toolbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         
-        /* ปุ่มถังขยะแบบเหลือแต่รูปไอคอน */
         .btn-delete-all { 
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); 
             color: rgba(255,255,255,0.6); width: 42px; height: 42px; border-radius: var(--btn-radius); 
@@ -204,7 +202,6 @@
 
         <header>
             <h1>K sarakharm farm EA</h1>
-            <!-- ปรับแต่งสวนด้านบน: มีภูเขาใหญ่ 🏔️ และต้นไม้เรืองแสงเบาๆ 🌲✨ -->
             <div class="farm-eco-line">
                 <span style="font-size: 26px;">🏔️</span>
                 <span class="glowing" style="font-size: 20px;">🌲</span>
@@ -237,7 +234,7 @@
                 <div class="history-box"><div class="history-label">TODAY</div><div class="history-value" id="sum-today">$0.00</div></div>
                 <div class="history-box"><div class="history-label">WEEK</div><div class="history-value" id="sum-week">$0.00</div></div>
                 <div class="history-box"><div class="history-label">MONTH</div><div class="history-value" id="sum-month">$0.00</div></div>
-                <div class="history-box"><div class="history-label">DRAWDOWN</div><div class="history-value" id="sum-dd">$0.00</div></div>
+                <div class="history-box"><div class="history-label">DRAWDOWN</div><div class="history-value" id="sum-dd">0.00%</div></div>
             </div>
         </div>
 
@@ -254,7 +251,6 @@
                 </select>
             </div>
             <div class="toolbar-right">
-                <!-- ปุ่มถังขยะแบบเหลือแต่รูปไอคอน -->
                 <button class="btn-delete-all" onclick="deleteAllFarms()" title="ล้างข้อมูลทั้งหมด">🗑️</button>
             </div>
         </div>
@@ -518,7 +514,7 @@
                         <div class="metric-item-compact"><div class="metric-label" style="font-size: 8px;">ACTIVE PAIRS</div><div class="metric-val-pairs" id="pairs-${login}">-</div></div>
                         <div class="metric-item-compact" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
                             <div class="metric-label" style="color: #fb923c; font-size: 8px;">DRAWDOWN</div>
-                            <div class="metric-val" id="dd-${login}" style="color: #fb923c; font-size: 10px;">0.00 (0.00%)</div>
+                            <div class="metric-val" id="dd-${login}" style="color: #fb923c; font-size: 10px;">0.00%</div>
                         </div>
                     </div>
                     <div class="card-history">
@@ -601,11 +597,10 @@
             
             const ddElem = document.getElementById(`dd-${login}`);
             if (data.dd_amount < 0) {
-                const absAmount = Math.abs(data.dd_amount).toFixed(2);
                 const absPercent = Math.abs(data.dd_percent).toFixed(2);
-                ddElem.innerText = `-${absAmount} ${data.currency} (-${absPercent}%)`;
+                ddElem.innerText = `(-${absPercent}%)`;
             } else {
-                ddElem.innerText = `0.00 ${data.currency} (0.00%)`;
+                ddElem.innerText = `(0.00%)`;
             }
 
             ['today', 'week', 'month'].forEach(t => {
@@ -757,10 +752,10 @@
             if (totalUsdDD < 0) {
                 const absDd = Math.abs(totalUsdDD);
                 const ddPct = (totalUsdBalance > 0) ? (absDd / totalUsdBalance) * 100 : 0;
-                sumDdElem.innerHTML = `-$${absDd.toFixed(2)} <span style="font-size: 9px; font-weight: normal;">(-${ddPct.toFixed(2)}%)</span>`;
+                sumDdElem.innerText = `(-${ddPct.toFixed(2)}%)`;
                 sumDdElem.style.color = '#fb923c'; 
             } else {
-                sumDdElem.innerText = `$0.00`;
+                sumDdElem.innerText = `(0.00%)`;
                 sumDdElem.style.color = 'var(--text-main)'; 
             }
 
