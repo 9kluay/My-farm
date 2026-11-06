@@ -46,7 +46,7 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2310b981' fill-opacity='0.4' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
         }
 
-        /* แก้ไข CSS ของอนุภาคสภาพอากาศให้ลอยเป็น Background จริงๆ และไม่มากองข้างล่าง */
+        /* อนุภาคสภาพอากาศแบบ Background */
         .weather-particle {
             position: fixed;
             top: -50px;
@@ -125,13 +125,13 @@
             filter: drop-shadow(0 3px 12px rgba(16, 185, 129, 0.4));
         }
         
-        /* แถวต้นไม้ด้านบน: ขยายความกว้างเต็ม 100% ชิดเส้นขอบซ้ายขวาพอดี */
+        /* สวนป่าด้านบน: ขยายความสูงต้นไม้เป็น 2 เท่าและเพิ่มความหนาแน่น */
         .farm-eco-header-box {
             position: relative; 
             background: transparent; 
             border: none; 
             border-radius: 0; 
-            padding: 4px 0;
+            padding: 8px 0;
             width: 100%; 
             margin: 0 auto 16px auto; 
             overflow: hidden; 
@@ -139,22 +139,23 @@
         .farm-eco-line { 
             position: relative; display: flex; justify-content: space-between; align-items: flex-end; 
             width: 100%; opacity: 0.95; flex-wrap: nowrap;
+            font-size: 32px;
         }
         .mountain-layer-back {
-            position: absolute; top: -4px; left: 0; width: 100%; display: flex; justify-content: space-around;
-            font-size: 20px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
+            position: absolute; top: -10px; left: 0; width: 100%; display: flex; justify-content: space-around;
+            font-size: 38px; opacity: 0.35; filter: blur(1px); pointer-events: none; z-index: 0;
         }
         .farm-eco-line span { 
             position: relative; z-index: 1; display: inline-block; transition: transform 0.3s; 
-            filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.25));
+            filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.3));
         }
         .farm-eco-line span.glowing {
-            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8)) drop-shadow(0 0 14px rgba(251, 191, 36, 0.5));
+            filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.9)) drop-shadow(0 0 20px rgba(251, 191, 36, 0.6));
             animation: treeGlow 3s ease-in-out infinite alternate;
         }
         @keyframes treeGlow {
-            0% { filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.4)); transform: scale(1); }
-            100% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)); transform: scale(1.05); }
+            0% { filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.5)); transform: scale(1); }
+            100% { filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.95)); transform: scale(1.08); }
         }
 
         /* กล่อง Dashboard หลัก */
@@ -301,18 +302,21 @@
             <div class="farm-eco-header-box">
                 <div class="farm-eco-line">
                     <div class="mountain-layer-back">
-                        <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
+                        <span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span><span>🏔️</span>
                     </div>
-                    <span style="font-size: 16px;">🌴</span>
-                    <span style="font-size: 13px;">🌿</span>
-                    <span style="font-size: 13px;">☘️</span>
-                    <span style="font-size: 13px;">🌵</span>
-                    <span style="font-size: 18px;">🏔️</span>
-                    <span class="glowing" style="font-size: 15px;">🌲</span>
-                    <span style="font-size: 12px;">🌳</span>
-                    <span style="font-size: 16px;">🌴</span>
-                    <span style="font-size: 11px;">🌿</span>
-                    <span class="glowing" style="font-size: 12px;">☘️</span>
+                    <span>🌴</span>
+                    <span>🌿</span>
+                    <span>☘️</span>
+                    <span>🌵</span>
+                    <span>🌳</span>
+                    <span>🏔️</span>
+                    <span class="glowing">🌲</span>
+                    <span>🌳</span>
+                    <span>🌴</span>
+                    <span>☘️</span>
+                    <span>🌿</span>
+                    <span class="glowing">🌲</span>
+                    <span>🌴</span>
                 </div>
             </div>
         </header>
