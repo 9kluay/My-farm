@@ -689,14 +689,25 @@
         }
 
         function updatePortfolioSummary() {
-            let totalUsdBalance = 0, totalUsdProfit = 0, tTrees = 0, totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0, totalUsdDD = 0, syncedCount = 0, sumEquityFromSheet = 0; 
+            let totalUsdBalance = 0, totalUsdProfit = 0, tTrees = 0, totalUsdToday = 0, totalUsdWeek = 0, totalUsdMonth = 0, totalUsdDD = 0, onlineFarmsCount = 0, fundedFarmsCount = 0, emptyFarmsCount = 0, sumEquityFromSheet = 0; 
             const allFarms = getFarmsList();
             allFarms.forEach(login => {
                 const d = globalPortfolioData[login]; 
-                if (d && !d.error && d.balance > 0) { 
-                    syncedCount++;
-                    totalUsdBalance += convertToUSD(d.balance, d.currency); totalUsdProfit += convertToUSD(d.profit, d.currency); sumEquityFromSheet += convertToUSD(d.equity_from_sheet, d.currency); 
-                    tTrees += d.open_positions; totalUsdToday += convertToUSD(d.profit_today || 0, d.currency); totalUsdWeek += convertToUSD(d.profit_week || 0, d.currency); totalUsdMonth += convertToUSD(d.profit_month || 0, d.currency); totalUsdDD += convertToUSD(d.dd_amount || 0, d.currency);
+                if (d && !d.error) { 
+                    onlineFarmsCount++; // ฟาร์มที่ออนไลน์ทั้งหมด
+                    if (d.balance > 0) {
+                        fundedFarmsCount++; // ฟาร์มที่มีเงิน
+                        totalUsdBalance += convertToUSD(d.balance, d.currency); 
+                        totalUsdProfit += convertToUSD(d.profit, d.currency); 
+                        sumEquityFromSheet += convertToUSD(d.equity_from_sheet, d.currency); 
+                        tTrees += d.open_positions; 
+                        totalUsdToday += convertToUSD(d.profit_today || 0, d.currency); 
+                        totalUsdWeek += convertToUSD(d.profit_week || 0, d.currency); 
+                        totalUsdMonth += convertToUSD(d.profit_month || 0, d.currency); 
+                        totalUsdDD += convertToUSD(d.dd_amount || 0, d.currency);
+                    } else {
+                        emptyFarmsCount++; // ฟาร์มที่ว่าง/ไม่มีเงิน
+                    }
                 }
             });
 
@@ -713,7 +724,9 @@
             const totalPercent = (totalUsdBalance > 0) ? (totalUsdProfit / totalUsdBalance) * 100 : 0;
             const percentElem = document.getElementById('sum-percent'); percentElem.className = 'stat-value ' + getColorClass(totalPercent); percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            document.getElementById('sum-farms').innerText = `${syncedCount}/${allFarms.length} แปลง`; document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
+            // แสดงผลรูปแบบ: 12/12 แปลง (0 แปลง) โดย (0 แปลง) ปรับขนาดเป็น 9px
+            document.getElementById('sum-farms').innerHTML = `${fundedFarmsCount}/${onlineFarmsCount} แปลง <span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">(${emptyFarmsCount} แปลง)</span>`; 
+            document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
             const updateSum = (id, val) => { const el = document.getElementById(id); el.innerText = formatMoney(val); el.className = 'history-value ' + getColorClass(val); };
             updateSum('sum-today', totalUsdToday); updateSum('sum-week', totalUsdWeek); updateSum('sum-month', totalUsdMonth);
