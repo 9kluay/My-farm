@@ -111,7 +111,7 @@
             filter: drop-shadow(0 3px 12px rgba(16, 185, 129, 0.4));
         }
         
-        /* สวนป่าด้านบน: จัดกลุ่มซ้อนกันอยู่กึ่งกลาง */
+        /* สวนป่าด้านบน */
         .farm-eco-header-box {
             position: relative; background: transparent; border: none; border-radius: 0; 
             padding: 8px 0; width: 100%; margin: 0 auto 16px auto; overflow: hidden; 
@@ -157,7 +157,7 @@
         .history-value { font-size: 11px; font-weight: 600; }
         .positive { color: var(--accent-emerald) !important; } .negative { color: var(--accent-rose) !important; }
 
-        /* แถบเครื่องมือ: ลดขนาดครึ่งหนึ่งและวางแถวเดียว */
+        /* แถบเครื่องมือ */
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: nowrap; gap: 6px; width: 100%; }
         .toolbar-left { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; width: 100%; }
         .toolbar-right { display: flex; align-items: center; flex-shrink: 0; }
@@ -272,7 +272,7 @@
             </div>
         </div>
 
-        <!-- แถบเครื่องมือขนาดครึ่งหนึ่งและวางแถวเดียว -->
+        <!-- แถบเครื่องมือ -->
         <div class="toolbar">
             <div class="toolbar-left">
                 <div class="search-box">
@@ -331,8 +331,19 @@
             const season = getSeasonInfo();
             document.getElementById('season-badge').innerHTML = `${season.icon} ${season.name}`;
             
+            // 1. อ่านข้อมูล Portfolio จาก LocalStorage มาแสดงผลก่อนทันที (Cache-First)
+            const cachedPortfolio = localStorage.getItem('my_forest_portfolio_data');
+            if (cachedPortfolio) {
+                try {
+                    globalPortfolioData = JSON.parse(cachedPortfolio);
+                } catch(e) {}
+            }
+
             fetchRealWorldWeather(); 
             renderForest(); 
+            updatePortfolioSummary(); 
+            
+            // 2. ดึงข้อมูลอัปเดตใหม่จาก Sheets เบื้องหลัง
             await syncAndRefreshAll(); 
 
             setInterval(() => { syncAndRefreshAll(); }, 60000);
@@ -544,7 +555,9 @@
             if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             await fetch(`${SCRIPT_URL}?action=deleteFarm&login=${login}`);
             let farms = JSON.parse(localStorage.getItem('my_forest_farms') || '[]').filter(f => f !== login); 
-            saveFarmsList(farms); delete globalPortfolioData[login]; 
+            saveFarmsList(farms); 
+            delete globalPortfolioData[login]; 
+            localStorage.setItem('my_forest_portfolio_data', JSON.stringify(globalPortfolioData));
             updatePortfolioSummary(); renderForest();
         };
 
@@ -552,7 +565,9 @@
             const confirmCode = prompt(`กรุณากรอกรหัส PIN เพื่อยืนยันการล้างข้อมูลฟาร์มทั้งหมด:`);
             if (confirmCode !== '17091709') return alert('รหัส PIN ไม่ถูกต้อง!');
             await fetch(`${SCRIPT_URL}?action=deleteAllFarms`);
-            localStorage.setItem('my_forest_farms', '[]'); globalPortfolioData = {}; 
+            localStorage.setItem('my_forest_farms', '[]'); 
+            globalPortfolioData = {}; 
+            localStorage.removeItem('my_forest_portfolio_data');
             updatePortfolioSummary(); renderForest(); alert('ล้างข้อมูลเรียบร้อยแล้ว');
         };
 
@@ -610,6 +625,8 @@
                         dd_amount: latest.max_dd_amount || 0, dd_percent: latest.max_dd_percent || 0
                     };
                 }
+                // บันทึกแคชข้อมูลล่าสุดลงใน LocalStorage
+                localStorage.setItem('my_forest_portfolio_data', JSON.stringify(globalPortfolioData));
                 updatePortfolioSummary(); updateUICard(login);
             } catch (err) { globalPortfolioData[login] = { error: true }; updateUICard(login); }
         }
@@ -731,7 +748,7 @@
             const totalPercent = (totalUsdBalance > 0) ? (totalUsdProfit / totalUsdBalance) * 100 : 0;
             const percentElem = document.getElementById('sum-percent'); percentElem.className = 'stat-value ' + getColorClass(totalPercent); percentElem.innerText = (totalPercent > 0 ? '+' : '') + totalPercent.toFixed(2) + '%';
             
-            // รักษาใช้สีสไตล์เดิมของธีมหลักทั้งหมด (เขียวมรกต + เทามิวต์ 9px)
+            // แสดงผลด้วยสไตล์สีเดิมของธีม
             document.getElementById('sum-farms').innerHTML = `${activeOrderFarmsCount}/${fundedFarmsCount} แปลง <span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">(${zeroBalanceFarmsCount} แปลง)</span>`; 
             document.getElementById('sum-trees').innerText = `${tTrees} ต้น`;
 
