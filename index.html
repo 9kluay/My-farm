@@ -283,6 +283,298 @@
         let currentSortMode = 'balance';
         let isNightTime = false; 
 
+        // ==========================================
+        // ระบบเสียงธรรมชาติอัตโนมัติ (หมุนเวียนบรรยากาศป่าใหม่ๆ ตลอดเวลา)
+        // ==========================================
+        const NatureSoundscape = (() => {
+            let ctx = null;
+            let initialized = false;
+            let masterGain = null;
+            let ambientFilter = null;
+            let ambientFilter2 = null;
+            let ambientGain = null;
+            let lfoOsc = null;
+            let lfoGain = null;
+            let currentSceneIndex = -1;
+
+            // ชุดบรรยากาศธรรมชาติที่หมุนเวียนเปลี่ยนไปเรื่อยๆ
+            const scenes = [
+                { name: 'gentle_brook', freq1: 720, q1: 1.4, freq2: 1450, q2: 2.0, lfoRate: 0.22, lfoDepth: 260, gain: 0.16 },   // ลำธารน้ำไหลเอื่อย
+                { name: 'forest_breeze', freq1: 340, q1: 0.9, freq2: 620, q2: 1.2, lfoRate: 0.09, lfoDepth: 190, gain: 0.19 },  // สายลมพัดผ่านยอดไม้
+                { name: 'soft_rain', freq1: 1350, q1: 0.7, freq2: 2600, q2: 1.1, lfoRate: 0.14, lfoDepth: 320, gain: 0.12 },     // ละอองฝนโปรยปราย
+                { name: 'distant_falls', freq1: 240, q1: 1.1, freq2: 510, q2: 1.5, lfoRate: 0.16, lfoDepth: 140, gain: 0.20 },  // น้ำตกและป่าลึก
+                { name: 'meadow_wind', freq1: 480, q1: 1.6, freq2: 980, q2: 1.8, lfoRate: 0.12, lfoDepth: 240, gain: 0.15 }     // ทุ่งหญ้าและสายลมเย็น
+            ];
+
+            function buildAudioGraph() {
+                if (initialized) return;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+
+                ctx = new AudioCtx();
+                initialized = true;
+
+                masterGain = ctx.createGain();
+                masterGain.gain.setValueAtTime(0.85, ctx.currentTime);
+                masterGain.connect(ctx.destination);
+
+                // สร้าง Pink Noise Buffer 4 วินาทีสำหรับเสียงพื้นหลังธรรมชาติที่นุ่มนวล
+                const bufferSize = ctx.sampleRate * 4;
+                const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.045;
+                    b6 = white * 0.115926;
+                }
+
+                const noiseSource = ctx.createBufferSource();
+                noiseSource.buffer = noiseBuffer;
+                noiseSource.loop = true;
+
+                ambientFilter = ctx.createBiquadFilter();
+                ambientFilter.type = 'bandpass';
+                ambientFilter.frequency.value = 600;
+                ambientFilter.Q.value = 1.2;
+
+                ambientFilter2 = ctx.createBiquadFilter();
+                ambientFilter2.type = 'lowpass';
+                ambientFilter2.frequency.value = 1600;
+                ambientFilter2.Q.value = 0.8;
+
+                lfoOsc = ctx.createOscillator();
+                lfoOsc.type = 'sine';
+                lfoOsc.frequency.value = 0.15;
+
+                lfoGain = ctx.createGain();
+                lfoGain.gain.value = 220;
+
+                lfoOsc.connect(lfoGain);
+                lfoGain.connect(ambientFilter.frequency);
+
+                ambientGain = ctx.createGain();
+                ambientGain.gain.value = 0.15;
+
+                noiseSource.connect(ambientFilter);
+                ambientFilter.connect(ambientFilter2);
+                ambientFilter2.connect(ambientGain);
+                ambientGain.connect(masterGain);
+
+                noiseSource.start();
+                lfoOsc.start();
+
+                // เริ่มหมุนเวียนบรรยากาศและเสียงสัตว์ป่า/ธรรมชาติแบบสุ่มต่อเนื่อง
+                rotateAmbientScene();
+                setInterval(rotateAmbientScene, 24000);
+                scheduleNextOrganicAccent();
+            }
+
+            // เปลี่ยนบรรยากาศเสียงน้ำ/ลม/ฝนอย่างนุ่มนวลทุกๆ 24 วินาทีไม่ให้ซ้ำจำเจ
+            function rotateAmbientScene() {
+                if (!ctx) return;
+                let nextIdx;
+                do {
+                    nextIdx = Math.floor(Math.random() * scenes.length);
+                } while (nextIdx === currentSceneIndex && scenes.length > 1);
+                currentSceneIndex = nextIdx;
+
+                const s = scenes[currentSceneIndex];
+                const now = ctx.currentTime;
+                const rampTime = 6.0; // ค่อยๆ เปลี่ยนถ่ายอย่างเป็นธรรมชาติใน 6 วินาที
+
+                ambientFilter.frequency.setTargetAtTime(s.freq1, now, rampTime / 3);
+                ambientFilter.Q.setTargetAtTime(s.q1, now, rampTime / 3);
+                ambientFilter2.frequency.setTargetAtTime(s.freq2, now, rampTime / 3);
+                ambientFilter2.Q.setTargetAtTime(s.q2, now, rampTime / 3);
+                lfoOsc.frequency.setTargetAtTime(s.lfoRate, now, rampTime / 3);
+                lfoGain.gain.setTargetAtTime(s.lfoDepth, now, rampTime / 3);
+                ambientGain.gain.setTargetAtTime(s.gain, now, rampTime / 3);
+            }
+
+            // สร้างเสียงธรรมชาติประกอบหลากหลายรูปแบบ (นกร้องหลายสายพันธุ์, หยดน้ำ, จิ้งหรีดกลางคืน, ลมพัดใบไผ่)
+            function playOrganicAccent() {
+                if (!ctx || ctx.state !== 'running') return;
+                const now = ctx.currentTime;
+                const type = isNightTime 
+                    ? ['cricket', 'night_bird', 'water_drop', 'bamboo_wind'][Math.floor(Math.random() * 4)]
+                    : ['songbird_melody', 'chirp_trill', 'woodland_coo', 'water_drop', 'twin_birds'][Math.floor(Math.random() * 5)];
+
+                if (type === 'songbird_melody') {
+                    // นกร้องทำนอง 2-3 โน้ต
+                    const notes = 2 + Math.floor(Math.random() * 2);
+                    const startFreq = 2400 + Math.random() * 1100;
+                    for (let i = 0; i < notes; i++) {
+                        const t = now + i * 0.16;
+                        const osc = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        osc.type = 'sine';
+                        const f = startFreq + (i % 2 === 0 ? 450 : -250) + Math.random() * 200;
+                        osc.frequency.setValueAtTime(f, t);
+                        osc.frequency.exponentialRampToValueAtTime(f * 1.18, t + 0.06);
+                        osc.frequency.exponentialRampToValueAtTime(f * 0.88, t + 0.14);
+
+                        g.gain.setValueAtTime(0.0001, t);
+                        g.gain.linearRampToValueAtTime(0.032, t + 0.03);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(t);
+                        osc.stop(t + 0.16);
+                    }
+                } else if (type === 'chirp_trill') {
+                    // เสียงนกเล็กส่งเสียงรัวเบาๆ
+                    const base = 3100 + Math.random() * 900;
+                    for (let i = 0; i < 4; i++) {
+                        const t = now + i * 0.075;
+                        const osc = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(base, t);
+                        osc.frequency.exponentialRampToValueAtTime(base + 550, t + 0.05);
+
+                        g.gain.setValueAtTime(0.0001, t);
+                        g.gain.linearRampToValueAtTime(0.022, t + 0.02);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(t);
+                        osc.stop(t + 0.075);
+                    }
+                } else if (type === 'woodland_coo') {
+                    // เสียงนกเขา/นกป่าทุ้มนุ่ม
+                    const base = 680 + Math.random() * 180;
+                    [0, 0.28].forEach((offset, idx) => {
+                        const t = now + offset;
+                        const osc = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(base, t);
+                        osc.frequency.linearRampToValueAtTime(idx === 0 ? base * 1.12 : base * 0.92, t + 0.22);
+
+                        g.gain.setValueAtTime(0.0001, t);
+                        g.gain.linearRampToValueAtTime(0.035, t + 0.06);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(t);
+                        osc.stop(t + 0.26);
+                    });
+                } else if (type === 'twin_birds') {
+                    // นก 2 ตัวร้องโต้ตอบกันคนละระดับเสียง
+                    [0, 0.55].forEach((offset, idx) => {
+                        const t = now + offset;
+                        const osc = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        osc.type = 'sine';
+                        const f = idx === 0 ? 2700 + Math.random() * 400 : 3400 + Math.random() * 500;
+                        osc.frequency.setValueAtTime(f, t);
+                        osc.frequency.exponentialRampToValueAtTime(f * 0.78, t + 0.18);
+
+                        g.gain.setValueAtTime(0.0001, t);
+                        g.gain.linearRampToValueAtTime(0.028, t + 0.03);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(t);
+                        osc.stop(t + 0.22);
+                    });
+                } else if (type === 'water_drop') {
+                    // เสียงหยดน้ำติ๋งลงลำธาร
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    const f = 950 + Math.random() * 650;
+                    osc.frequency.setValueAtTime(f, now);
+                    osc.frequency.exponentialRampToValueAtTime(f * 1.85, now + 0.09);
+
+                    g.gain.setValueAtTime(0.0001, now);
+                    g.gain.linearRampToValueAtTime(0.035, now + 0.015);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'cricket' || type === 'night_bird') {
+                    // เสียงจิ้งหรีดกลางคืนเบาๆ
+                    const base = 4200 + Math.random() * 600;
+                    for (let i = 0; i < 6; i++) {
+                        const t = now + i * 0.06;
+                        const osc = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(base, t);
+
+                        g.gain.setValueAtTime(0.0001, t);
+                        g.gain.linearRampToValueAtTime(0.014, t + 0.015);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(t);
+                        osc.stop(t + 0.055);
+                    }
+                } else if (type === 'bamboo_wind') {
+                    // เสียงลมพลิ้วผ่านใบไม้ยามค่ำ
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(420, now);
+                    osc.frequency.linearRampToValueAtTime(510, now + 0.8);
+
+                    g.gain.setValueAtTime(0.0001, now);
+                    g.gain.linearRampToValueAtTime(0.02, now + 0.35);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.95);
+                }
+            }
+
+            function scheduleNextOrganicAccent() {
+                const delay = 3200 + Math.random() * 4800; // สุ่มทุกๆ 3.2 - 8 วินาที
+                setTimeout(() => {
+                    playOrganicAccent();
+                    scheduleNextOrganicAccent();
+                }, delay);
+            }
+
+            function unlockAndPlay() {
+                buildAudioGraph();
+                if (ctx && ctx.state === 'suspended') {
+                    ctx.resume().catch(() => {});
+                }
+            }
+
+            return {
+                start: () => {
+                    unlockAndPlay();
+                    // ปลดล็อกเสียงอัตโนมัติทันทีที่มีการขยับ/แตะ/เลื่อน/คลิกใดๆ บนหน้าเว็บโดยไม่ต้องมีปุ่ม
+                    const events = ['pointerdown', 'touchstart', 'click', 'keydown', 'scroll'];
+                    const onGesture = () => {
+                        unlockAndPlay();
+                        if (ctx && ctx.state === 'running') {
+                            events.forEach(ev => window.removeEventListener(ev, onGesture));
+                        }
+                    };
+                    events.forEach(ev => window.addEventListener(ev, onGesture, { passive: true }));
+                }
+            };
+        })();
+
         function convertToUSD(amount, currency) {
             const curr = (currency || 'USD').toUpperCase();
             if (curr === 'USC' || curr === 'CENT') return Number(amount) / 100;
@@ -335,6 +627,9 @@
             renderForest(); 
             updatePortfolioSummary(); 
             
+            // เริ่มเสียงธรรมชาติอัตโนมัติทันทีและหมุนเวียนเสียงใหม่ๆ ต่อเนื่อง
+            NatureSoundscape.start();
+
             await syncAndRefreshAll(); 
 
             setInterval(() => { syncAndRefreshAll(); }, 60000);
@@ -358,7 +653,6 @@
                     particle.style.left = Math.random() * window.innerWidth + 'px';
                     particle.style.animationDuration = (Math.random() * 5 + 4) + 's'; 
                     particle.style.animationName = 'fallParticle';
-                    // ดอกไม้และใบไม้ขนาดเล็กกว่าครึ่งหนึ่งของต้นไม้ (6px - 10px)
                     particle.style.fontSize = (Math.random() * 4 + 6) + 'px'; 
                     document.body.appendChild(particle);
                     setTimeout(() => particle.remove(), 9000);
@@ -462,7 +756,6 @@
             const bigTrees = ['🌲', '🌳', '🌴'];
             const smallLeaves = ['🌿', '🌱'];
 
-            // สร้างข้อมูลต้นไม้แต่ละแปลง พร้อมสุ่มชนิดและตำแหน่งตามเลขพอร์ต
             let forestItems = validFarms.map((item) => {
                 const login = item.login;
                 const d = item.data;
@@ -477,7 +770,6 @@
                 let isLeafOrFlower = false;
 
                 if (d.profit < 0) {
-                    // ดอกไม้เหี่ยวขนาดเล็กกว่าครึ่งหนึ่งของต้นไม้ (13px)
                     emoji = '🥀';
                     size = 13;
                     isLeafOrFlower = true;
@@ -485,11 +777,9 @@
                     if (d.profit > 0) glowClass = 'glowing';
 
                     if (relativePercent >= 25) {
-                        // ต้นไม้ใหญ่-กลาง (28px - 42px) สลับชนิดไม่ให้ซ้ำกัน
                         emoji = bigTrees[hashType % bigTrees.length];
                         size = Math.round(28 + ((relativePercent - 25) / 75) * 14);
                     } else {
-                        // ใบไม้/ต้นกล้า (11px - 13px) เล็กกว่าครึ่งหนึ่งของต้นไม้ (28px+)
                         emoji = smallLeaves[hashType % smallLeaves.length];
                         size = relativePercent >= 12 ? 13 : 11;
                         isLeafOrFlower = true;
@@ -507,13 +797,10 @@
                 };
             });
 
-            // 1. สลับลำดับตำแหน่งแบบสุ่มตาม hash ของพอร์ต ไม่ให้เรียงจากใหญ่ไปเล็ก
             forestItems.sort((a, b) => a.sortKey - b.sortKey);
 
-            // 2. ป้องกันไม่ให้ไอคอนชนิดเดียวกันหรือขนาดเท่ากันเรียงติดกันซ้ำๆ
             for (let i = 1; i < forestItems.length; i++) {
                 if (forestItems[i].emoji === forestItems[i - 1].emoji) {
-                    // หาตัวถัดไปที่ไอคอนไม่ซ้ำมาสลับตำแหน่ง
                     let swapIdx = -1;
                     for (let j = i + 1; j < forestItems.length; j++) {
                         if (forestItems[j].emoji !== forestItems[i - 1].emoji) {
@@ -526,7 +813,6 @@
                         forestItems[i] = forestItems[swapIdx];
                         forestItems[swapIdx] = temp;
                     } else if (!forestItems[i].isLeafOrFlower) {
-                        // กรณีทุกพอร์ตอยู่ระดับเดียวกันหมด ให้เปลี่ยนสายพันธุ์ต้นไม้สลับกัน
                         const currentIdx = bigTrees.indexOf(forestItems[i - 1].emoji);
                         forestItems[i].emoji = bigTrees[(currentIdx + 1) % bigTrees.length];
                     } else if (forestItems[i].emoji !== '🥀') {
