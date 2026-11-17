@@ -38,30 +38,6 @@
             position: relative;
         }
 
-        /* แถบแจ้งเตือนชั่วคราวกรณีเบราว์เซอร์บล็อก Autoplay (หายไปทันทีเมื่อแตะหน้าจอ) */
-        .sound-unlock-toast {
-            position: fixed;
-            bottom: 38px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(14, 28, 22, 0.92);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            color: #a7f3d0;
-            font-size: 11px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            z-index: 1000;
-            pointer-events: none;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            white-space: nowrap;
-        }
-        .sound-unlock-toast.hidden {
-            opacity: 0;
-            transform: translate(-50%, 10px);
-        }
-
         /* ละอองดอกไม้/ใบไม้ (โหมดกลางวัน - ขนาดเล็กกว่าครึ่งหนึ่งของต้นไม้) */
         .weather-particle {
             position: fixed; top: -50px; z-index: 1; pointer-events: none; user-select: none;
@@ -307,442 +283,6 @@
         let currentSortMode = 'balance';
         let isNightTime = false; 
 
-        // ==========================================
-        // ระบบเสียงธรรมชาติใสโปร่ง ไร้อาการอื้อ (High-Pass Filtered + Crisp Water & Forest Birds)
-        // ==========================================
-        const NatureSoundscape = (() => {
-            let ctx = null;
-            let initialized = false;
-            let hasPlayedWelcome = false;
-            let masterGain = null;
-            let forestReverbInput = null;
-            let breezeGain = null;
-            let breezeBandpass = null;
-            let currentSceneIndex = -1;
-            let toastEl = null;
-
-            // ชุดบรรยากาศป่า 6 รูปแบบที่สลับหมุนเวียนอย่างแผ่วเบา (ตัดย่านเบสอื้อออกทั้งหมด)
-            const scenes = [
-                { name: 'clear_brook', centerFreq: 1350, q: 0.7, peakGain: 0.038, waterDensity: 1.0 },   // ลำธารใสไหลผ่านโขดหิน
-                { name: 'morning_canopy', centerFreq: 1850, q: 0.6, peakGain: 0.032, waterDensity: 0.5 }, // ยอดไม้ยามเช้าและนกร้อง
-                { name: 'bamboo_breeze', centerFreq: 1100, q: 0.9, peakGain: 0.042, waterDensity: 0.3 },  // สายลมพัดผ่านป่าไผ่
-                { name: 'light_mist', centerFreq: 2400, q: 0.5, peakGain: 0.030, waterDensity: 0.8 },     // ละอองหมอกและหยดน้ำค้าง
-                { name: 'sunny_meadow', centerFreq: 1600, q: 0.8, peakGain: 0.028, waterDensity: 0.4 },   // ทุ่งหญ้าโปร่งสบาย
-                { name: 'quiet_forest', centerFreq: 1250, q: 0.7, peakGain: 0.018, waterDensity: 0.6 }    // ป่าเงียบสงบฟังเสียงนกชัดๆ
-            ];
-
-            function unlockIOSAudio() {
-                try {
-                    const silentAudio = document.createElement('audio');
-                    silentAudio.setAttribute('playsinline', '');
-                    silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
-                    const p = silentAudio.play();
-                    if (p && typeof p.catch === 'function') p.catch(() => {});
-                } catch (e) {}
-            }
-
-            function showToastHint() {
-                if (toastEl || (ctx && ctx.state === 'running')) return;
-                toastEl = document.createElement('div');
-                toastEl.className = 'sound-unlock-toast';
-                toastEl.innerHTML = '🌿 แตะหน้าจอ 1 ครั้งเพื่อเปิดเสียงธรรมชาติ';
-                document.body.appendChild(toastEl);
-            }
-
-            function hideToastHint() {
-                if (!toastEl) return;
-                const el = toastEl;
-                toastEl = null;
-                el.classList.add('hidden');
-                setTimeout(() => { if (el.parentNode) el.remove(); }, 600);
-            }
-
-            function buildAudioGraph() {
-                if (initialized) return;
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-
-                ctx = new AudioCtx();
-                initialized = true;
-
-                masterGain = ctx.createGain();
-                masterGain.gain.setValueAtTime(0.9, ctx.currentTime);
-                masterGain.connect(ctx.destination);
-
-                // สร้าง Forest Echo (เสียงสะท้อนในป่าโปร่งๆ ให้เสียงนกและหยดน้ำดูมีระยะลึก ไม่กระด้าง)
-                forestReverbInput = ctx.createGain();
-                forestReverbInput.gain.value = 0.28;
-
-                const delayL = ctx.createDelay();
-                delayL.delayTime.value = 0.24;
-                const delayR = ctx.createDelay();
-                delayR.delayTime.value = 0.37;
-
-                const echoFilter = ctx.createBiquadFilter();
-                echoFilter.type = 'bandpass';
-                echoFilter.frequency.value = 1800;
-                echoFilter.Q.value = 0.7;
-
-                const feedback = ctx.createGain();
-                feedback.gain.value = 0.22;
-
-                forestReverbInput.connect(echoFilter);
-                echoFilter.connect(delayL);
-                delayL.connect(delayR);
-                delayR.connect(feedback);
-                feedback.connect(echoFilter);
-
-                if (typeof ctx.createStereoPanner === 'function') {
-                    const panL = ctx.createStereoPanner();
-                    panL.pan.value = -0.65;
-                    const panR = ctx.createStereoPanner();
-                    panR.pan.value = 0.65;
-                    delayL.connect(panL);
-                    delayR.connect(panR);
-                    panL.connect(masterGain);
-                    panR.connect(masterGain);
-                } else {
-                    delayL.connect(masterGain);
-                    delayR.connect(masterGain);
-                }
-
-                // สร้าง White Noise แบบเบาบางสำหรับเสียงลมผ่านใบไม้ (ไม่มีเสียงเบสต่ำ)
-                const bufferSize = ctx.sampleRate * 4;
-                const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                const output = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    output[i] = (Math.random() * 2 - 1) * 0.2;
-                }
-
-                const noiseSource = ctx.createBufferSource();
-                noiseSource.buffer = noiseBuffer;
-                noiseSource.loop = true;
-
-                // 1. High-Pass Filter 450 Hz ตัดเสียงอื้อ/เสียงฮัมย่านต่ำออก 100%
-                const highPass = ctx.createBiquadFilter();
-                highPass.type = 'highpass';
-                highPass.frequency.value = 450;
-
-                // 2. Bandpass นุ่มๆ สำหรับเสียงใบไม้ไหว
-                breezeBandpass = ctx.createBiquadFilter();
-                breezeBandpass.type = 'bandpass';
-                breezeBandpass.frequency.value = 1500;
-                breezeBandpass.Q.value = 0.7;
-
-                // 3. Lowpass 4200 Hz ตัดเสียงซ่าแหลมบาดหู
-                const lowPass = ctx.createBiquadFilter();
-                lowPass.type = 'lowpass';
-                lowPass.frequency.value = 4200;
-
-                breezeGain = ctx.createGain();
-                breezeGain.gain.value = 0.015; // เบาและโปร่งมาก
-
-                noiseSource.connect(highPass);
-                highPass.connect(breezeBandpass);
-                breezeBandpass.connect(lowPass);
-                lowPass.connect(breezeGain);
-                breezeGain.connect(masterGain);
-
-                noiseSource.start();
-
-                // เริ่มวงจรเสียงธรรมชาติทั้งหมด
-                rotateAmbientScene();
-                setInterval(rotateAmbientScene, 22000);
-                scheduleBreezeSwell();
-                scheduleWaterRipple();
-                scheduleNextBirdOrNatureCall();
-            }
-
-            function rotateAmbientScene() {
-                if (!ctx) return;
-                let nextIdx;
-                do {
-                    nextIdx = Math.floor(Math.random() * scenes.length);
-                } while (nextIdx === currentSceneIndex && scenes.length > 1);
-                currentSceneIndex = nextIdx;
-
-                const s = scenes[currentSceneIndex];
-                const now = ctx.currentTime;
-                breezeBandpass.frequency.setTargetAtTime(s.centerFreq, now, 2.5);
-                breezeBandpass.Q.setTargetAtTime(s.q, now, 2.5);
-            }
-
-            // จังหวะลมพัดผ่านยอดไม้: ค่อยๆ พัดแผ่วเข้ามา 4-6 วินาที แล้วจางหายไปสู่ความเงียบ (ไม่เปิดแช่)
-            function scheduleBreezeSwell() {
-                if (ctx && ctx.state === 'running' && breezeGain) {
-                    const now = ctx.currentTime;
-                    const scene = scenes[Math.max(0, currentSceneIndex)];
-                    const peak = scene.peakGain * (0.7 + Math.random() * 0.5);
-                    const swellIn = 3.5 + Math.random() * 2.5;
-                    const swellOut = 4.5 + Math.random() * 3.0;
-
-                    breezeGain.gain.cancelScheduledValues(now);
-                    breezeGain.gain.setValueAtTime(breezeGain.gain.value, now);
-                    breezeGain.gain.linearRampToValueAtTime(peak, now + swellIn);
-                    breezeGain.gain.exponentialRampToValueAtTime(0.004, now + swellIn + swellOut);
-                }
-                const nextSwell = 11000 + Math.random() * 7000; // เว้นช่วงเงียบสบายหู
-                setTimeout(scheduleBreezeSwell, nextSwell);
-            }
-
-            function createStereoTarget() {
-                if (typeof ctx.createStereoPanner === 'function') {
-                    const panner = ctx.createStereoPanner();
-                    panner.pan.value = (Math.random() * 1.5) - 0.75;
-                    panner.connect(masterGain);
-                    panner.connect(forestReverbInput);
-                    return panner;
-                }
-                return masterGain;
-            }
-
-            // เสียงน้ำไหลกระทบโขดหิน (ฟองน้ำใสๆ ระดับเสียงเบาละมุน)
-            function scheduleWaterRipple() {
-                if (ctx && ctx.state === 'running') {
-                    const scene = scenes[Math.max(0, currentSceneIndex)];
-                    if (Math.random() < scene.waterDensity) {
-                        const now = ctx.currentTime;
-                        const drops = 1 + Math.floor(Math.random() * 3);
-                        const dest = createStereoTarget();
-
-                        for (let i = 0; i < drops; i++) {
-                            const t = now + i * (0.09 + Math.random() * 0.14);
-                            const osc = ctx.createOscillator();
-                            const g = ctx.createGain();
-
-                            osc.type = 'sine';
-                            const startF = 950 + Math.random() * 1100;
-                            osc.frequency.setValueAtTime(startF, t);
-                            osc.frequency.exponentialRampToValueAtTime(startF * (1.35 + Math.random() * 0.4), t + 0.055);
-
-                            g.gain.setValueAtTime(0.0001, t);
-                            g.gain.linearRampToValueAtTime(0.022 + Math.random() * 0.015, t + 0.01);
-                            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.065);
-
-                            osc.connect(g);
-                            g.connect(dest);
-                            osc.start(t);
-                            osc.stop(t + 0.07);
-                        }
-                    }
-                }
-                const nextRipple = 700 + Math.random() * 1600;
-                setTimeout(scheduleWaterRipple, nextRipple);
-            }
-
-            // เสียงนกป่าร้องหลากหลายสายพันธุ์ (นกขมิ้น, นกปรอด, นกเขา, นกกระจอก, จิ้งหรีดกลางคืน)
-            function playNatureCall(forceType = null) {
-                if (!ctx || ctx.state !== 'running') return;
-                const now = ctx.currentTime;
-                const dest = createStereoTarget();
-
-                const dayCalls = ['oriole_flute', 'bulbul_cheer', 'distant_dove', 'sparrow_chirp', 'duo_birds'];
-                const nightCalls = ['soft_cricket', 'night_frog', 'distant_dove', 'gentle_drop'];
-                const pool = isNightTime ? nightCalls : dayCalls;
-                const type = forceType || pool[Math.floor(Math.random() * pool.length)];
-
-                if (type === 'oriole_flute') {
-                    // นกขมิ้นร้องเสียงใสกังวานเหมือนขลุ่ย 3-4 โน้ต
-                    const melody = [1980, 2480, 2220, 2640];
-                    const count = 3 + Math.floor(Math.random() * 2);
-                    const shift = 0.9 + Math.random() * 0.25;
-
-                    for (let i = 0; i < count; i++) {
-                        const t = now + i * 0.19;
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        const f = melody[i % melody.length] * shift;
-
-                        osc.frequency.setValueAtTime(f * 0.96, t);
-                        osc.frequency.exponentialRampToValueAtTime(f, t + 0.04);
-                        osc.frequency.linearRampToValueAtTime(f * 0.98, t + 0.15);
-
-                        g.gain.setValueAtTime(0.0001, t);
-                        g.gain.linearRampToValueAtTime(0.055, t + 0.025);
-                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
-
-                        osc.connect(g);
-                        g.connect(dest);
-                        osc.start(t);
-                        osc.stop(t + 0.18);
-                    }
-                } else if (type === 'bulbul_cheer') {
-                    // นกปรอดร้องเสียงร่าเริงไล่ระดับ
-                    const base = 2400 + Math.random() * 600;
-                    const steps = [1.0, 1.25, 1.12, 1.42, 1.2];
-                    steps.forEach((ratio, i) => {
-                        const t = now + i * 0.11;
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        const f = base * ratio;
-                        osc.frequency.setValueAtTime(f, t);
-                        osc.frequency.exponentialRampToValueAtTime(f * 1.1, t + 0.06);
-
-                        g.gain.setValueAtTime(0.0001, t);
-                        g.gain.linearRampToValueAtTime(0.048, t + 0.015);
-                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.095);
-
-                        osc.connect(g);
-                        g.connect(dest);
-                        osc.start(t);
-                        osc.stop(t + 0.10);
-                    });
-                } else if (type === 'distant_dove') {
-                    // เสียงนกป่า/นกเขาร้องทุ้มนุ่มอยู่ไกลๆ
-                    const base = 640 + Math.random() * 140;
-                    [0, 0.34, 0.68].forEach((offset, idx) => {
-                        const t = now + offset;
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(base, t);
-                        osc.frequency.linearRampToValueAtTime(idx === 1 ? base * 1.12 : base * 0.92, t + 0.24);
-
-                        g.gain.setValueAtTime(0.0001, t);
-                        g.gain.linearRampToValueAtTime(0.045, t + 0.06);
-                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-
-                        osc.connect(g);
-                        g.connect(dest);
-                        osc.start(t);
-                        osc.stop(t + 0.30);
-                    });
-                } else if (type === 'sparrow_chirp') {
-                    // เสียงนกเล็กจิ๊บๆ 2-3 ครั้ง
-                    const base = 3100 + Math.random() * 700;
-                    const count = 2 + Math.floor(Math.random() * 2);
-                    for (let i = 0; i < count; i++) {
-                        const t = now + i * 0.14;
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(base, t);
-                        osc.frequency.exponentialRampToValueAtTime(base * 0.78, t + 0.08);
-
-                        g.gain.setValueAtTime(0.0001, t);
-                        g.gain.linearRampToValueAtTime(0.042, t + 0.015);
-                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-
-                        osc.connect(g);
-                        g.connect(dest);
-                        osc.start(t);
-                        osc.stop(t + 0.10);
-                    }
-                } else if (type === 'duo_birds') {
-                    // นก 2 ตัวร้องรับกันคนละฝั่ง
-                    [0, 0.65].forEach((offset, idx) => {
-                        const t = now + offset;
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        const f = idx === 0 ? 2250 : 2850;
-                        osc.frequency.setValueAtTime(f, t);
-                        osc.frequency.exponentialRampToValueAtTime(f * 1.18, t + 0.08);
-                        osc.frequency.exponentialRampToValueAtTime(f * 0.9, t + 0.20);
-
-                        g.gain.setValueAtTime(0.0001, t);
-                        g.gain.linearRampToValueAtTime(0.05, t + 0.025);
-                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-
-                        osc.connect(g);
-                        g.connect(dest);
-                        osc.start(t);
-                        osc.stop(t + 0.23);
-                    });
-                } else if (type === 'soft_cricket') {
-                    // เสียงจิ้งหรีดกลางคืนเบาๆ นุ่มๆ
-                    const base = 3950 + Math.random() * 350;
-                    for (let i = 0; i < 5; i++) {
-                        const t = now + i * 0.065;
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(base, t);
-
-                        g.gain.setValueAtTime(0.0001, t);
-                        g.gain.linearRampToValueAtTime(0.025, t + 0.015);
-                        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
-
-                        osc.connect(g);
-                        g.connect(dest);
-                        osc.start(t);
-                        osc.stop(t + 0.06);
-                    }
-                } else if (type === 'night_frog' || type === 'gentle_drop') {
-                    const osc = ctx.createOscillator();
-                    const g = ctx.createGain();
-                    osc.type = 'sine';
-                    const f = 1150 + Math.random() * 300;
-                    osc.frequency.setValueAtTime(f, now);
-                    osc.frequency.exponentialRampToValueAtTime(f * 1.45, now + 0.08);
-
-                    g.gain.setValueAtTime(0.0001, now);
-                    g.gain.linearRampToValueAtTime(0.035, now + 0.015);
-                    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.10);
-
-                    osc.connect(g);
-                    g.connect(dest);
-                    osc.start(now);
-                    osc.stop(now + 0.11);
-                }
-            }
-
-            function scheduleNextBirdOrNatureCall() {
-                const delay = 2400 + Math.random() * 3800; // สุ่มทุก 2.4 - 6.2 วินาที
-                setTimeout(() => {
-                    playNatureCall();
-                    scheduleNextBirdOrNatureCall();
-                }, delay);
-            }
-
-            function onRunningConfirmed() {
-                hideToastHint();
-                if (!hasPlayedWelcome) {
-                    hasPlayedWelcome = true;
-                    setTimeout(() => playNatureCall('oriole_flute'), 100);
-                }
-            }
-
-            function unlockAndPlay(fromGesture = false) {
-                if (fromGesture) unlockIOSAudio();
-                buildAudioGraph();
-                if (!ctx) return;
-
-                if (ctx.state === 'running') {
-                    onRunningConfirmed();
-                } else if (ctx.state === 'suspended') {
-                    ctx.resume().then(() => {
-                        if (ctx.state === 'running') onRunningConfirmed();
-                    }).catch(() => {});
-                }
-            }
-
-            return {
-                start: () => {
-                    unlockAndPlay(false);
-
-                    setTimeout(() => {
-                        if (!ctx || ctx.state !== 'running') {
-                            showToastHint();
-                        } else {
-                            onRunningConfirmed();
-                        }
-                    }, 400);
-
-                    const events = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
-                    const onGesture = () => {
-                        unlockAndPlay(true);
-                        if (ctx && ctx.state === 'running') {
-                            events.forEach(ev => window.removeEventListener(ev, onGesture, true));
-                        }
-                    };
-                    events.forEach(ev => window.addEventListener(ev, onGesture, { capture: true, passive: true }));
-                }
-            };
-        })();
-
         function convertToUSD(amount, currency) {
             const curr = (currency || 'USD').toUpperCase();
             if (curr === 'USC' || curr === 'CENT') return Number(amount) / 100;
@@ -795,9 +335,6 @@
             renderForest(); 
             updatePortfolioSummary(); 
             
-            // เริ่มระบบเสียงธรรมชาติใสโปร่งอัตโนมัติ
-            NatureSoundscape.start();
-
             await syncAndRefreshAll(); 
 
             setInterval(() => { syncAndRefreshAll(); }, 60000);
@@ -821,6 +358,7 @@
                     particle.style.left = Math.random() * window.innerWidth + 'px';
                     particle.style.animationDuration = (Math.random() * 5 + 4) + 's'; 
                     particle.style.animationName = 'fallParticle';
+                    // ดอกไม้และใบไม้ขนาดเล็กกว่าครึ่งหนึ่งของต้นไม้ (6px - 10px)
                     particle.style.fontSize = (Math.random() * 4 + 6) + 'px'; 
                     document.body.appendChild(particle);
                     setTimeout(() => particle.remove(), 9000);
@@ -924,6 +462,7 @@
             const bigTrees = ['🌲', '🌳', '🌴'];
             const smallLeaves = ['🌿', '🌱'];
 
+            // สร้างข้อมูลต้นไม้แต่ละแปลง พร้อมสุ่มชนิดและตำแหน่งตามเลขพอร์ต
             let forestItems = validFarms.map((item) => {
                 const login = item.login;
                 const d = item.data;
@@ -938,6 +477,7 @@
                 let isLeafOrFlower = false;
 
                 if (d.profit < 0) {
+                    // ดอกไม้เหี่ยวขนาดเล็กกว่าครึ่งหนึ่งของต้นไม้ (13px)
                     emoji = '🥀';
                     size = 13;
                     isLeafOrFlower = true;
@@ -945,9 +485,11 @@
                     if (d.profit > 0) glowClass = 'glowing';
 
                     if (relativePercent >= 25) {
+                        // ต้นไม้ใหญ่-กลาง (28px - 42px) สลับชนิดไม่ให้ซ้ำกัน
                         emoji = bigTrees[hashType % bigTrees.length];
                         size = Math.round(28 + ((relativePercent - 25) / 75) * 14);
                     } else {
+                        // ใบไม้/ต้นกล้า (11px - 13px) เล็กกว่าครึ่งหนึ่งของต้นไม้ (28px+)
                         emoji = smallLeaves[hashType % smallLeaves.length];
                         size = relativePercent >= 12 ? 13 : 11;
                         isLeafOrFlower = true;
@@ -965,10 +507,13 @@
                 };
             });
 
+            // 1. สลับลำดับตำแหน่งแบบสุ่มตาม hash ของพอร์ต ไม่ให้เรียงจากใหญ่ไปเล็ก
             forestItems.sort((a, b) => a.sortKey - b.sortKey);
 
+            // 2. ป้องกันไม่ให้ไอคอนชนิดเดียวกันหรือขนาดเท่ากันเรียงติดกันซ้ำๆ
             for (let i = 1; i < forestItems.length; i++) {
                 if (forestItems[i].emoji === forestItems[i - 1].emoji) {
+                    // หาตัวถัดไปที่ไอคอนไม่ซ้ำมาสลับตำแหน่ง
                     let swapIdx = -1;
                     for (let j = i + 1; j < forestItems.length; j++) {
                         if (forestItems[j].emoji !== forestItems[i - 1].emoji) {
@@ -981,6 +526,7 @@
                         forestItems[i] = forestItems[swapIdx];
                         forestItems[swapIdx] = temp;
                     } else if (!forestItems[i].isLeafOrFlower) {
+                        // กรณีทุกพอร์ตอยู่ระดับเดียวกันหมด ให้เปลี่ยนสายพันธุ์ต้นไม้สลับกัน
                         const currentIdx = bigTrees.indexOf(forestItems[i - 1].emoji);
                         forestItems[i].emoji = bigTrees[(currentIdx + 1) % bigTrees.length];
                     } else if (forestItems[i].emoji !== '🥀') {
